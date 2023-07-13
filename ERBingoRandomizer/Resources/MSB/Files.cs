@@ -1,4 +1,4 @@
-﻿namespace ERBingoRandomizer.MSB;
+﻿namespace ERBingoRandomizer.Resources.MSB;
 
 public static class Files {
     public static readonly string[] Paths = {

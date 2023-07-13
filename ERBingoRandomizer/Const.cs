@@ -1,11 +1,25 @@
 ﻿namespace ERBingoRandomizer;
 
 public static class Const {
-    public const string EXE_NAME = "eldenring.exe";
-    public const string REGULATION_NAME = "\\regulation.bin";
-    public const string ITEMMSGBND_NAME = "/msg/engus/item.msgbnd.dcx";
-    public const string MENUMSGBND_NAME = "/msg/engus/menu.msgbnd.dcx";
+    public const float Chance = 0.01f;
 
+    public const string ExeName = "eldenring.exe";
+    public const string RegulationName = "\\regulation.bin";
+    public const string ItemmsgbndName = "/msg/engus/item.msgbnd.dcx";
+    public const string MenumsgbndName = "/msg/engus/menu.msgbnd.dcx";
+    // Gear Randomizer  
+    public const int NoItem = -1;
+    public const byte HelmType = 0; 
+    public const byte BodyType = 1; 
+    public const byte ArmType = 2; 
+    public const byte LegType = 3; 
+    // Level Randomizer  
+    public const byte MaxStat = 13;
+    public const byte MinStat = 4;
+    public const float StatRollChance = 0.6f;
+    public const byte NumStats = 8;
+
+    // BHD5
     public static class ArchiveKeys {
         public static string DATA0 = @"-----BEGIN RSA PUBLIC KEY-----
 MIIBCwKCAQEA9Rju2whruXDVQZpfylVEPeNxm7XgMHcDyaaRUIpXQE0qEo+6Y36L

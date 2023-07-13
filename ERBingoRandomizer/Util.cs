@@ -11,9 +11,39 @@ using System.Xml;
 namespace ERBingoRandomizer;
 
 static class Util {
+    public static readonly string ExeDir = Environment.CurrentDirectory;
+
+    public static int DeleteFromEnd(int num, int n)
+    {
+        for (int i = 1; num != 0; i++)
+        {
+            num /= 10;
+
+            if (i == n)
+                return num;
+        }
+
+        return 0;
+    }
+    public static int DeleteFromEndAndRestore(int num, int n) {
+        int end = DeleteFromEnd(num, n);
+        if (end == 0) {
+            return end;
+        }
+        
+        for (int i = 1; end != 0; i++)
+        {
+            end *= 10;
+
+            if (i == n)
+                return end;
+        }
+        
+        return end;
+    }
+    
     private const uint PRIME = 37;
     private const ulong PRIME64 = 0x85ul;
-    
     static readonly (string, string)[] _pathValueTuple = new (string, string)[] {
         (@"HKEY_CURRENT_USER\SOFTWARE\Valve\Steam", "SteamPath"),
         (@"HKEY_LOCAL_MACHINE\SOFTWARE\Wow6432Node\Valve\Steam", "InstallPath"),

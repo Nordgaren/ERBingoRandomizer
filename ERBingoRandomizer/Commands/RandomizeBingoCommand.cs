@@ -18,13 +18,15 @@ public class RandomizeBingoCommand : AsyncCommandBase {
     public override bool CanExecute(object? parameter) {
         return !_mwViewModel.InProgress 
             && !string.IsNullOrWhiteSpace(_mwViewModel.Path) 
-            && _mwViewModel.Path.ToLower().EndsWith(EXE_NAME) 
+            && _mwViewModel.Path.ToLower().EndsWith(ExeName) 
             && File.Exists(_mwViewModel.Path);
     }
     public override async Task ExecuteAsync(object? parameter) {
         _mwViewModel.InProgress = true;
-        // _mwViewModel.Path is not null, and is a valid path to eldenring.exe, because of CanExecute.
-        await BingoRandomizer.BuildRandomizerAsync(_mwViewModel.Path!, _mwViewModel.Seed);
+        _mwViewModel.Seed = string.IsNullOrWhiteSpace(_mwViewModel.Seed) ? Random.Shared.NextInt64().ToString() : _mwViewModel.Seed.Trim();
+        // _mwViewModel.Path is not null, and is a valid path to eldenring.exe, because of the conditions in CanExecute.
+        BingoRandomizer randomizer = await BingoRandomizer.BuildRandomizerAsync(_mwViewModel.Path!, _mwViewModel.Seed);
+        await Task.Run(() => randomizer.RandomizeRegulation());
         _mwViewModel.InProgress = false;
     }
     private void ViewModel_PropertyChanged(object? sender, PropertyChangedEventArgs e) {

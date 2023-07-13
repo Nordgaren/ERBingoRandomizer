@@ -14,8 +14,7 @@ internal class InverseBoolConverter : IValueConverter
         return !(bool)value;
     }
 
-    public object ConvertBack(object value, Type targetType, object parameter, CultureInfo culture)
-    {
-        throw new NotImplementedException("There is no backwards conversion for count to bool");
+    public object ConvertBack(object value, Type targetType, object parameter, CultureInfo culture) {
+        return Convert(value, targetType, parameter, culture);
     }
 }
