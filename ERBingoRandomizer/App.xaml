@@ -1,0 +1,13 @@
+﻿<Application x:Class="ERBingoRandomizer.App"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:local="clr-namespace:ERBingoRandomizer"
+             xmlns:converter="clr-namespace:ERBingoRandomizer.Converter"
+             StartupUri="MainWindow.xaml">
+    <Application.Resources>
+        <ResourceDictionary>
+            <converter:InverseBoolConverter x:Key="InverseBoolConverter"/>
+        </ResourceDictionary>
+         
+    </Application.Resources>
+</Application>

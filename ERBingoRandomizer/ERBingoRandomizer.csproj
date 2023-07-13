@@ -1,0 +1,38 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+
+    <PropertyGroup>
+        <OutputType>WinExe</OutputType>
+        <TargetFramework>net6.0-windows</TargetFramework>
+        <Nullable>enable</Nullable>
+        <UseWPF>true</UseWPF>
+    </PropertyGroup>
+
+    <ItemGroup>
+      <ProjectReference Include="..\..\DSMapStudio\FSParam\FSParam.csproj" />
+      <ProjectReference Include="..\..\DSMapStudio\SoulsFormats\SoulsFormats\SoulsFormats.csproj" />
+    </ItemGroup>
+
+    <ItemGroup>
+      <None Remove="Resources\Params\Defs\CharaInitParam.xml" />
+      <EmbeddedResource Include="Resources\Params\Defs\CharaInitParam.xml" />
+      <None Remove="Resources\Params\Defs\EquipParamAccessory.xml" />
+      <EmbeddedResource Include="Resources\Params\Defs\EquipParamAccessory.xml" />
+      <None Remove="Resources\Params\Defs\EquipParamGoods.xml" />
+      <EmbeddedResource Include="Resources\Params\Defs\EquipParamGoods.xml" />
+      <None Remove="Resources\Params\Defs\EquipParamProtector.xml" />
+      <EmbeddedResource Include="Resources\Params\Defs\EquipParamProtector.xml" />
+      <None Remove="Resources\Params\Defs\EquipParamWeapon.xml" />
+      <EmbeddedResource Include="Resources\Params\Defs\EquipParamWeapon.xml" />
+      <None Remove="Resources\Params\Defs\ItemLotParam.xml" />
+      <EmbeddedResource Include="Resources\Params\Defs\ItemLotParam.xml" />
+      <None Remove="Resources\Params\Defs\MagicParam.xml" />
+      <EmbeddedResource Include="Resources\Params\Defs\MagicParam.xml" />
+      <None Remove="Resources\Params\Defs\ShopLineupParam.xml" />
+      <EmbeddedResource Include="Resources\Params\Defs\ShopLineupParam.xml" />
+    </ItemGroup>
+
+    <ItemGroup>
+      <PackageReference Include="BouncyCastle" Version="1.8.9" />
+    </ItemGroup>
+
+</Project>

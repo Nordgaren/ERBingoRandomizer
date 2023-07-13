@@ -1,0 +1,23 @@
+﻿<Window x:Class="ERBingoRandomizer.MainWindow"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        xmlns:viewModel="clr-namespace:ERBingoRandomizer"
+        xmlns:viewModels="clr-namespace:ERBingoRandomizer.ViewModels"
+        mc:Ignorable="d"
+        Title="MainWindow" Height="450" Width="800" ResizeMode="CanMinimize">
+    <Window.DataContext>
+        <viewModels:MainWindowViewModel x:Name="MainWindowViewModel"/>
+    </Window.DataContext>
+    <Grid>
+        <StackPanel>
+            <Label Margin="0,25" Content="Path to Elden Ring exe" HorizontalAlignment="Center" FontWeight="UltraBlack"/>
+            <TextBox Margin="100,0,100,0" Text="{Binding Path}"/>
+            <Label Margin="0,25" Content="Seed" HorizontalAlignment="Center" FontWeight="UltraBlack"/>
+            <TextBox Margin="100,0,100,0" Text="{Binding Seed}"/>
+            <Separator Margin="0,25,0,25"/>
+            <Button Width="150" Height="50" Content="Bingo!" Command="{Binding RandomizeBingo}" IsEnabled="{Binding InProgress, Converter={StaticResource ResourceKey=InverseBoolConverter}}"/>
+        </StackPanel>
+    </Grid>
+</Window>
