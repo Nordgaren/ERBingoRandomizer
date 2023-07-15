@@ -1,5 +1,4 @@
 ﻿using ERBingoRandomizer.Params;
-using FSParam;
 using static FSParam.Param;
 using static ERBingoRandomizer.Utility.Config;
 
