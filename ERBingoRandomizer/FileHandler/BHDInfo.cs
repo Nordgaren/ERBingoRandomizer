@@ -1,7 +1,7 @@
 ﻿using SoulsFormats;
 using System.IO;
 
-namespace ERBingoRandomizer.BHDReader; 
+namespace ERBingoRandomizer.FileHandler; 
 
 public class BHDInfo {
     private BHD5 _bhd;
@@ -26,5 +26,8 @@ public class BHDInfo {
         }
 
         return null;
+    }
+    public string GetSalt() {
+        return _bhd.Salt;
     }
 }

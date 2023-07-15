@@ -1,78 +1,71 @@
-﻿using FSParam;
+﻿using ERBingoRandomizer.Params;
+using FSParam;
 using static FSParam.Param;
-using static ERBingoRandomizer.Const;
+using static ERBingoRandomizer.Utility.Config;
+
 
 namespace ERBingoRandomizer.Randomizer;
 
 public partial class BingoRandomizer {
-    private void randomizeLevels(Row chr) {
-        Cell baseVit = chr["baseVit"].Value;
-        Cell baseWil = chr["baseWil"].Value;
-        Cell baseEnd = chr["baseEnd"].Value;
-        Cell baseStr = chr["baseStr"].Value;
-        Cell baseDex = chr["baseDex"].Value;
-        Cell baseMag = chr["baseMag"].Value;
-        Cell baseFai = chr["baseFai"].Value;
-        Cell baseLuc = chr["baseLuc"].Value;
+    private void randomizeLevels(CharaInitParam chr) {
 
-        int pool = (byte)baseVit.Value
-            + (byte)baseWil.Value
-            + (byte)baseEnd.Value
-            + (byte)baseStr.Value
-            + (byte)baseDex.Value
-            + (byte)baseMag.Value
-            + (byte)baseFai.Value
-            + (byte)baseLuc.Value;
+        int pool = chr.baseVit
+            + chr.baseWil
+            + chr.baseEnd
+            + chr.baseStr
+            + chr.baseDex
+            + chr.baseMag
+            + chr.baseFai
+            + chr.baseLuc;
 
         pool -= MinStat * NumStats;
 
-        baseVit.Value = MinStat;
-        baseWil.Value = MinStat;
-        baseEnd.Value = MinStat;
-        baseStr.Value = MinStat;
-        baseDex.Value = MinStat;
-        baseMag.Value = MinStat;
-        baseFai.Value = MinStat;
-        baseLuc.Value = MinStat;
+        chr.baseVit = MinStat;
+        chr.baseWil = MinStat;
+        chr.baseEnd = MinStat;
+        chr.baseStr = MinStat;
+        chr.baseDex = MinStat;
+        chr.baseMag = MinStat;
+        chr.baseFai = MinStat;
+        chr.baseLuc = MinStat;
 
         while (pool > 0) {
-            pool += modifyStats(baseVit);
+            pool += modifyStats(chr.GetVit());
             if (pool <= 0) {
                 break;
             }
-            pool += modifyStats(baseWil);
+            pool += modifyStats(chr.GetWil());
             if (pool <= 0) {
                 break;
             }
-            pool += modifyStats(baseEnd);
+            pool += modifyStats(chr.GetEnd());
             if (pool <= 0) {
                 break;
             }
-            pool += modifyStats(baseStr);
+            pool += modifyStats(chr.GetStr());
             if (pool <= 0) {
                 break;
             }
-            pool += modifyStats(baseDex);
+            pool += modifyStats(chr.GetDex());
             if (pool <= 0) {
                 break;
             }
-            pool += modifyStats(baseMag);
+            pool += modifyStats(chr.GetMag());
             if (pool <= 0) {
                 break;
             }
-            pool += modifyStats(baseFai);
+            pool += modifyStats(chr.GetFai());
             if (pool <= 0) {
                 break;
             }
-            pool += modifyStats(baseLuc);
+            pool += modifyStats(chr.GetLuc());
         }
     }
 
     int modifyStats(Cell entry) {
         byte value = (byte)entry.Value;
         if (value < MaxStat && _random.NextSingle() < StatRollChance) {
-            value += 1;
-            entry.Value = value;
+            entry.Value = (byte)(value + 1);
             return -1;
         }
         return 0;

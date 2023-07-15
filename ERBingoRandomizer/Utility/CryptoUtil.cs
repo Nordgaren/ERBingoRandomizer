@@ -3,8 +3,9 @@ using Org.BouncyCastle.Crypto.Engines;
 using Org.BouncyCastle.OpenSsl;
 using System;
 using System.IO;
+using System.Threading;
 
-namespace ERBingoRandomizer;
+namespace ERBingoRandomizer.Utility;
 
 /// <summary>
 /// These RSA functions are copy-pasted straight from BinderTool. Thank you Atvaark!
@@ -18,7 +19,7 @@ internal static class CryptoUtil {
     /// <exception cref="ArgumentNullException">When the argument filePath is null</exception>
     /// <exception cref="ArgumentNullException">When the argument keyPath is null</exception>
     /// <returns>A memory stream with the decrypted file</returns>
-    public static MemoryStream DecryptRsa(string filePath, string key) {
+    public static MemoryStream DecryptRsa(string filePath, string key, CancellationToken cancellationToken) {
         if (filePath == null) {
             throw new ArgumentNullException(nameof(filePath));
         }
@@ -38,6 +39,7 @@ internal static class CryptoUtil {
             int outputBlockSize = engine.GetOutputBlockSize();
             byte[] inputBlock = new byte[inputBlockSize];
             while (inputStream.Read(inputBlock, 0, inputBlock.Length) > 0) {
+                cancellationToken.ThrowIfCancellationRequested();;
                 byte[] outputBlock = engine.ProcessBlock(inputBlock, 0, inputBlockSize);
 
                 int requiredPadding = outputBlockSize - outputBlock.Length;

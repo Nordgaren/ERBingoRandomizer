@@ -1,6 +1,6 @@
 ﻿using System;
 
-namespace ERBingoRandomizer; 
+namespace ERBingoRandomizer.Utility; 
 class NoParamDefException : Exception {
     public NoParamDefException(string paramType) : base($"Could not find ParamDef for {paramType}") {}
 

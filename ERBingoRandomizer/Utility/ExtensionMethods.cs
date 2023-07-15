@@ -2,7 +2,7 @@
 using SoulsFormats;
 using System.Collections.Generic;
 
-namespace ERBingoRandomizer; 
+namespace ERBingoRandomizer.Utility; 
 
 public static class ExtensionMethods {
     public static bool ApplyParamDefsCarefully(this Param param, List<PARAMDEF> defs) {

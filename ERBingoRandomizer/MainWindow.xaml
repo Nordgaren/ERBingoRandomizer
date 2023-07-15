@@ -3,21 +3,56 @@
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
         xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
-        xmlns:viewModel="clr-namespace:ERBingoRandomizer"
         xmlns:viewModels="clr-namespace:ERBingoRandomizer.ViewModels"
         mc:Ignorable="d"
-        Title="MainWindow" Height="450" Width="800" ResizeMode="CanMinimize">
+        Title="Bingo Randomizer" Height="600" Width="1000" ResizeMode="CanResizeWithGrip" MaxWidth="1000" MinWidth="1000" MinHeight="600"
+        Background="DimGray">
     <Window.DataContext>
-        <viewModels:MainWindowViewModel x:Name="MainWindowViewModel"/>
+        <viewModels:MainWindowViewModel x:Name="MainWindowViewModel" />
     </Window.DataContext>
     <Grid>
+        <Grid.RowDefinitions>
+            <RowDefinition Height="315" />
+            <RowDefinition />
+        </Grid.RowDefinitions>
         <StackPanel>
-            <Label Margin="0,25" Content="Path to Elden Ring exe" HorizontalAlignment="Center" FontWeight="UltraBlack"/>
-            <TextBox Margin="100,0,100,0" Text="{Binding Path}"/>
-            <Label Margin="0,25" Content="Seed" HorizontalAlignment="Center" FontWeight="UltraBlack"/>
-            <TextBox Margin="100,0,100,0" Text="{Binding Seed}"/>
-            <Separator Margin="0,25,0,25"/>
-            <Button Width="150" Height="50" Content="Bingo!" Command="{Binding RandomizeBingo}" IsEnabled="{Binding InProgress, Converter={StaticResource ResourceKey=InverseBoolConverter}}"/>
+            <Label Margin="0,25" Content="Path to Elden Ring exe" HorizontalAlignment="Center" FontWeight="UltraBlack" />
+            <TextBox Margin="100,0,100,0" Text="{Binding Path, UpdateSourceTrigger=PropertyChanged}" 
+                     FontSize="13" FontWeight="Bold"/>
+            <Label Margin="0,25" Content="Seed" HorizontalAlignment="Center" FontWeight="UltraBlack" />
+            <TextBox Margin="100,0,100,0" Text="{Binding Seed, UpdateSourceTrigger=PropertyChanged}"
+                     FontSize="13" FontWeight="Bold"/>
+            <Separator Margin="0,25,0,0" />
+            
+            <StackPanel Orientation="Horizontal" HorizontalAlignment="Center">
+                <Label Content="Last Seed:" FontWeight="Medium"/>
+                <Label Content="{Binding LastSeedText}" FontWeight="Black" Foreground="YellowGreen" />
+            </StackPanel>
+            
+            <StackPanel Orientation="Horizontal" HorizontalAlignment="Center">
+                <Grid>
+                    <Button Width="150" Height="50" Content="Cancel" Command="{Binding CancelRandomizeBingo}"
+                            Visibility="{Binding InProgress, Converter={StaticResource BoolToVisibilityConverter}}"
+                            FontWeight="Bold"/>
+                    <Button Width="150" Height="50" Content="Randomize" Command="{Binding RandomizeBingo}" 
+                            Visibility="{Binding InProgress, Converter={StaticResource InverseBoolToVisibilityConverter}}"
+                            FontWeight="Bold"/>
+                </Grid>
+                <Separator Margin="50,0,0,0" />
+                <Button Width="150" Height="50" Content="Bingo!" Command="{Binding LaunchEldenRing}" FontWeight="Bold"/>
+                <Separator Margin="50,0,0,0" />
+                <Button Width="150" Height="50" Content="Package Files" Command="{Binding PackageFiles}" FontWeight="Bold"/>
+            </StackPanel>
+            
         </StackPanel>
+        <ListBox Grid.Row="1" Name="LogListBox" ItemsSource="{Binding LogView}" Background="Gray">
+            <ListBox.ItemTemplate>
+                <DataTemplate>
+                    <StackPanel Orientation="Horizontal">
+                        <TextBlock Text="{Binding}" FontWeight="Bold" Foreground="LightGray"/>
+                    </StackPanel>
+                </DataTemplate>
+            </ListBox.ItemTemplate>
+        </ListBox>
     </Grid>
 </Window>

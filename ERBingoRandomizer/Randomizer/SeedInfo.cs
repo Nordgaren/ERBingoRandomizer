@@ -6,6 +6,5 @@ public class SeedInfo {
     public SeedInfo(string seed, string sha256Hash) {
         Seed = seed;
         SHA256Hash = sha256Hash;
-
     }
 }
