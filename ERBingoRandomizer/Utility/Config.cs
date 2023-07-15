@@ -20,6 +20,7 @@ public static class Config {
     public const byte NumStats = 8;
     public const string ResourcesPath = "./Resources";
     // Paths
-    public static readonly string CachePath = $"{ExeDir}/Cache";
+    public static readonly string CachePath = $"{ExeDir}\\Cache";
     public static readonly string LastSeedPath = $"{CachePath}/LastSeed.json";
+    public static readonly string PackagesPath = $"{ExeDir}\\Cache\\Packaged";
 }

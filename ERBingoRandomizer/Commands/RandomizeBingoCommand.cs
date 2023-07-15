@@ -34,8 +34,8 @@ public class RandomizeBingoCommand : AsyncCommandBase {
             _mwViewModel.LastSeed = randomizer.SeedInfo;
             _mwViewModel.FilesReady = Directory.GetFiles(BingoPath).Length > 0;
         }
-        catch (OperationCanceledException e) {
-            _mwViewModel.Log.Add("Randomization Canceled");
+        catch (OperationCanceledException) {
+            _mwViewModel.LogMessage("Randomization Canceled");
         }
         finally {
             _mwViewModel.RandoButtonText = "Randomize!";

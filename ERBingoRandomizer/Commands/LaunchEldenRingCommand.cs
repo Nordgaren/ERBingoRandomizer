@@ -17,7 +17,7 @@ public class LaunchEldenRingCommand : CommandBase {
     }
 
     public override void Execute(object? parameter) {
-        _mwViewModel.Log.Add("Launching Elden Ring via ModEngine 2");
+        _mwViewModel.LogMessage("Launching Elden Ring via ModEngine 2");
         Process me2 = new() {
             StartInfo = new ProcessStartInfo {
                 FileName = "launchmod_bingo.bat",

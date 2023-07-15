@@ -31,7 +31,7 @@
             
             <StackPanel Orientation="Horizontal" HorizontalAlignment="Center">
                 <Grid>
-                    <Button Width="150" Height="50" Content="Cancel" Command="{Binding CancelRandomizeBingo}"
+                    <Button Width="150" Height="50" Content="Cancel" Command="{Binding Cancel}"
                             Visibility="{Binding InProgress, Converter={StaticResource BoolToVisibilityConverter}}"
                             FontWeight="Bold"/>
                     <Button Width="150" Height="50" Content="Randomize" Command="{Binding RandomizeBingo}" 
@@ -41,7 +41,14 @@
                 <Separator Margin="50,0,0,0" />
                 <Button Width="150" Height="50" Content="Bingo!" Command="{Binding LaunchEldenRing}" FontWeight="Bold"/>
                 <Separator Margin="50,0,0,0" />
-                <Button Width="150" Height="50" Content="Package Files" Command="{Binding PackageFiles}" FontWeight="Bold"/>
+                <Grid>
+                    <Button Width="150" Height="50" Content="Cancel" Command="{Binding Cancel}"
+                            Visibility="{Binding Packaging, Converter={StaticResource BoolToVisibilityConverter}}"
+                            FontWeight="Bold"/>
+                    <Button Width="150" Height="50" Content="Package Files" Command="{Binding PackageFiles}" 
+                            Visibility="{Binding Packaging, Converter={StaticResource InverseBoolToVisibilityConverter}}"
+                            FontWeight="Bold"/>
+                </Grid>
             </StackPanel>
             
         </StackPanel>

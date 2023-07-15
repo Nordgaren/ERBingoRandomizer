@@ -21,7 +21,7 @@ public class MainWindowViewModel : ViewModelBase, IDisposable {
         RandomizeBingo = new RandomizeBingoCommand(this);
         LaunchEldenRing = new LaunchEldenRingCommand(this);
         PackageFiles = new PackageFilesCommand(this);
-        CancelRandomizeBingo = new CancelRandomizeBingoCommand(this);
+        Cancel = new CancelCommand(this);
         FilesReady = AllFilesReady();
         if (FilesReady) {
             LastSeed = File.Exists(LastSeedPath) ? JsonSerializer.Deserialize<SeedInfo>(File.ReadAllText(LastSeedPath)) : null;
@@ -72,6 +72,15 @@ public class MainWindowViewModel : ViewModelBase, IDisposable {
             }
         }
     }
+    private bool _packaging;
+    public bool Packaging {
+        get => _packaging;
+        set {
+            if (SetField(ref _packaging, value)) {
+                _watcher.EnableRaisingEvents = !_packaging;
+            }
+        }
+    }
     private bool _filesReady;
     public bool FilesReady {
         get => _filesReady;
@@ -81,7 +90,7 @@ public class MainWindowViewModel : ViewModelBase, IDisposable {
     public ICommand RandomizeBingo { get; }
     public ICommand LaunchEldenRing { get; }
     public ICommand PackageFiles { get; }
-    public ICommand CancelRandomizeBingo { get; }
+    public ICommand Cancel { get; }
     private ObservableCollection<string> _log;
     public ObservableCollection<string> Log {
         get => _log;
@@ -90,6 +99,9 @@ public class MainWindowViewModel : ViewModelBase, IDisposable {
                 OnPropertyChanged(nameof(LogView));
             }
         }
+    }
+    public void LogMessage(string message) {
+        Log.Add(message);
     }
 
     public ICollectionView LogView { get; }
