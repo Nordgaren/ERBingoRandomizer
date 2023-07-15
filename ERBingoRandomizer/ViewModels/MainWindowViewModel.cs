@@ -1,6 +1,5 @@
 ﻿using ERBingoRandomizer.Commands;
 using ERBingoRandomizer.Randomizer;
-using System.Windows.Input;
 using ERBingoRandomizer.Utility;
 using System;
 using System.Collections.ObjectModel;
@@ -10,77 +9,14 @@ using System.IO;
 using System.Text.Json;
 using System.Threading;
 using System.Windows.Data;
+using System.Windows.Input;
 using static ERBingoRandomizer.Utility.Const;
 using static ERBingoRandomizer.Utility.Config;
 
 namespace ERBingoRandomizer.ViewModels;
 
 public class MainWindowViewModel : ViewModelBase, IDisposable {
-    private string _seed = string.Empty;
-    public string Seed {
-        get => _seed;
-        set => SetField(ref _seed, value);
-    }
-    private string? _path = Util.TryGetGameInstallLocation("\\steamapps\\common\\ELDEN RING\\Game\\eldenring.exe");
-    public string? Path {
-        get => _path;
-        set => SetField(ref _path, value);
-    }
-    private string _randoButtonText = "Randomize";
-    public string? RandoButtonText {
-        get => _randoButtonText;
-        set => SetField(ref _randoButtonText, value);
-    }
-    private bool _inProgress = false;
-    public bool InProgress {
-        get => _inProgress;
-        set {
-            if (SetField(ref _inProgress, value)) {
-                _watcher.EnableRaisingEvents = !_inProgress;
-            }
-        }
-    }
-    private bool _filesReady = Directory.GetFiles(BingoPath).Length > 0;
-    public bool FilesReady {
-        get => _filesReady;
-        set => SetField(ref _filesReady, value);
-    }
-
-    public ICommand RandomizeBingo { get; }
-    public ICommand LaunchEldenRing { get; }
-    public ICommand PackageFiles { get; }
-    public ICommand CancelRandomizeBingo { get; }
-
     private readonly FileSystemWatcher _watcher;
-
-    private ObservableCollection<string> _log;
-    public ObservableCollection<string> Log {
-        get => _log;
-        set {
-            if (SetField(ref _log, value)) {
-                OnPropertyChanged(nameof(LogView));
-            }
-        }
-    }
-
-    public ICollectionView LogView { get; }
-
-    public CancellationTokenSource CancellationTokenSource { get; private set; }
-    public CancellationToken CancellationToken { get; private set; }
-    public string LastSeedText {
-        get => string.IsNullOrWhiteSpace(Seed) ? "Unknown Seed" : Seed;
-    }
-    private SeedInfo? _lastSeed;
-    public SeedInfo? LastSeed {
-        get => _lastSeed;
-        set {
-            Seed = value?.Seed ?? string.Empty;
-            if (SetField(ref _lastSeed, value)) {
-                OnPropertyChanged(nameof(LastSeedText));
-            }
-        }
-    }
-
     public MainWindowViewModel() {
         RandomizeBingo = new RandomizeBingoCommand(this);
         LaunchEldenRing = new LaunchEldenRingCommand(this);
@@ -90,10 +26,10 @@ public class MainWindowViewModel : ViewModelBase, IDisposable {
         if (FilesReady) {
             LastSeed = File.Exists(LastSeedPath) ? JsonSerializer.Deserialize<SeedInfo>(File.ReadAllText(LastSeedPath)) : null;
         }
-        Log = new();
+        Log = new ObservableCollection<string>();
         LogView = CollectionViewSource.GetDefaultView(Log);
         GetNewCancellationToken();
-        _watcher = new(ME2Path);
+        _watcher = new FileSystemWatcher(ME2Path);
         _watcher.NotifyFilter = NotifyFilters.Attributes
             | NotifyFilters.CreationTime
             | NotifyFilters.DirectoryName
@@ -111,6 +47,68 @@ public class MainWindowViewModel : ViewModelBase, IDisposable {
         _watcher.Filter = "*";
         _watcher.IncludeSubdirectories = true;
         _watcher.EnableRaisingEvents = true;
+    }
+    private string _seed = string.Empty;
+    public string Seed {
+        get => _seed;
+        set => SetField(ref _seed, value);
+    }
+    private string? _path = Util.TryGetGameInstallLocation("\\steamapps\\common\\ELDEN RING\\Game\\eldenring.exe");
+    public string? Path {
+        get => _path;
+        set => SetField(ref _path, value);
+    }
+    private string _randoButtonText = "Randomize";
+    public string? RandoButtonText {
+        get => _randoButtonText;
+        set => SetField(ref _randoButtonText, value);
+    }
+    private bool _inProgress;
+    public bool InProgress {
+        get => _inProgress;
+        set {
+            if (SetField(ref _inProgress, value)) {
+                _watcher.EnableRaisingEvents = !_inProgress;
+            }
+        }
+    }
+    private bool _filesReady;
+    public bool FilesReady {
+        get => _filesReady;
+        set => SetField(ref _filesReady, value);
+    }
+
+    public ICommand RandomizeBingo { get; }
+    public ICommand LaunchEldenRing { get; }
+    public ICommand PackageFiles { get; }
+    public ICommand CancelRandomizeBingo { get; }
+    private ObservableCollection<string> _log;
+    public ObservableCollection<string> Log {
+        get => _log;
+        set {
+            if (SetField(ref _log, value)) {
+                OnPropertyChanged(nameof(LogView));
+            }
+        }
+    }
+
+    public ICollectionView LogView { get; }
+
+    public CancellationTokenSource CancellationTokenSource { get; private set; }
+    public CancellationToken CancellationToken { get; private set; }
+    public string LastSeedText => string.IsNullOrWhiteSpace(Seed) ? "Unknown Seed" : Seed;
+    private SeedInfo? _lastSeed;
+    public SeedInfo? LastSeed {
+        get => _lastSeed;
+        set {
+            Seed = value?.Seed ?? string.Empty;
+            if (SetField(ref _lastSeed, value)) {
+                OnPropertyChanged(nameof(LastSeedText));
+            }
+        }
+    }
+    public void Dispose() {
+        _watcher.Dispose();
     }
     private void OnChanged(object sender, FileSystemEventArgs e) {
         if (e.ChangeType != WatcherChangeTypes.Changed) {
@@ -144,8 +142,9 @@ public class MainWindowViewModel : ViewModelBase, IDisposable {
         FilesReady = AllFilesReady();
     }
 
-    private void OnError(object sender, ErrorEventArgs e) =>
+    private void OnError(object sender, ErrorEventArgs e) {
         PrintException(e.GetException());
+    }
 
     private static void PrintException(Exception? ex) {
         if (ex != null) {
@@ -156,11 +155,8 @@ public class MainWindowViewModel : ViewModelBase, IDisposable {
             PrintException(ex.InnerException);
         }
     }
-    public void Dispose() {
-        _watcher.Dispose();
-    }
     public void GetNewCancellationToken() {
-        CancellationTokenSource = new();
+        CancellationTokenSource = new CancellationTokenSource();
         CancellationToken = CancellationTokenSource.Token;
         CancellationToken.Register(GetNewCancellationToken);
     }

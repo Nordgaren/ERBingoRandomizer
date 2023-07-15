@@ -8,9 +8,9 @@ using System.Threading;
 namespace ERBingoRandomizer.Utility;
 
 /// <summary>
-/// These RSA functions are copy-pasted straight from BinderTool. Thank you Atvaark!
+///     These RSA functions are copy-pasted straight from BinderTool. Thank you Atvaark!
 /// </summary>
-internal static class CryptoUtil {
+static class CryptoUtil {
     /// <summary>
     ///     Decrypts a file with a provided decryption key.
     /// </summary>
@@ -29,17 +29,18 @@ internal static class CryptoUtil {
         }
 
         AsymmetricKeyParameter keyParameter = GetKeyOrDefault(key);
-        RsaEngine engine = new RsaEngine();
+        RsaEngine engine = new();
         engine.Init(false, keyParameter);
 
-        MemoryStream outputStream = new MemoryStream();
+        MemoryStream outputStream = new();
         using (FileStream inputStream = File.OpenRead(filePath)) {
 
             int inputBlockSize = engine.GetInputBlockSize();
             int outputBlockSize = engine.GetOutputBlockSize();
             byte[] inputBlock = new byte[inputBlockSize];
             while (inputStream.Read(inputBlock, 0, inputBlock.Length) > 0) {
-                cancellationToken.ThrowIfCancellationRequested();;
+                cancellationToken.ThrowIfCancellationRequested();
+                ;
                 byte[] outputBlock = engine.ProcessBlock(inputBlock, 0, inputBlockSize);
 
                 int requiredPadding = outputBlockSize - outputBlock.Length;
@@ -59,7 +60,7 @@ internal static class CryptoUtil {
 
     public static AsymmetricKeyParameter GetKeyOrDefault(string key) {
         try {
-            PemReader pemReader = new PemReader(new StringReader(key));
+            PemReader pemReader = new(new StringReader(key));
             return (AsymmetricKeyParameter)pemReader.ReadObject();
         }
         catch {

@@ -2,16 +2,16 @@
 using System.IO;
 using System.Runtime.InteropServices;
 
-namespace ERBingoRandomizer.Utility; 
+namespace ERBingoRandomizer.Utility;
 
 public static class Kernel32 {
     [DllImport("kernel32", SetLastError = true)]
-    static extern IntPtr LoadLibraryW([MarshalAs(UnmanagedType.LPWStr)]string lpFileName);
-        
+    private static extern IntPtr LoadLibraryW([MarshalAs(UnmanagedType.LPWStr)]string lpFileName);
+
     [DllImport("kernel32.dll")]
     public static extern uint GetLastError();
-        
-    [DllImport("kernel32.dll", SetLastError=true)]
+
+    [DllImport("kernel32.dll", SetLastError = true)]
     [return: MarshalAs(UnmanagedType.Bool)]
     public static extern bool FreeLibrary(IntPtr hModule);
 

@@ -8,59 +8,75 @@
     </PropertyGroup>
 
     <ItemGroup>
-      <ProjectReference Include="..\..\DSMapStudio\FSParam\FSParam.csproj" />
-      <ProjectReference Include="..\..\DSMapStudio\SoulsFormats\SoulsFormats\SoulsFormats.csproj" />
+        <ResourceFiles Include="$(SolutionDir)ERBingoRandomizer\Resources\**\*.*" />
+    </ItemGroup>
+    <PropertyGroup>
+        <SolutionDir>$(MSBuildThisFileDirectory)..\</SolutionDir>
+    </PropertyGroup>
+
+    <!-- Copy all resources to the build output directy except when building in publish mode, to have them exist in a debug/release build, but not have them packed into an executable when publishing -->
+    <Target Name="CopyResources" Condition="'$(Configuration)'!='Publish'" AfterTargets="Build">
+        <Message Text="Copy resource files" Importance="High" />
+        <Message Text="Files: @(ResourceFiles)" Importance="High" />
+        <Message Text="directory: $(OutDir)" Importance="High" />
+        <Copy SourceFiles="@(ResourceFiles)" DestinationFolder="$(OutDir)Resources\%(RecursiveDir)" SkipUnchangedFiles="true" />
+    </Target>
+
+    <!-- Copy all resources to the published output -->
+    <Target Name="CopyResourcesPublish" Condition="'$(Configuration)'=='Publish' OR '$(Configuration)'=='Release'" AfterTargets="Publish">
+        <Message Text="Copy resource files" Importance="High" />
+        <Message Text="Files: @(ResourceFiles)" Importance="High" />
+        <Message Text="Directory: $(PublishDir)" Importance="High" />
+        <Copy SourceFiles="@(ResourceFiles)" DestinationFolder="$(PublishDir)Resources\%(RecursiveDir)" SkipUnchangedFiles="true" />
+        <Message Text="Moving Readme: $(PublishDir)" Importance="High" />
+        <Message Text="Solution Dir: $(SolutionDir)" Importance="High" />
+        <Copy SourceFiles="$(SolutionDir)README.md" DestinationFiles="$(PublishDir)README.txt" />
+        <Move SourceFiles="$(PublishDir)\$(AssemblyName).exe" DestinationFiles="$(PublishDir)\Elden Ring Debug Tool.exe" />
+        <Message Text="Renamed executable file." Importance="high" />
+        <!--<Exec Command="7za.exe a -t7z &quot;Elden Ring Debug Tool.7z&quot; .\bin\Publish\win-x64\* -xr!*.pdb" />
+        <Move SourceFiles="Elden Ring Debug Tool.7z" DestinationFiles="$(PublishDir)..\Elden Ring Debug Tool $(AssemblyVersion).7z" />-->
+    </Target>
+
+
+    <ItemGroup>
+        <ProjectReference Include="..\..\DSMapStudio\FSParam\FSParam.csproj" />
+        <ProjectReference Include="..\..\DSMapStudio\SoulsFormats\SoulsFormats\SoulsFormats.csproj" />
     </ItemGroup>
     <ItemGroup>
-      <None Remove="Resources\Params\Defs\CharaInitParam.xml" />
-      <EmbeddedResource Include="Resources\Params\Defs\CharaInitParam.xml" />
-      <None Remove="Resources\Params\Defs\EquipParamAccessory.xml" />
-      <EmbeddedResource Include="Resources\Params\Defs\EquipParamAccessory.xml" />
-      <None Remove="Resources\Params\Defs\EquipParamGoods.xml" />
-      <EmbeddedResource Include="Resources\Params\Defs\EquipParamGoods.xml" />
-      <None Remove="Resources\Params\Defs\EquipParamProtector.xml" />
-      <EmbeddedResource Include="Resources\Params\Defs\EquipParamProtector.xml" />
-      <None Remove="Resources\Params\Defs\EquipParamWeapon.xml" />
-      <EmbeddedResource Include="Resources\Params\Defs\EquipParamWeapon.xml" />
-      <None Remove="Resources\Params\Defs\ItemLotParam.xml" />
-      <EmbeddedResource Include="Resources\Params\Defs\ItemLotParam.xml" />
-      <None Remove="Resources\Params\Defs\MagicParam.xml" />
-      <EmbeddedResource Include="Resources\Params\Defs\MagicParam.xml" />
-      <None Remove="Resources\Params\Defs\ShopLineupParam.xml" />
-      <EmbeddedResource Include="Resources\Params\Defs\ShopLineupParam.xml" />
-      <None Update="Resources\ME2\config_bingo.toml">
-        <CopyToOutputDirectory>Never</CopyToOutputDirectory>
-      </None>
-      <None Update="Resources\ME2\launchmod_bingo.bat">
-        <CopyToOutputDirectory>Never</CopyToOutputDirectory>
-      </None>
-      <None Update="Resources\ME2\modengine2_launcher.exe">
-        <CopyToOutputDirectory>Never</CopyToOutputDirectory>
-      </None>
-      <None Update="Resources\ME2\README.txt">
-        <CopyToOutputDirectory>Never</CopyToOutputDirectory>
-      </None>
+        <None Remove="Resources\Params\Defs\CharaInitParam.xml" />
+        <EmbeddedResource Include="Resources\Params\Defs\CharaInitParam.xml" />
+        <None Remove="Resources\Params\Defs\EquipParamAccessory.xml" />
+        <EmbeddedResource Include="Resources\Params\Defs\EquipParamAccessory.xml" />
+        <None Remove="Resources\Params\Defs\EquipParamGoods.xml" />
+        <EmbeddedResource Include="Resources\Params\Defs\EquipParamGoods.xml" />
+        <None Remove="Resources\Params\Defs\EquipParamProtector.xml" />
+        <EmbeddedResource Include="Resources\Params\Defs\EquipParamProtector.xml" />
+        <None Remove="Resources\Params\Defs\EquipParamWeapon.xml" />
+        <EmbeddedResource Include="Resources\Params\Defs\EquipParamWeapon.xml" />
+        <None Remove="Resources\Params\Defs\ItemLotParam.xml" />
+        <EmbeddedResource Include="Resources\Params\Defs\ItemLotParam.xml" />
+        <None Remove="Resources\Params\Defs\MagicParam.xml" />
+        <EmbeddedResource Include="Resources\Params\Defs\MagicParam.xml" />
+        <None Remove="Resources\Params\Defs\ShopLineupParam.xml" />
+        <EmbeddedResource Include="Resources\Params\Defs\ShopLineupParam.xml" />
     </ItemGroup>
 
     <ItemGroup>
-      <PackageReference Include="BouncyCastle" Version="1.8.9" />
-      <PackageReference Include="System.Drawing.Common" Version="8.0.0-preview.5.23280.5" />
+        <PackageReference Include="BouncyCastle" Version="1.8.9" />
+        <PackageReference Include="System.Drawing.Common" Version="8.0.0-preview.5.23280.5" />
     </ItemGroup>
 
     <ItemGroup>
-      <Reference Include="System.Drawing">
-        <HintPath>..\..\..\..\..\..\Windows\Microsoft.NET\Framework64\v4.0.30319\System.Drawing.dll</HintPath>
-      </Reference>
-      <Reference Include="System.Drawing.Primitives">
-        <HintPath>..\..\..\..\..\..\Windows\Microsoft.NET\Framework64\v4.0.30319\System.Drawing.Primitives.dll</HintPath>
-      </Reference>
-      <Reference Include="System.Windows.Forms">
-        <HintPath>..\..\..\..\..\..\Windows\Microsoft.NET\Framework64\v4.0.30319\System.Windows.Forms.dll</HintPath>
-      </Reference>
+        <Reference Include="System.Drawing">
+            <HintPath>..\..\..\..\..\..\Windows\Microsoft.NET\Framework64\v4.0.30319\System.Drawing.dll</HintPath>
+        </Reference>
+        <Reference Include="System.Drawing.Primitives">
+            <HintPath>..\..\..\..\..\..\Windows\Microsoft.NET\Framework64\v4.0.30319\System.Drawing.Primitives.dll</HintPath>
+        </Reference>
+        <Reference Include="System.Windows.Forms">
+            <HintPath>..\..\..\..\..\..\Windows\Microsoft.NET\Framework64\v4.0.30319\System.Windows.Forms.dll</HintPath>
+        </Reference>
     </ItemGroup>
 
-    <ItemGroup>
-      <Folder Include="Resources\ME2" />
-    </ItemGroup>
 
 </Project>

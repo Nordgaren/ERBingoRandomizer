@@ -5,7 +5,6 @@ namespace ERBingoRandomizer.Utility;
 
 // Non configurable constants  
 public static class Const {
-    public static readonly string ExeDir = Environment.CurrentDirectory;
     // Paths  
     public const string ME2Path = $"{ResourcesPath}/ME2";
     public const string BingoPath = $"{ME2Path}/bingo";
@@ -49,7 +48,8 @@ public static class Const {
     public const byte IncantationType = 1;
     public const ushort StaffType = 57;
     public const ushort SealType = 61;
-    
+    public static readonly string ExeDir = Environment.CurrentDirectory;
+
     //CharaInitParam Msg Bnd Entries  
     public static readonly int[] ChrInfoMapping = {
         297130, 297131, 297132, 297133, 297134, 297135, 297138, 297136, 297137, 297139,

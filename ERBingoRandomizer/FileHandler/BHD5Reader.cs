@@ -1,11 +1,11 @@
-﻿using SoulsFormats;
+﻿using ERBingoRandomizer.Utility;
+using SoulsFormats;
 using System;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.IO;
 using System.Threading;
 using System.Threading.Tasks;
-using ERBingoRandomizer.Utility;
 using static ERBingoRandomizer.Utility.Config;
 
 namespace ERBingoRandomizer.FileHandler;
@@ -20,12 +20,12 @@ public class BHD5Reader {
     private static readonly string Data2CachePath = $"{CachePath}/{Data2}";
     private static readonly string Data3CachePath = $"{CachePath}/{Data3}";
 
-    private BHD5 _data0;
+    private readonly BHD5 _data0;
     private BHD5 _data1;
     private BHD5 _data2;
     private BHD5 _data3;
 
-    private Dictionary<ulong, BHDInfo> _fileDictionary;
+    private readonly Dictionary<ulong, BHDInfo> _fileDictionary;
     public BHD5Reader(string path, bool cache, CancellationToken cancellationToken) {
 
         if (!Directory.Exists(CachePath)) {
@@ -80,7 +80,7 @@ public class BHD5Reader {
         cancellationToken.ThrowIfCancellationRequested();
         ;
 
-        _fileDictionary = new();
+        _fileDictionary = new Dictionary<ulong, BHDInfo>();
         foreach (BHD5.Bucket bucket in _data0.Buckets) {
             foreach (BHD5.FileHeader header in bucket) {
                 _fileDictionary.Add(header.FileNameHash, new BHDInfo(_data0, $"{path}/{Data0}"));

@@ -12,11 +12,21 @@ using System.Xml;
 namespace ERBingoRandomizer.Utility;
 
 static class Util {
-   
-    public static int DeleteFromEnd(int num, int n)
-    {
-        for (int i = 1; num != 0; i++)
-        {
+    private const uint PRIME = 37;
+    private const ulong PRIME64 = 0x85ul;
+    private static readonly (string, string)[] _pathValueTuple = {
+        (@"HKEY_CURRENT_USER\SOFTWARE\Valve\Steam", "SteamPath"),
+        (@"HKEY_LOCAL_MACHINE\SOFTWARE\Wow6432Node\Valve\Steam", "InstallPath"),
+        (@"HKEY_LOCAL_MACHINE\SOFTWARE\Valve\Steam", "InstallPath"),
+        (@"HKEY_CURRENT_USER\SOFTWARE\Wow6432Node\Valve\Steam", "SteamPath"),
+    };
+
+    private static readonly string[] _oodleGames = {
+        "ELDEN RING",
+        "Sekiro",
+    };
+    public static int DeleteFromEnd(int num, int n) {
+        for (int i = 1; num != 0; i++) {
             num /= 10;
 
             if (i == n)
@@ -30,23 +40,16 @@ static class Util {
         if (end == 0) {
             return end;
         }
-        
-        for (int i = 1; end != 0; i++)
-        {
+
+        for (int i = 1; end != 0; i++) {
             end *= 10;
 
             if (i == n)
                 return end;
         }
-        
+
         return end;
     }
-    static readonly (string, string)[] _pathValueTuple = new (string, string)[] {
-        (@"HKEY_CURRENT_USER\SOFTWARE\Valve\Steam", "SteamPath"),
-        (@"HKEY_LOCAL_MACHINE\SOFTWARE\Wow6432Node\Valve\Steam", "InstallPath"),
-        (@"HKEY_LOCAL_MACHINE\SOFTWARE\Valve\Steam", "InstallPath"),
-        (@"HKEY_CURRENT_USER\SOFTWARE\Wow6432Node\Valve\Steam", "SteamPath"),
-    };
 
     public static string? TryGetGameInstallLocation(string gamePath) {
         if (!gamePath.StartsWith("\\") && !gamePath.StartsWith("/"))
@@ -88,11 +91,6 @@ static class Util {
 
         return installPath;
     }
-
-    private static string[] _oodleGames = {
-        "ELDEN RING",
-        "Sekiro",
-    };
     public static string? GetOodlePath() {
         foreach (string game in _oodleGames) {
             string? path = TryGetGameInstallLocation($"\\steamapps\\common\\{game}\\Game\\oo2core_6_win64.dll");
@@ -166,59 +164,47 @@ static class Util {
         xml.LoadXml(xml_string);
         return PARAMDEF.XmlSerializer.Deserialize(xml);
     }
-    private const uint PRIME = 37;
-    private const ulong PRIME64 = 0x85ul;
-    public static ulong ComputeHash(string path, BHD5.Game game)
-    {
+    public static ulong ComputeHash(string path, BHD5.Game game) {
         string hashable = path.Trim().Replace('\\', '/').ToLowerInvariant();
         if (!hashable.StartsWith("/"))
             hashable = '/' + hashable;
         return game >= BHD5.Game.EldenRing ? hashable.Aggregate(0ul, (i, c) => i * PRIME64 + c) : hashable.Aggregate(0u, (i, c) => i * PRIME + c);
     }
-    public static string SplitCharacterText(bool useSpaces, List<string> items)
-    {
+    public static string SplitCharacterText(bool useSpaces, List<string> items) {
         int lineCount = 3;
         int sizeLimit = 250;
         // Pick some generic serif font to approximate Garamond
         Font f = new("Times New Roman", 12);
         // Hardcode this for the time being
         string delimeter = useSpaces ? ", " : "，";
-        List<string> committed = new List<string>();
-        foreach (string item in items)
-        {
+        List<string> committed = new();
+        foreach (string item in items) {
             List<string> cand = committed.ToList();
-            if (cand.Count == 0)
-            {
+            if (cand.Count == 0) {
                 cand.Add("");
             }
-            else
-            {
+            else {
                 // This adds a space, trim it later if it matters
                 cand[cand.Count - 1] += delimeter;
             }
             // Japanese, Chinese, and Thai lack ascii spaces
             // Otherwise, add one word at a time, also measuring the space before.
-            foreach (string token in item.Split(' ').Select((s, i) => (i == 0 ? "" : " ") + s))
-            {
+            foreach (string token in item.Split(' ').Select((s, i) => (i == 0 ? "" : " ") + s)) {
                 string lastLine = cand[cand.Count - 1];
                 string addedLine = (lastLine + token).Trim(' ');
-                if (TextRenderer.MeasureText(addedLine, f).Width < sizeLimit)
-                {
+                if (TextRenderer.MeasureText(addedLine, f).Width < sizeLimit) {
                     cand[cand.Count - 1] = addedLine;
                 }
-                else
-                {
+                else {
                     cand.Add(token.Trim(' '));
                 }
             }
-            if (cand.Count > lineCount)
-            {
+            if (cand.Count > lineCount) {
                 break;
             }
             committed = cand;
         }
-        if (committed.Count == 0)
-        {
+        if (committed.Count == 0) {
             // Make each item a line, hope it goes well
             committed = items.Take(lineCount).ToList();
         }

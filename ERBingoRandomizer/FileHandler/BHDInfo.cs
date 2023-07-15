@@ -1,11 +1,11 @@
 ﻿using SoulsFormats;
 using System.IO;
 
-namespace ERBingoRandomizer.FileHandler; 
+namespace ERBingoRandomizer.FileHandler;
 
 public class BHDInfo {
-    private BHD5 _bhd;
-    private string _bdtPath;
+    private readonly string _bdtPath;
+    private readonly BHD5 _bhd;
     private string _bhdPath;
 
     public BHDInfo(BHD5 bhd, string bdt) {
@@ -19,8 +19,8 @@ public class BHDInfo {
 
         foreach (BHD5.FileHeader header in bucket) {
             if (header.FileNameHash == hash) {
-                using (FileStream fs = new (_bdtPath, FileMode.Open)) {
-                   return header.ReadFile(fs);
+                using (FileStream fs = new(_bdtPath, FileMode.Open)) {
+                    return header.ReadFile(fs);
                 }
             }
         }

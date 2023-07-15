@@ -1,6 +1,7 @@
 ﻿using ERBingoRandomizer.FileHandler;
 using ERBingoRandomizer.Params;
 using ERBingoRandomizer.Resources.MSB;
+using ERBingoRandomizer.Utility;
 using FSParam;
 using SoulsFormats;
 using System;
@@ -9,13 +10,12 @@ using System.IO;
 using System.Linq;
 using System.Security.Cryptography;
 using System.Text;
+using System.Text.Json;
 using System.Threading;
 using System.Threading.Tasks;
 using static ERBingoRandomizer.Utility.Const;
 using static ERBingoRandomizer.Utility.Config;
 using static FSParam.Param;
-using ERBingoRandomizer.Utility;
-using System.Text.Json;
 
 
 namespace ERBingoRandomizer.Randomizer;
@@ -233,8 +233,8 @@ public partial class BingoRandomizer {
         return Task.CompletedTask;
     }
     private void buildMsbList() {
-        _msbs = new();
-        foreach (string path in Files.Paths) {
+        _msbs = new List<MSBE>();
+        foreach (string path in MsbFiles.Files) {
             MSBE msb = MSBE.Read(_bhd5Reader.GetFile(path));
             addRefs(msb);
             _msbs.Add(msb);
@@ -248,20 +248,20 @@ public partial class BingoRandomizer {
             _itemLotParam_mapRefs.Add(treasure.ItemLotID);
         }
     }
-    void getDefs() {
-        _paramDefs = new();
+    private void getDefs() {
+        _paramDefs = new List<PARAMDEF>();
         string[] defs = Util.GetEmbeddedFolder("Resources.Params.Defs");
         foreach (string def in defs) {
             _paramDefs.Add(Util.XmlDeserialize(def));
         }
     }
-    void getParams() {
+    private void getParams() {
         _regulationBnd = SFUtil.DecryptERRegulation(_regulationPath);
         foreach (BinderFile file in _regulationBnd.Files) {
             getParams(file);
         }
     }
-    void getFmgs() {
+    private void getFmgs() {
         byte[] itemMsgbndBytes = getOrOpenFile(ItemMsgBNDPath);
         if (itemMsgbndBytes == null) {
             throw new InvalidFileException(ItemMsgBNDPath);
@@ -270,7 +270,7 @@ public partial class BingoRandomizer {
         foreach (BinderFile file in itemBnd.Files) {
             getFmgs(file);
         }
-        
+
         _cancellationToken.ThrowIfCancellationRequested();
 
         byte[] menuMsgbndBytes = getOrOpenFile(MenuMsgBNDPath);
@@ -282,7 +282,7 @@ public partial class BingoRandomizer {
             getFmgs(file);
         }
     }
-    byte[] getOrOpenFile(string path) {
+    private byte[] getOrOpenFile(string path) {
         if (!File.Exists($"{CachePath}/{path}")) {
             byte[]? file = _bhd5Reader.GetFile(path);
             Directory.CreateDirectory(Path.GetDirectoryName($"{CachePath}/{path}"));
@@ -292,9 +292,9 @@ public partial class BingoRandomizer {
 
         return File.ReadAllBytes($"{CachePath}/{path}");
     }
-    void buildDictionaries() {
-        _weaponDictionary = new();
-        _weaponTypeDictionary = new();
+    private void buildDictionaries() {
+        _weaponDictionary = new Dictionary<int, EquipParamWeapon>();
+        _weaponTypeDictionary = new Dictionary<ushort, List<Row>>();
 
         foreach (Row row in _equipParamWeapon.Rows) {
             string rowString = _weaponFmg[row.ID];
@@ -312,14 +312,14 @@ public partial class BingoRandomizer {
                 rows.Add(row);
             }
             else {
-                rows = new();
+                rows = new List<Row>();
                 rows.Add(row);
                 _weaponTypeDictionary.Add(wep.wepType, rows);
             }
         }
 
-        _armorDictionary = new();
-        _armorTypeDictionary = new();
+        _armorDictionary = new Dictionary<int, Row>();
+        _armorTypeDictionary = new Dictionary<byte, List<Row>>();
         foreach (Row row in _equipParamProtector.Rows) {
             int sortId = (int)row["sortId"].Value.Value;
             string rowString = _protectorFmg[row.ID];
@@ -334,13 +334,14 @@ public partial class BingoRandomizer {
                 rows.Add(row);
             }
             else {
-                rows = new();
-                rows.Add(row);
+                rows = new List<Row> {
+                    row,
+                };
                 _armorTypeDictionary.Add(protectorCategory, rows);
             }
         }
 
-        _goodsDictionary = new();
+        _goodsDictionary = new Dictionary<int, Row>();
         foreach (Row row in _equipParamGoods.Rows) {
             int sortId = (int)row["sortId"].Value.Value;
             string rowString = _goodsFmg[row.ID];
@@ -351,8 +352,8 @@ public partial class BingoRandomizer {
             _goodsDictionary.Add(row.ID, row);
         }
 
-        _magicDictionary = new();
-        _magicTypeDictionary = new();
+        _magicDictionary = new Dictionary<int, Magic>();
+        _magicTypeDictionary = new Dictionary<byte, List<Row>>();
         foreach (Row row in _magicParam.Rows) {
             if (!_goodsDictionary.ContainsKey(row.ID)) {
                 continue;
@@ -364,13 +365,13 @@ public partial class BingoRandomizer {
                 rows.Add(row);
             }
             else {
-                rows = new();
+                rows = new List<Row>();
                 rows.Add(row);
                 _magicTypeDictionary.Add(magic.ezStateBehaviorType, rows);
             }
         }
 
-        _accessoryDictionary = new();
+        _accessoryDictionary = new Dictionary<int, Row>();
         foreach (Row row in _equipParamAccessory.Rows) {
             int sortId = (int)row["sortId"].Value.Value;
             string rowString = _accessoryFmg[row.ID];
@@ -381,7 +382,7 @@ public partial class BingoRandomizer {
             _accessoryDictionary.Add(row.ID, row);
         }
     }
-    void getParams(BinderFile file) {
+    private void getParams(BinderFile file) {
         string fileName = Path.GetFileName(file.Name);
         switch (fileName) {
             case EquipParamWeaponName:
@@ -440,7 +441,7 @@ public partial class BingoRandomizer {
                 break;
         }
     }
-    void getFmgs(BinderFile file) {
+    private void getFmgs(BinderFile file) {
         string fileName = Path.GetFileName(file.Name);
         switch (fileName) {
             case WeaponNameName:
@@ -460,7 +461,7 @@ public partial class BingoRandomizer {
                 break;
         }
     }
-    void setBndFile(BND4 files, string fileName, byte[] bytes) {
+    private void setBndFile(BND4 files, string fileName, byte[] bytes) {
         foreach (BinderFile file in files.Files) {
             if (file.Name.EndsWith(fileName)) {
                 file.Bytes = bytes;

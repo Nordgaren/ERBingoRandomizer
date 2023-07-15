@@ -3,36 +3,36 @@
 namespace ERBingoRandomizer.Params;
 
 public class CharaInitParam {
-    
-    private Cell _wepLeft;
-    private Cell _wepRight;
-    private Cell _subWepLeft;
-    private Cell _subWepRight;
-    private Cell _subWepLeft3;
-    private Cell _subWepRight3;
-    private Cell _equipHelm;
-    private Cell _equipArmer;
-    private Cell _equipGaunt;
-    private Cell _equipLeg;
-    private Cell _equipArrow;
     private Cell _arrowNum;
-    private Cell _equipSubArrow;
-    private Cell _subArrowNum;
-    private Cell _equipBolt;
-    private Cell _boltNum;
-    private Cell _equipSubBolt;
-    private Cell _subBoltNum;
-    private Cell _equipSpell01;
-    private Cell _equipSpell02;
-    private Cell _baseVit;
-    private Cell _baseWil;
-    private Cell _baseEnd;
-    private Cell _baseStr;
     private Cell _baseDex;
-    private Cell _baseMag;
+    private Cell _baseEnd;
     private Cell _baseFai;
     private Cell _baseLuc;
-    
+    private Cell _baseMag;
+    private Cell _baseStr;
+    private Cell _baseVit;
+    private Cell _baseWil;
+    private Cell _boltNum;
+    private Cell _equipArmer;
+    private Cell _equipArrow;
+    private Cell _equipBolt;
+    private Cell _equipGaunt;
+    private Cell _equipHelm;
+    private Cell _equipLeg;
+    private Cell _equipSpell01;
+    private Cell _equipSpell02;
+    private Cell _equipSubArrow;
+    private Cell _equipSubBolt;
+    private Cell _subArrowNum;
+    private Cell _subBoltNum;
+    private Cell _subWepLeft;
+    private Cell _subWepLeft3;
+    private Cell _subWepRight;
+    private Cell _subWepRight3;
+
+    private Cell _wepLeft;
+    private Cell _wepRight;
+
     public CharaInitParam(Row chr) {
         _wepLeft = chr["equip_Wep_Left"].Value;
         _wepRight = chr["equip_Wep_Right"].Value;
@@ -54,7 +54,7 @@ public class CharaInitParam {
         _subBoltNum = chr["subBoltNum"].Value;
         _equipSpell01 = chr["equip_Spell_01"].Value;
         _equipSpell02 = chr["equip_Spell_02"].Value;
-        
+
         _baseVit = chr["baseVit"].Value;
         _baseWil = chr["baseWil"].Value;
         _baseEnd = chr["baseEnd"].Value;
@@ -63,7 +63,7 @@ public class CharaInitParam {
         _baseMag = chr["baseMag"].Value;
         _baseFai = chr["baseFai"].Value;
         _baseLuc = chr["baseLuc"].Value;
-        
+
     }
     public int wepleft { get => (int)_wepLeft.Value; set => _wepLeft.Value = value; }
     public int wepRight { get => (int)_wepRight.Value; set => _wepRight.Value = value; }
@@ -85,37 +85,37 @@ public class CharaInitParam {
     public ushort subBoltNum { get => (ushort)_subBoltNum.Value; set => _subBoltNum.Value = value; }
     public int equipSpell01 { get => (int)_equipSpell01.Value; set => _equipSpell01.Value = value; }
     public int equipSpell02 { get => (int)_equipSpell02.Value; set => _equipSpell02.Value = value; }
-    public byte baseVit { get => (byte)_baseVit.Value; set => _baseVit.Value = value; }   
-    public byte baseWil { get => (byte)_baseWil.Value; set => _baseWil.Value = value; }   
-    public byte baseEnd { get => (byte)_baseEnd.Value; set => _baseEnd.Value = value; }   
-    public byte baseStr { get => (byte)_baseStr.Value; set => _baseStr.Value = value; }   
-    public byte baseDex { get => (byte)_baseDex.Value; set => _baseDex.Value = value; }   
-    public byte baseMag { get => (byte)_baseMag.Value; set => _baseMag.Value = value; }   
-    public byte baseFai { get => (byte)_baseFai.Value; set => _baseFai.Value = value; }   
-    public byte baseLuc { get => (byte)_baseLuc.Value; set => _baseLuc.Value = value; }   
-    
+    public byte baseVit { get => (byte)_baseVit.Value; set => _baseVit.Value = value; }
+    public byte baseWil { get => (byte)_baseWil.Value; set => _baseWil.Value = value; }
+    public byte baseEnd { get => (byte)_baseEnd.Value; set => _baseEnd.Value = value; }
+    public byte baseStr { get => (byte)_baseStr.Value; set => _baseStr.Value = value; }
+    public byte baseDex { get => (byte)_baseDex.Value; set => _baseDex.Value = value; }
+    public byte baseMag { get => (byte)_baseMag.Value; set => _baseMag.Value = value; }
+    public byte baseFai { get => (byte)_baseFai.Value; set => _baseFai.Value = value; }
+    public byte baseLuc { get => (byte)_baseLuc.Value; set => _baseLuc.Value = value; }
+
     public Cell GetVit() {
-        return _baseVit;      
+        return _baseVit;
     }
     public Cell GetWil() {
-        return _baseWil;      
+        return _baseWil;
     }
     public Cell GetEnd() {
-        return _baseEnd;      
+        return _baseEnd;
     }
     public Cell GetStr() {
-        return _baseStr;      
+        return _baseStr;
     }
     public Cell GetDex() {
-        return _baseDex;      
+        return _baseDex;
     }
     public Cell GetMag() {
-        return _baseMag;      
+        return _baseMag;
     }
     public Cell GetFai() {
-        return _baseFai;      
+        return _baseFai;
     }
     public Cell GetLuc() {
-        return _baseLuc;      
+        return _baseLuc;
     }
 }

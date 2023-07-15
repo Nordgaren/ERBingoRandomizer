@@ -1,9 +1,8 @@
 ﻿using ERBingoRandomizer.Params;
 
-namespace ERBingoRandomizer.Utility; 
+namespace ERBingoRandomizer.Utility;
 
 public class RandoUtil {
-    
     public static bool ChrCanUseWeapon(EquipParamWeapon wep, CharaInitParam chr) {
         return wep.properStrength <= chr.baseStr
             && wep.properAgility <= chr.baseDex

@@ -61,7 +61,7 @@ public partial class BingoRandomizer {
         }
     }
 
-    int modifyStats(Cell entry) {
+    private int modifyStats(Cell entry) {
         byte value = (byte)entry.Value;
         if (value < MaxStat && _random.NextSingle() < StatRollChance) {
             entry.Value = (byte)(value + 1);
