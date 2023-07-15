@@ -14,7 +14,7 @@ public class CancelCommand : AsyncCommandBase {
         return _mwViewModel.InProgress || _mwViewModel.Packaging;
     }
     public override async Task ExecuteAsync(object? parameter) {
-        _mwViewModel.LogMessage("Cancelling Task");
+        _mwViewModel.DisplayMessage("Cancelling Task");
         _mwViewModel.CancellationTokenSource.Cancel();
     }
     private void ViewModel_PropertyChanged(object? sender, PropertyChangedEventArgs e) {

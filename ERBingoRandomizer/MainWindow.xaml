@@ -52,7 +52,7 @@
             </StackPanel>
             
         </StackPanel>
-        <ListBox Grid.Row="1" Name="LogListBox" ItemsSource="{Binding LogView}" Background="Gray">
+        <ListBox Grid.Row="1" Name="LogListBox" ItemsSource="{Binding DisplayView}" Background="Gray">
             <ListBox.ItemTemplate>
                 <DataTemplate>
                     <StackPanel Orientation="Horizontal">

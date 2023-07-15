@@ -25,12 +25,12 @@ public class PackageFilesCommand : AsyncCommandBase {
     public override async Task ExecuteAsync(object? parameter) {
         try {
             _mwViewModel.Packaging = true;
-            _mwViewModel.LogMessage($"Packaging seed {_mwViewModel.Seed}");
+            _mwViewModel.DisplayMessage($"Packaging seed {_mwViewModel.Seed}");
             await Task.Run(PackageFiles);
             Process.Start("explorer.exe", $"{PackagesPath}");
         }
         catch (OperationCanceledException) {
-            _mwViewModel.LogMessage("Randomization Canceled");
+            _mwViewModel.DisplayMessage("Randomization Canceled");
         }
         finally {
             _mwViewModel.Packaging = false;
