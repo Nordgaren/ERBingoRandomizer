@@ -37,6 +37,7 @@ public partial class BingoRandomizer {
     // FMGs
     private BND4 _menuMsgBND;
     private FMG _lineHelpFmg;
+    private FMG _menuTextFmg;
     private FMG _weaponFmg;
     private FMG _protectorFmg;
     private FMG _goodsFmg;
@@ -59,6 +60,7 @@ public partial class BingoRandomizer {
 
     // Dictionaries
     private Dictionary<int, EquipParamWeapon> _weaponDictionary;
+    private Dictionary<int, string> _weaponNameDictionary;
     private Dictionary<int, EquipParamWeapon> _customWeaponDictionary;
     private Dictionary<int, Row> _armorDictionary;
     private Dictionary<int, Row> _goodsDictionary;
@@ -98,6 +100,7 @@ public partial class BingoRandomizer {
         return num;
     }
     public Task RandomizeRegulation() {
+        _randomizerLog = new List<string>();
         randomizeCharaInitParam();
         _cancellationToken.ThrowIfCancellationRequested();
         randomizeItemLotParams();
@@ -105,6 +108,7 @@ public partial class BingoRandomizer {
         randomizeShopLineupParam();
         _cancellationToken.ThrowIfCancellationRequested();
         writeFiles();
+        writeLog();
         SeedInfo = new SeedInfo(_seed,
             BitConverter.ToString(SHA256.HashData(File.ReadAllBytes($"{BingoPath}/{RegulationName}"))).Replace("-", ""));
         string seedJson = JsonSerializer.Serialize(SeedInfo);
@@ -141,10 +145,15 @@ public partial class BingoRandomizer {
                     continue;
                 }
 
-                int id = (int)itemIds[i].GetValue(row);
+         
                 EquipParamWeapon wep;
+                int id = (int)itemIds[i].GetValue(row);
+                int sanitizedId = removeWeaponLevels(id);
                 if (category == ItemLotWeaponCategory) {
-                    if (_weaponDictionary.TryGetValue(removeWeaponLevels(id), out wep)) {
+                    if (_weaponDictionary.TryGetValue(sanitizedId, out wep)) {
+                        if (id != sanitizedId) {
+                            _weaponNameDictionary[id] = $"{_weaponNameDictionary[sanitizedId]} + {id - sanitizedId}" ;
+                        }
                         ushort chance = (ushort)chances[i].GetValue(row);
                         if (chance == totalWeight) {
                             addToOrderedDict(categoryDictMap, wep, id);
@@ -175,6 +184,11 @@ public partial class BingoRandomizer {
 
         Dictionary<int, int> guaranteedDropReplace = getReplacementHashmap(categoryDictMap);
         Dictionary<int, int> chanceDropReplace = getReplacementHashmap(categoryDictEnemy);
+        logItem("Item Replacements - all instances of item on left will be replaced with item on right");
+        logReplacementDictionary(guaranteedDropReplace);
+        logReplacementDictionary(chanceDropReplace);
+        logItem("");
+
 
         foreach (Row row in _itemLotParam_enemy.Rows.Concat(_itemLotParam_map.Rows)) {
             Column[] itemIds = row.Cells.Take(ItemLots).ToArray();
@@ -210,6 +224,11 @@ public partial class BingoRandomizer {
             }
         }
     }
+    private void logReplacementDictionary(Dictionary<int, int> dict) {
+        foreach (KeyValuePair<int, int> pair in dict) {
+            logItem($"{_weaponNameDictionary[pair.Key]} -> {_weaponNameDictionary[pair.Value]}");
+        }
+    }
     private void randomizeShopLineupParam() {
         OrderedDictionary shopLineupParamDictionary = new();
         List<ShopLineupParam> shopLineupParamRemembranceList = new();
@@ -220,8 +239,12 @@ public partial class BingoRandomizer {
             }
 
             ShopLineupParam lot = new(new Row(row));
+            int sanitizedId = removeWeaponLevels(lot.equipId);
             EquipParamWeapon wep;
-            if (_weaponDictionary.TryGetValue(removeWeaponLevels(lot.equipId), out wep)) {
+            if (_weaponDictionary.TryGetValue(sanitizedId, out wep)) {
+                if (lot.equipId != sanitizedId) {
+                    _weaponNameDictionary[lot.equipId] = $"{_weaponNameDictionary[sanitizedId]} +{lot.equipId - sanitizedId}" ;
+                }
                 addToShopLineupParamDict(lot, shopLineupParamDictionary, wep, shopLineupParamRemembranceList);
             }
             else if (_customWeaponDictionary.TryGetValue(lot.equipId, out wep)) {
@@ -231,11 +254,14 @@ public partial class BingoRandomizer {
 
         shuffleVectors(shopLineupParamDictionary);
         shopLineupParamRemembranceList = shopLineupParamRemembranceList.OrderBy(i => _random.Next()).ToList();
+        logItem("Shop Replacements - Random item selected (by weapon category) from a pool of items consisting of only shop entries. Remembrances are randomized amongst each-other.");
 
         foreach (Row row in _shopLineupParam.Rows) {
+            printShopId(row.ID);
             if ((byte)row["equipType"].Value.Value != ShopLineupWeaponCategory || row.ID >= 9000000) {
                 continue;
             }
+
 
             ShopLineupParam lot = new(row);
             EquipParamWeapon wep;
@@ -247,12 +273,71 @@ public partial class BingoRandomizer {
             }
         }
     }
+    private void printShopId(int rowId) {
+        switch (rowId) {
+            case 100000:
+                logItem("\nGatekeeper Gostoc");
+                break;
+            case 100100:
+                logItem("\nPatches");
+                break;
+            case 100325:
+                logItem("\nPidia Carian Servant");
+                break;
+            case 100500:
+                logItem("\nMerchant Kale");
+                break;
+            case 100525:
+                logItem("\nMerchant - North Limgrave");
+                break;
+            case 100550:
+                logItem("\nMerchant - East Limgrave");
+                break;
+            case 100575:
+                logItem("\nMerchant - Coastal Cave");
+                break;
+            case 100600:
+                logItem("\nMerchant - East Weeping Peninsula");
+                break;
+            case 100625:
+                logItem("\nMerchant - Liurnia of the Lakes");
+                break;
+            case 100650:
+                logItem("\nIsolated Merchant - Weeping Peninsula");
+                break;
+            case 100700:
+                logItem("\nMerchant - North Liurnia");
+                break;
+            case 100725:
+                logItem("\nHermit Merchant - Leyndell");
+                break;
+            case 100750:
+                logItem("\nMerchant - Altus Plateau");
+                break;
+            case 100875:
+                logItem("\nIsolated Merchant - Dragonbarrow");
+                break;
+            case 100925:
+                logItem("\nMerchant - Siofra River");
+                break;
+            case 101800:
+                logItem("\nTwin Maiden Husks");
+                break;
+            case 101900:
+                logItem("\nRemembrances");
+                break;
+        }
+    }
     private void replaceShopLineupParam(ShopLineupParam lot, OrderedDictionary shopLineupParamDictionary, EquipParamWeapon wep, List<ShopLineupParam> shopLineupParamRememberanceList) {
         if (lot.mtrlId == -1) {
-            copyShopLineupParam(lot, getNewId(lot.equipId, (List<ShopLineupParam>)shopLineupParamDictionary[(object)wep.wepType]));
+            ShopLineupParam newLineup = getNewId(lot.equipId, (List<ShopLineupParam>)shopLineupParamDictionary[(object)wep.wepType]);
+            logItem($"{_weaponFmg[lot.equipId]} -> {_weaponFmg[newLineup.equipId]}");
+            copyShopLineupParam(lot, newLineup);
             return;
         }
-        copyShopLineupParam(lot, getNewId(lot.equipId, shopLineupParamRememberanceList));
+        ShopLineupParam newRemembrance = getNewId(lot.equipId, shopLineupParamRememberanceList);
+        logItem($"{_weaponFmg[lot.equipId]} -> {_weaponFmg[newRemembrance.equipId]}");
+        copyShopLineupParam(lot, newRemembrance);
     }
     private static void addToShopLineupParamDict(ShopLineupParam lot, OrderedDictionary shopLineupParamDictionary, EquipParamWeapon wep, List<ShopLineupParam> shopLineupParamRememberanceList) {
         if (lot.mtrlId == -1) {
@@ -267,9 +352,79 @@ public partial class BingoRandomizer {
             if (row != null) {
                 CharaInitParam param = new(row);
                 randomizeCharaInitEntry(param);
+                logCharaInitEntry(param, i + 288100);
                 addDescriptionString(param, ChrInfoMapping[i]);
             }
         }
+    }
+    private void logCharaInitEntry(CharaInitParam chr, int i) {
+        logItem($"{_menuTextFmg[i]} -");
+        logItem("Weapons");
+        if (chr.wepleft != -1) {
+            logItem($"Left: {_weaponFmg[chr.wepleft]}");
+        }
+        if (chr.wepRight != -1) {
+            logItem($"Right: {_weaponFmg[chr.wepRight]}");
+        }
+        if (chr.subWepLeft != -1) {
+            logItem($"Left 2: {_weaponFmg[chr.subWepLeft]}");
+        }
+        if (chr.subWepRight != -1) {
+            logItem($"Right 2: {_weaponFmg[chr.subWepRight]}");
+        }
+        if (chr.subWepLeft3 != -1) {
+            logItem($"Left 3: {_weaponFmg[chr.subWepLeft3]}");
+        }
+        if (chr.subWepRight3 != -1) {
+            logItem($"Right 3: {_weaponFmg[chr.subWepRight3]}");
+        }
+        logItem("");
+        logItem("Armor");
+        if (chr.equipHelm != -1) {
+            logItem($"Helm: {_protectorFmg[chr.equipHelm]}");
+        }
+        if (chr.equipArmer != -1) {
+            logItem($"Body: {_protectorFmg[chr.equipArmer]}");
+        }
+        if (chr.equipGaunt != -1) {
+            logItem($"Arms: {_protectorFmg[chr.equipGaunt]}");
+        }
+        if (chr.equipLeg != -1) {
+            logItem($"Legs: {_protectorFmg[chr.equipLeg]}");
+        }
+        logItem("");
+        logItem("Levels");
+        logItem($"Vigor: {chr.baseVit}");
+        logItem($"Attunement: {chr.baseWil}");
+        logItem($"Endurance: {chr.baseEnd}");
+        logItem($"Strength: {chr.baseStr}");
+        logItem($"Dexterity: {chr.baseDex}");
+        logItem($"Intelligence: {chr.baseMag}");
+        logItem($"Faith: {chr.baseFai}");
+        logItem($"Arcane: {chr.baseLuc}");
+        logItem("");
+        logItem("Ammo");
+        if (chr.equipArrow != -1) {
+            logItem($"{_weaponFmg[chr.equipArrow]}[{chr.arrowNum}]");
+        }
+        if (chr.equipSubArrow != -1) {
+            logItem($"{_weaponFmg[chr.equipSubArrow]}[{chr.subArrowNum}]");
+        }
+        if (chr.equipBolt != -1) {
+            logItem($"{_weaponFmg[chr.equipBolt]}[{chr.boltNum}]");
+        }
+        if (chr.equipSubBolt != -1) {
+            logItem($"{_weaponFmg[chr.equipSubBolt]}[{chr.subBoltNum}]");
+        }
+        logItem("");
+        logItem("Spells");
+        if (chr.equipSpell01 != -1) {
+            logItem($"{_goodsFmg[chr.equipSpell01]}");
+        }
+        if (chr.equipSpell02 != -1) {
+            logItem($"{_goodsFmg[chr.equipSpell02]}");
+        }
+        logItem("");
     }
     private void randomizeCharaInitEntry(CharaInitParam chr) {
         chr.wepleft = chanceGetRandomWeapon(chr.wepleft);

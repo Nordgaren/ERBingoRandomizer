@@ -21,6 +21,7 @@ public static class Config {
     public const string ResourcesPath = "./Resources";
     // Paths
     public static readonly string CachePath = $"{ExeDir}\\Cache";
+    public static readonly string SpoilerPath = $"{CachePath}/Spoilers";
     public static readonly string LastSeedPath = $"{CachePath}/LastSeed.json";
     public static readonly string PackagesPath = $"{ExeDir}\\Cache\\Packaged";
     // Files

@@ -4,11 +4,22 @@ using System;
 using System.Collections.Generic;
 using System.Collections.Specialized;
 using System.Diagnostics;
+using System.IO;
 using System.Linq;
+using static ERBingoRandomizer.Utility.Config;
 
 namespace ERBingoRandomizer.Randomizer;
 
 public partial class BingoRandomizer {
+    private List<string> _randomizerLog;
+
+    private void logItem(string item) {
+        _randomizerLog.Add(item);
+    }
+    private void writeLog() {
+        Directory.CreateDirectory(SpoilerPath);
+        File.WriteAllLines($"{SpoilerPath}/spoiler-{_seed}.log", _randomizerLog);
+    }
     private void shuffleVectors(OrderedDictionary orderedDictionary) {
         for (int i = 0; i < orderedDictionary.Count; i++) {
             List<ShopLineupParam> value = (List<ShopLineupParam>)orderedDictionary[i];
@@ -29,7 +40,7 @@ public partial class BingoRandomizer {
         lot.menuTitleMsgId = shopLineupParam.menuTitleMsgId;
     }
     private int removeWeaponMetadata(int id) {
-        return id * 10000 / 10000;
+        return id / 10000 * 10000;
     }
     private int removeWeaponLevels(int id) {
         return id / 100 * 100;

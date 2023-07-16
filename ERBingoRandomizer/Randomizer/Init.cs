@@ -101,6 +101,7 @@ public partial class BingoRandomizer {
     private void buildDictionaries() {
         _weaponDictionary = new Dictionary<int, EquipParamWeapon>();
         _weaponTypeDictionary = new Dictionary<ushort, List<Row>>();
+        _weaponNameDictionary = new Dictionary<int, string>();
 
         foreach (Row row in _equipParamWeapon.Rows) {
             string rowString = _weaponFmg[row.ID];
@@ -114,6 +115,7 @@ public partial class BingoRandomizer {
             }
 
             List<Row>? rows;
+            _weaponNameDictionary[row.ID] = rowString;
             if (_weaponTypeDictionary.TryGetValue(wep.wepType, out rows)) {
                 rows.Add(row);
             }
@@ -130,7 +132,8 @@ public partial class BingoRandomizer {
             if (!_weaponDictionary.TryGetValue((int)row["baseWepId"].Value.Value, out EquipParamWeapon wep)) {
                 continue;
             }
-
+            EquipParamCustomWeapon customWep = new EquipParamCustomWeapon(row);
+            _weaponNameDictionary[row.ID] = $"{_weaponNameDictionary[customWep.baseWepId]} +{customWep.reinforceLv}";
             _customWeaponDictionary.Add(row.ID, wep);
 
             List<Row>? rows;
@@ -290,6 +293,9 @@ public partial class BingoRandomizer {
                 break;
             case GR_LineHelpName:
                 _lineHelpFmg = FMG.Read(file.Bytes);
+                break;
+            case GR_MenuTextName:
+                _menuTextFmg = FMG.Read(file.Bytes);
                 break;
         }
     }

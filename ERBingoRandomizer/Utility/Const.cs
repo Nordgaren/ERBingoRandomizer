@@ -30,6 +30,7 @@ public static class Const {
     public const string GoodsNameName = "GoodsName.fmg";
     public const string AccessoryNameName = "AccessoryName.fmg";
     public const string GR_LineHelpName = "GR_LineHelp.fmg";
+    public const string GR_MenuTextName = "GR_MenuText.fmg";
     // Gear Randomizer  
     public const int NoItem = -1;
     public const byte HelmType = 0;
