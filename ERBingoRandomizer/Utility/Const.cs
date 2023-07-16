@@ -15,6 +15,7 @@ public static class Const {
     public const string MenuMsgBNDPath = "/msg/engus/menu.msgbnd.dcx";
     // Params  
     public const string EquipParamWeaponName = "EquipParamWeapon.param";
+    public const string EquipParamCustomWeaponName = "EquipParamCustomWeapon.param";
     public const string EquipParamGoodsName = "EquipParamGoods.param";
     public const string EquipParamAccessoryName = "EquipParamAccessory.param";
     public const string EquipParamProtectorName = "EquipParamProtector.param";
@@ -49,6 +50,16 @@ public static class Const {
     public const ushort StaffType = 57;
     public const ushort SealType = 61;
     public static readonly string ExeDir = Environment.CurrentDirectory;
+    
+    // Item Lot offsets
+    public const int ItemLots = 8;
+    public const int CategoriesStart = 8;
+    public const int ChanceStart = 16;
+    // Item Lot constants 
+    public const int ItemLotWeaponCategory = 2;
+    public const int ItemLotCustomWeaponCategory = 6;
+    // Shop Lineup constants
+    public const byte ShopLineupWeaponCategory = 0;
 
     //CharaInitParam Msg Bnd Entries  
     public static readonly int[] ChrInfoMapping = {

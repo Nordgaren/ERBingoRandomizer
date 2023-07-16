@@ -19,18 +19,19 @@ public class PackageFilesCommand : AsyncCommandBase {
         _mwViewModel.PropertyChanged += ViewModel_PropertyChanged;
     }
     public override bool CanExecute(object? parameter) {
-        return _mwViewModel.FilesReady && !_mwViewModel.Packaging;
+        return _mwViewModel.FilesReady && !_mwViewModel.Packaging && !_mwViewModel.InProgress;
     }
 
     public override async Task ExecuteAsync(object? parameter) {
         try {
             _mwViewModel.Packaging = true;
+            _mwViewModel.ListBoxDisplay.Clear();;
             _mwViewModel.DisplayMessage($"Packaging seed {_mwViewModel.Seed}");
             await Task.Run(PackageFiles);
             Process.Start("explorer.exe", $"{PackagesPath}");
         }
         catch (OperationCanceledException) {
-            _mwViewModel.DisplayMessage("Randomization Canceled");
+            _mwViewModel.DisplayMessage("Packaging Canceled");
         }
         finally {
             _mwViewModel.Packaging = false;
@@ -43,7 +44,6 @@ public class PackageFilesCommand : AsyncCommandBase {
         using (ZipOutputStream stream = new(File.Create($"{PackagesPath}\\{_mwViewModel.Seed}.zip"))) {
             byte[] buffer = new byte[4096];
             foreach (string file in filenames) {
-                _mwViewModel.CancellationToken.ThrowIfCancellationRequested();
                 ZipEntry entry = new(file.Replace(ME2Path, ""));
 
                 entry.DateTime = DateTime.Now;
@@ -52,6 +52,7 @@ public class PackageFilesCommand : AsyncCommandBase {
                 using (FileStream fs = File.OpenRead(file)) {
                     int sourceBytes;
                     do {
+                        _mwViewModel.CancellationToken.ThrowIfCancellationRequested();
                         sourceBytes = fs.Read(buffer, 0, buffer.Length);
                         stream.Write(buffer, 0, sourceBytes);
                     } while (sourceBytes > 0);
@@ -65,7 +66,8 @@ public class PackageFilesCommand : AsyncCommandBase {
 
     private void ViewModel_PropertyChanged(object? sender, PropertyChangedEventArgs e) {
         if (e.PropertyName is nameof(MainWindowViewModel.FilesReady)
-        or nameof(MainWindowViewModel.Packaging)) {
+        or nameof(MainWindowViewModel.Packaging) 
+        or nameof(MainWindowViewModel.InProgress) ) {
             OnCanExecuteChanged();
         }
     }

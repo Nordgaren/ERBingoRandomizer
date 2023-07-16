@@ -23,4 +23,6 @@ public static class Config {
     public static readonly string CachePath = $"{ExeDir}\\Cache";
     public static readonly string LastSeedPath = $"{CachePath}/LastSeed.json";
     public static readonly string PackagesPath = $"{ExeDir}\\Cache\\Packaged";
+    // Files
+    public const bool CacheBHDs = false;
 }

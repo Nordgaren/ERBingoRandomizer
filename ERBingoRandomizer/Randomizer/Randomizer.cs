@@ -5,7 +5,10 @@ using ERBingoRandomizer.Utility;
 using FSParam;
 using SoulsFormats;
 using System;
+using System.Collections;
 using System.Collections.Generic;
+using System.Collections.Specialized;
+using System.Diagnostics;
 using System.IO;
 using System.Linq;
 using System.Security.Cryptography;
@@ -44,6 +47,7 @@ public partial class BingoRandomizer {
     private List<PARAMDEF> _paramDefs;
     // Params
     private Param _equipParamWeapon;
+    private Param _equipParamCustomWeapon;
     private Param _equipParamGoods;
     private Param _equipParamProtector;
     private Param _equipParamAccessory;
@@ -55,6 +59,7 @@ public partial class BingoRandomizer {
 
     // Dictionaries
     private Dictionary<int, EquipParamWeapon> _weaponDictionary;
+    private Dictionary<int, EquipParamWeapon> _customWeaponDictionary;
     private Dictionary<int, Row> _armorDictionary;
     private Dictionary<int, Row> _goodsDictionary;
     private Dictionary<int, Magic> _magicDictionary;
@@ -95,6 +100,10 @@ public partial class BingoRandomizer {
     public Task RandomizeRegulation() {
         randomizeCharaInitParam();
         _cancellationToken.ThrowIfCancellationRequested();
+        randomizeItemLotParams();
+        _cancellationToken.ThrowIfCancellationRequested();
+        randomizeShopLineupParam();
+        _cancellationToken.ThrowIfCancellationRequested();
         writeFiles();
         SeedInfo = new SeedInfo(_seed,
             BitConverter.ToString(SHA256.HashData(File.ReadAllBytes($"{BingoPath}/{RegulationName}"))).Replace("-", ""));
@@ -117,6 +126,141 @@ public partial class BingoRandomizer {
         File.WriteAllBytes($"{BingoPath}/{MenuMsgBNDPath}", _menuMsgBND.Write());
 
     }
+    private void randomizeItemLotParams() {
+        OrderedDictionary categoryDictEnemy = new();
+        OrderedDictionary categoryDictMap = new();
+
+        foreach (Row row in _itemLotParam_enemy.Rows.Concat(_itemLotParam_map.Rows)) {
+            Column[] itemIds = row.Cells.Take(ItemLots).ToArray();
+            Column[] categories = row.Cells.Skip(CategoriesStart).Take(ItemLots).ToArray();
+            Column[] chances = row.Cells.Skip(ChanceStart).Take(ItemLots).ToArray();
+            int totalWeight = chances.Sum(a => (ushort)a.GetValue(row));
+            for (int i = 0; i < ItemLots; i++) {
+                int category = (int)categories[i].GetValue(row);
+                if (category != ItemLotWeaponCategory && category != ItemLotCustomWeaponCategory) {
+                    continue;
+                }
+
+                int id = (int)itemIds[i].GetValue(row);
+                EquipParamWeapon wep;
+                if (category == ItemLotWeaponCategory) {
+                    if (_weaponDictionary.TryGetValue(removeWeaponLevels(id), out wep)) {
+                        ushort chance = (ushort)chances[i].GetValue(row);
+                        if (chance == totalWeight) {
+                            addToOrderedDict(categoryDictMap, wep, id);
+                        }
+                        else {
+                            addToOrderedDict(categoryDictEnemy, wep, id);
+                        }
+                    }
+                    continue;
+                }
+
+                if (_customWeaponDictionary.TryGetValue(id, out wep)) {
+                    ushort chance = (ushort)chances[i].GetValue(row);
+                    if (chance == totalWeight) {
+                        addToOrderedDict(categoryDictMap, wep, id);
+                    }
+                    else {
+                        addToOrderedDict(categoryDictEnemy, wep, id);
+                    }
+                }
+
+
+            }
+        }
+
+        dedupVectors(categoryDictMap);
+        dedupVectors(categoryDictEnemy);
+
+        Dictionary<int, int> guaranteedDropReplace = getReplacementHashmap(categoryDictMap);
+        Dictionary<int, int> chanceDropReplace = getReplacementHashmap(categoryDictEnemy);
+
+        foreach (Row row in _itemLotParam_enemy.Rows.Concat(_itemLotParam_map.Rows)) {
+            Column[] itemIds = row.Cells.Take(ItemLots).ToArray();
+            Column[] categories = row.Cells.Skip(CategoriesStart).Take(ItemLots).ToArray();
+            for (int i = 0; i < ItemLots; i++) {
+                int category = (int)categories[i].GetValue(row);
+                if (category != ItemLotWeaponCategory && category != ItemLotCustomWeaponCategory) {
+                    continue;
+                }
+
+                int id = (int)itemIds[i].GetValue(row);
+                if (category == ItemLotWeaponCategory) {
+                    if (_weaponDictionary.TryGetValue(removeWeaponLevels(id), out EquipParamWeapon _)) {
+                        int newId;
+                        if (guaranteedDropReplace.TryGetValue(id, out newId)) {
+                            itemIds[i].SetValue(row, newId);
+                        }
+                        else if (chanceDropReplace.TryGetValue(id, out newId)) {
+                            itemIds[i].SetValue(row, newId);
+                        }
+                    }
+                    continue;
+                }
+                if (_customWeaponDictionary.TryGetValue(id, out EquipParamWeapon _)) {
+                    int newId;
+                    if (guaranteedDropReplace.TryGetValue(id, out newId)) {
+                        itemIds[i].SetValue(row, newId);
+                    }
+                    else if (chanceDropReplace.TryGetValue(id, out newId)) {
+                        itemIds[i].SetValue(row, newId);
+                    }
+                }
+            }
+        }
+    }
+    private void randomizeShopLineupParam() {
+        OrderedDictionary shopLineupParamDictionary = new();
+        List<ShopLineupParam> shopLineupParamRemembranceList = new();
+
+        foreach (Row row in _shopLineupParam.Rows) {
+            if ((byte)row["equipType"].Value.Value != ShopLineupWeaponCategory || row.ID >= 9000000) {
+                continue;
+            }
+
+            ShopLineupParam lot = new(new Row(row));
+            EquipParamWeapon wep;
+            if (_weaponDictionary.TryGetValue(removeWeaponLevels(lot.equipId), out wep)) {
+                addToShopLineupParamDict(lot, shopLineupParamDictionary, wep, shopLineupParamRemembranceList);
+            }
+            else if (_customWeaponDictionary.TryGetValue(lot.equipId, out wep)) {
+                addToShopLineupParamDict(lot, shopLineupParamDictionary, wep, shopLineupParamRemembranceList);
+            }
+        }
+
+        shuffleVectors(shopLineupParamDictionary);
+        shopLineupParamRemembranceList = shopLineupParamRemembranceList.OrderBy(i => _random.Next()).ToList();
+
+        foreach (Row row in _shopLineupParam.Rows) {
+            if ((byte)row["equipType"].Value.Value != ShopLineupWeaponCategory || row.ID >= 9000000) {
+                continue;
+            }
+
+            ShopLineupParam lot = new(row);
+            EquipParamWeapon wep;
+            if (_weaponDictionary.TryGetValue(removeWeaponLevels(lot.equipId), out wep)) {
+                replaceShopLineupParam(lot, shopLineupParamDictionary, wep, shopLineupParamRemembranceList);
+            }
+            else if (_weaponDictionary.TryGetValue(removeWeaponLevels(lot.equipId), out wep)) {
+                replaceShopLineupParam(lot, shopLineupParamDictionary, wep, shopLineupParamRemembranceList);
+            }
+        }
+    }
+    private void replaceShopLineupParam(ShopLineupParam lot, OrderedDictionary shopLineupParamDictionary, EquipParamWeapon wep, List<ShopLineupParam> shopLineupParamRememberanceList) {
+        if (lot.mtrlId == -1) {
+            copyShopLineupParam(lot, getNewId(lot.equipId, (List<ShopLineupParam>)shopLineupParamDictionary[(object)wep.wepType]));
+            return;
+        }
+        copyShopLineupParam(lot, getNewId(lot.equipId, shopLineupParamRememberanceList));
+    }
+    private static void addToShopLineupParamDict(ShopLineupParam lot, OrderedDictionary shopLineupParamDictionary, EquipParamWeapon wep, List<ShopLineupParam> shopLineupParamRememberanceList) {
+        if (lot.mtrlId == -1) {
+            addToOrderedDict(shopLineupParamDictionary, wep, lot);
+            return;
+        }
+        shopLineupParamRememberanceList.Add(lot);
+    }
     private void randomizeCharaInitParam() {
         for (int i = 0; i < 10; i++) {
             Row? row = _charaInitParam[i + 3000];
@@ -135,10 +279,10 @@ public partial class BingoRandomizer {
         chr.subWepLeft3 = chanceGetRandomWeapon(chr.subWepLeft3);
         chr.subWepRight3 = chanceGetRandomWeapon(chr.subWepRight3);
 
-        chr.equipHelm = chanceGetRandomHelm(chr.equipHelm);
-        chr.equipArmer = chanceGetRandomBody(chr.equipArmer);
-        chr.equipGaunt = chanceGetRandomArms(chr.equipGaunt);
-        chr.equipLeg = chanceGetRandomLegs(chr.equipLeg);
+        chr.equipHelm = chanceGetRandomArmor(chr.equipHelm, HelmType);
+        chr.equipArmer = chanceGetRandomArmor(chr.equipArmer, BodyType);
+        chr.equipGaunt = chanceGetRandomArmor(chr.equipGaunt, ArmType);
+        chr.equipLeg = chanceGetRandomArmor(chr.equipLeg, LegType);
 
         randomizeLevels(chr);
 
@@ -212,254 +356,6 @@ public partial class BingoRandomizer {
         }
 
         _lineHelpFmg[id] = string.Join(", ", str); //Util.SplitCharacterText(true, str);
-    }
-
-    private Task init() {
-        _bhd5Reader = new BHD5Reader(_path, false, _cancellationToken);
-        _cancellationToken.ThrowIfCancellationRequested();
-        _oodlePtr = Kernel32.LoadLibrary($"{_path}/oo2core_6_win64.dll");
-        _cancellationToken.ThrowIfCancellationRequested();
-        getDefs();
-        _cancellationToken.ThrowIfCancellationRequested();
-        getParams();
-        _cancellationToken.ThrowIfCancellationRequested();
-        getFmgs();
-        _cancellationToken.ThrowIfCancellationRequested();
-        buildDictionaries();
-        _cancellationToken.ThrowIfCancellationRequested();
-        // buildMsbList();
-        // _cancellationToken.ThrowIfCancellationRequested();
-        Kernel32.FreeLibrary(_oodlePtr);
-        return Task.CompletedTask;
-    }
-    private void buildMsbList() {
-        _msbs = new List<MSBE>();
-        foreach (string path in MsbFiles.Files) {
-            MSBE msb = MSBE.Read(_bhd5Reader.GetFile(path));
-            addRefs(msb);
-            _msbs.Add(msb);
-        }
-    }
-    private void addRefs(MSBE msb) {
-        foreach (MSBE.Event.Treasure? treasure in msb.Events.Treasures) {
-            if (treasure == null) {
-                continue;
-            }
-            _itemLotParam_mapRefs.Add(treasure.ItemLotID);
-        }
-    }
-    private void getDefs() {
-        _paramDefs = new List<PARAMDEF>();
-        string[] defs = Util.GetEmbeddedFolder("Resources.Params.Defs");
-        foreach (string def in defs) {
-            _paramDefs.Add(Util.XmlDeserialize(def));
-        }
-    }
-    private void getParams() {
-        _regulationBnd = SFUtil.DecryptERRegulation(_regulationPath);
-        foreach (BinderFile file in _regulationBnd.Files) {
-            getParams(file);
-        }
-    }
-    private void getFmgs() {
-        byte[] itemMsgbndBytes = getOrOpenFile(ItemMsgBNDPath);
-        if (itemMsgbndBytes == null) {
-            throw new InvalidFileException(ItemMsgBNDPath);
-        }
-        BND4 itemBnd = BND4.Read(itemMsgbndBytes);
-        foreach (BinderFile file in itemBnd.Files) {
-            getFmgs(file);
-        }
-
-        _cancellationToken.ThrowIfCancellationRequested();
-
-        byte[] menuMsgbndBytes = getOrOpenFile(MenuMsgBNDPath);
-        if (itemMsgbndBytes == null) {
-            throw new InvalidFileException(MenuMsgBNDPath);
-        }
-        _menuMsgBND = BND4.Read(menuMsgbndBytes);
-        foreach (BinderFile file in _menuMsgBND.Files) {
-            getFmgs(file);
-        }
-    }
-    private byte[] getOrOpenFile(string path) {
-        if (!File.Exists($"{CachePath}/{path}")) {
-            byte[]? file = _bhd5Reader.GetFile(path);
-            Directory.CreateDirectory(Path.GetDirectoryName($"{CachePath}/{path}"));
-            File.WriteAllBytes($"{CachePath}/{path}", file);
-            return file;
-        }
-
-        return File.ReadAllBytes($"{CachePath}/{path}");
-    }
-    private void buildDictionaries() {
-        _weaponDictionary = new Dictionary<int, EquipParamWeapon>();
-        _weaponTypeDictionary = new Dictionary<ushort, List<Row>>();
-
-        foreach (Row row in _equipParamWeapon.Rows) {
-            string rowString = _weaponFmg[row.ID];
-            if ((int)row["sortId"].Value.Value == 9999999 || row.ID == 17030000 || string.IsNullOrWhiteSpace(rowString) || rowString.ToLower().Contains("error")) {
-                continue;
-            }
-
-            EquipParamWeapon wep = new(row);
-            if (!(wep.wepType >= 81 && wep.wepType <= 86)) {
-                _weaponDictionary.Add(row.ID, new EquipParamWeapon(row));
-            }
-
-            List<Row>? rows;
-            if (_weaponTypeDictionary.TryGetValue(wep.wepType, out rows)) {
-                rows.Add(row);
-            }
-            else {
-                rows = new List<Row>();
-                rows.Add(row);
-                _weaponTypeDictionary.Add(wep.wepType, rows);
-            }
-        }
-
-        _armorDictionary = new Dictionary<int, Row>();
-        _armorTypeDictionary = new Dictionary<byte, List<Row>>();
-        foreach (Row row in _equipParamProtector.Rows) {
-            int sortId = (int)row["sortId"].Value.Value;
-            string rowString = _protectorFmg[row.ID];
-            if (sortId == 9999999 || sortId == 99999 || string.IsNullOrWhiteSpace(rowString) || rowString.ToLower().Contains("error")) {
-                continue;
-            }
-
-            _armorDictionary.Add(row.ID, row);
-            byte protectorCategory = (byte)row["protectorCategory"].Value.Value;
-            List<Row>? rows;
-            if (_armorTypeDictionary.TryGetValue(protectorCategory, out rows)) {
-                rows.Add(row);
-            }
-            else {
-                rows = new List<Row> {
-                    row,
-                };
-                _armorTypeDictionary.Add(protectorCategory, rows);
-            }
-        }
-
-        _goodsDictionary = new Dictionary<int, Row>();
-        foreach (Row row in _equipParamGoods.Rows) {
-            int sortId = (int)row["sortId"].Value.Value;
-            string rowString = _goodsFmg[row.ID];
-            if (sortId == 9999999 || sortId == 0 || string.IsNullOrWhiteSpace(rowString) || rowString.ToLower().Contains("error")) {
-                continue;
-            }
-
-            _goodsDictionary.Add(row.ID, row);
-        }
-
-        _magicDictionary = new Dictionary<int, Magic>();
-        _magicTypeDictionary = new Dictionary<byte, List<Row>>();
-        foreach (Row row in _magicParam.Rows) {
-            if (!_goodsDictionary.ContainsKey(row.ID)) {
-                continue;
-            }
-            Magic magic = new(row);
-            _magicDictionary.Add(row.ID, magic);
-            List<Row>? rows;
-            if (_magicTypeDictionary.TryGetValue(magic.ezStateBehaviorType, out rows)) {
-                rows.Add(row);
-            }
-            else {
-                rows = new List<Row>();
-                rows.Add(row);
-                _magicTypeDictionary.Add(magic.ezStateBehaviorType, rows);
-            }
-        }
-
-        _accessoryDictionary = new Dictionary<int, Row>();
-        foreach (Row row in _equipParamAccessory.Rows) {
-            int sortId = (int)row["sortId"].Value.Value;
-            string rowString = _accessoryFmg[row.ID];
-            if (sortId == 9999999 || string.IsNullOrWhiteSpace(rowString) || rowString.ToLower().Contains("error")) {
-                continue;
-            }
-
-            _accessoryDictionary.Add(row.ID, row);
-        }
-    }
-    private void getParams(BinderFile file) {
-        string fileName = Path.GetFileName(file.Name);
-        switch (fileName) {
-            case EquipParamWeaponName:
-                _equipParamWeapon = Param.Read(file.Bytes);
-                if (!_equipParamWeapon.ApplyParamDefsCarefully(_paramDefs)) {
-                    throw new NoParamDefException(_equipParamWeapon.ParamType);
-                }
-                break;
-            case EquipParamGoodsName:
-                _equipParamGoods = Param.Read(file.Bytes);
-                if (!_equipParamGoods.ApplyParamDefsCarefully(_paramDefs)) {
-                    throw new NoParamDefException(_equipParamGoods.ParamType);
-                }
-                break;
-            case EquipParamAccessoryName:
-                _equipParamAccessory = Param.Read(file.Bytes);
-                if (!_equipParamAccessory.ApplyParamDefsCarefully(_paramDefs)) {
-                    throw new NoParamDefException(_equipParamAccessory.ParamType);
-                }
-                break;
-            case EquipParamProtectorName:
-                _equipParamProtector = Param.Read(file.Bytes);
-                if (!_equipParamProtector.ApplyParamDefsCarefully(_paramDefs)) {
-                    throw new NoParamDefException(_equipParamProtector.ParamType);
-                }
-                break;
-            case CharaInitParamName:
-                _charaInitParam = Param.Read(file.Bytes);
-                if (!_charaInitParam.ApplyParamDefsCarefully(_paramDefs)) {
-                    throw new NoParamDefException(_charaInitParam.ParamType);
-                }
-                break;
-            case MagicName:
-                _magicParam = Param.Read(file.Bytes);
-                if (!_magicParam.ApplyParamDefsCarefully(_paramDefs)) {
-                    throw new NoParamDefException(_magicParam.ParamType);
-                }
-                break;
-            case ItemLotParam_mapName:
-                _itemLotParam_map = Param.Read(file.Bytes);
-                if (!_itemLotParam_map.ApplyParamDefsCarefully(_paramDefs)) {
-                    throw new NoParamDefException(_itemLotParam_map.ParamType);
-                }
-                break;
-            case ItemLotParam_enemyName:
-                _itemLotParam_enemy = Param.Read(file.Bytes);
-                if (!_itemLotParam_enemy.ApplyParamDefsCarefully(_paramDefs)) {
-                    throw new NoParamDefException(_itemLotParam_enemy.ParamType);
-                }
-                break;
-            case ShopLineupParamName:
-                _shopLineupParam = Param.Read(file.Bytes);
-                if (!_shopLineupParam.ApplyParamDefsCarefully(_paramDefs)) {
-                    throw new NoParamDefException(_shopLineupParam.ParamType);
-                }
-                break;
-        }
-    }
-    private void getFmgs(BinderFile file) {
-        string fileName = Path.GetFileName(file.Name);
-        switch (fileName) {
-            case WeaponNameName:
-                _weaponFmg = FMG.Read(file.Bytes);
-                break;
-            case ProtectorNameName:
-                _protectorFmg = FMG.Read(file.Bytes);
-                break;
-            case GoodsNameName:
-                _goodsFmg = FMG.Read(file.Bytes);
-                break;
-            case AccessoryNameName:
-                _accessoryFmg = FMG.Read(file.Bytes);
-                break;
-            case GR_LineHelpName:
-                _lineHelpFmg = FMG.Read(file.Bytes);
-                break;
-        }
     }
     private void setBndFile(BND4 files, string fileName, byte[] bytes) {
         foreach (BinderFile file in files.Files) {

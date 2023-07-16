@@ -8,6 +8,7 @@ using System.Linq;
 using System.Reflection;
 using System.Windows.Forms;
 using System.Xml;
+using static ERBingoRandomizer.Utility.Config;
 
 namespace ERBingoRandomizer.Utility;
 
@@ -104,15 +105,9 @@ static class Util {
         string resourceName = $"ERBingoRandomizer.{item}";
         return ReadToString(resourceName);
     }
-    public static string[] GetEmbeddedFolder(string item) {
-        Assembly assembly = Assembly.GetCallingAssembly();
-        string resourceName = $"ERBingoRandomizer.{item}";
-        if (!resourceName.EndsWith(".")) {
-            resourceName += ".";
-        }
-
-        string[] resources = assembly.GetManifestResourceNames();
-        return resources.Where(s => s.StartsWith(resourceName)).Select(s => ReadToString(s)).ToArray();
+    public static string[] GetResources(string item) {
+        string[] resources = Directory.GetFiles($"{ResourcesPath}/{item}");
+        return resources.Select(s => ReadToString(s)).ToArray();
     }
     public static byte[] GetEmbeddedResourceBytes(string item) {
         string resourceName = $"ERBingoRandomizer.{item}";
@@ -136,15 +131,7 @@ static class Util {
         return files.ToArray();
     }
     private static string ReadToString(string resourceName) {
-        Assembly assembly = Assembly.GetCallingAssembly();
-        using (Stream? stream = assembly.GetManifestResourceStream(resourceName)) {
-            if (stream == null)
-                throw new NullReferenceException($"Could not find embedded resource: {resourceName} in the {Assembly.GetCallingAssembly().GetName()} assembly");
-
-            using (StreamReader reader = new(stream)) {
-                return reader.ReadToEnd();
-            }
-        }
+        return File.ReadAllText(resourceName);
     }
     private static byte[] ReadToBytes(string resourceName) {
         Assembly assembly = Assembly.GetCallingAssembly();

@@ -1,4 +1,5 @@
 ﻿using ERBingoRandomizer.ViewModels;
+using System;
 using System.ComponentModel;
 using System.Diagnostics;
 using static ERBingoRandomizer.Utility.Const;
@@ -13,11 +14,20 @@ public class LaunchEldenRingCommand : CommandBase {
     }
 
     public override bool CanExecute(object? parameter) {
-        return _mwViewModel.FilesReady;
+        return _mwViewModel.FilesReady && !_mwViewModel.InProgress;
     }
 
     public override void Execute(object? parameter) {
+        if (eldenRingIsOpen()) {
+            _mwViewModel.DisplayMessage("Elden Ring is still open. Please close Elden Ring or wait for it to full exit.");
+            return;
+        }
+        _mwViewModel.ListBoxDisplay.Clear();
         _mwViewModel.DisplayMessage("Launching Elden Ring via ModEngine 2");
+        launchEldenRing();
+    }
+    private static void launchEldenRing() {
+
         Process me2 = new() {
             StartInfo = new ProcessStartInfo {
                 FileName = "launchmod_bingo.bat",
@@ -29,9 +39,22 @@ public class LaunchEldenRingCommand : CommandBase {
 
         me2.Start();
     }
+    private bool eldenRingIsOpen() {
+        Process[] processes = Process.GetProcesses();
+        foreach (Process process in processes) {
+            if (process.ProcessName is "eldenring") {
+                if (process.HasExited) {
+                    _mwViewModel.DisplayMessage("Bingus!");
+                }
+                return true;
+            }
+        }
+        return false;
+    }
 
     private void ViewModel_PropertyChanged(object? sender, PropertyChangedEventArgs e) {
-        if (e.PropertyName is nameof(MainWindowViewModel.FilesReady)) {
+        if (e.PropertyName is nameof(MainWindowViewModel.FilesReady)
+            or nameof(MainWindowViewModel.InProgress)) {
             OnCanExecuteChanged();
         }
     }

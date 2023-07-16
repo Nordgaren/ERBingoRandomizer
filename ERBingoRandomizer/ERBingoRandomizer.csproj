@@ -13,6 +13,9 @@
     <PropertyGroup>
         <SolutionDir>$(MSBuildThisFileDirectory)..\</SolutionDir>
     </PropertyGroup>
+    <PropertyGroup Condition=" '$(Configuration)' == 'Release' ">
+      <PlatformTarget>x64</PlatformTarget>
+    </PropertyGroup>
 
     <!-- Copy all resources to the build output directy except when building in publish mode, to have them exist in a debug/release build, but not have them packed into an executable when publishing -->
     <Target Name="CopyResources" Condition="'$(Configuration)'!='Publish'" AfterTargets="Build">
@@ -31,7 +34,7 @@
         <Message Text="Moving Readme: $(PublishDir)" Importance="High" />
         <Message Text="Solution Dir: $(SolutionDir)" Importance="High" />
         <Copy SourceFiles="$(SolutionDir)README.md" DestinationFiles="$(PublishDir)README.txt" />
-        <Move SourceFiles="$(PublishDir)\$(AssemblyName).exe" DestinationFiles="$(PublishDir)\Elden Ring Debug Tool.exe" />
+        <Move SourceFiles="$(PublishDir)\$(AssemblyName).exe" DestinationFiles="$(PublishDir)\ERBingo Randomizer.exe" />
         <Message Text="Renamed executable file." Importance="high" />
         <!--<Exec Command="7za.exe a -t7z &quot;Elden Ring Debug Tool.7z&quot; .\bin\Publish\win-x64\* -xr!*.pdb" />
         <Move SourceFiles="Elden Ring Debug Tool.7z" DestinationFiles="$(PublishDir)..\Elden Ring Debug Tool $(AssemblyVersion).7z" />-->

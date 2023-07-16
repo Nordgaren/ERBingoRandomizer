@@ -72,7 +72,7 @@ public class BHD5Reader {
         cancellationToken.ThrowIfCancellationRequested();
 
         if (cache && !File.Exists(Data0CachePath)) {
-            File.WriteAllBytes(Data0CachePath, msbBytes[0]);
+            File.WriteAllBytes($"{Data0CachePath}.bhd", msbBytes[0]);
         }
         // _data1 = readBHD5(msbBytes[1]);
         // _data2 = readBHD5(msbBytes[2]);

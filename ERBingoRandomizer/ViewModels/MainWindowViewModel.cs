@@ -26,8 +26,8 @@ public class MainWindowViewModel : ViewModelBase, IDisposable {
         if (FilesReady) {
             LastSeed = File.Exists(LastSeedPath) ? JsonSerializer.Deserialize<SeedInfo>(File.ReadAllText(LastSeedPath)) : null;
         }
-        Display = new ObservableCollection<string>();
-        DisplayView = CollectionViewSource.GetDefaultView(Display);
+        ListBoxDisplay = new ObservableCollection<string>();
+        DisplayView = CollectionViewSource.GetDefaultView(ListBoxDisplay);
         GetNewCancellationToken();
         _watcher = new FileSystemWatcher(ME2Path);
         _watcher.NotifyFilter = NotifyFilters.Attributes
@@ -91,17 +91,17 @@ public class MainWindowViewModel : ViewModelBase, IDisposable {
     public ICommand LaunchEldenRing { get; }
     public ICommand PackageFiles { get; }
     public ICommand Cancel { get; }
-    private ObservableCollection<string> _display;
-    public ObservableCollection<string> Display {
-        get => _display;
+    private ObservableCollection<string> _listBoxDisplay;
+    public ObservableCollection<string> ListBoxDisplay {
+        get => _listBoxDisplay;
         set {
-            if (SetField(ref _display, value)) {
+            if (SetField(ref _listBoxDisplay, value)) {
                 OnPropertyChanged(nameof(DisplayView));
             }
         }
     }
     public void DisplayMessage(string message) {
-        Display.Add(message);
+        ListBoxDisplay.Add(message);
     }
     public ICollectionView DisplayView { get; }
 
