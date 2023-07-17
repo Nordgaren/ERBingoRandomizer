@@ -58,89 +58,23 @@ public partial class BingoRandomizer {
 
         return false;
     }
-    private bool hasBow(CharaInitParam chr) {
-        if (checkWeaponType(chr.wepRight, BowType, LightBowType)) {
+    private bool hasWeaponOfType(CharaInitParam chr, params ushort[] types) {
+        if (checkWeaponType(chr.wepRight)) {
             return true;
         }
-        if (checkWeaponType(chr.wepleft, BowType, LightBowType)) {
+        if (checkWeaponType(chr.wepleft)) {
             return true;
         }
-        if (checkWeaponType(chr.subWepLeft, BowType, LightBowType)) {
+        if (checkWeaponType(chr.subWepLeft)) {
             return true;
         }
-        if (checkWeaponType(chr.subWepRight, BowType, LightBowType)) {
+        if (checkWeaponType(chr.subWepRight)) {
             return true;
         }
-        if (checkWeaponType(chr.subWepLeft3, BowType, LightBowType)) {
+        if (checkWeaponType(chr.subWepLeft3)) {
             return true;
         }
-        if (checkWeaponType(chr.subWepRight3, BowType, LightBowType)) {
-            return true;
-        }
-
-        return false;
-    }
-    private bool hasGreatbow(CharaInitParam chr) {
-        if (checkWeaponType(chr.wepRight, GreatbowType)) {
-            return true;
-        }
-        if (checkWeaponType(chr.wepleft, GreatbowType)) {
-            return true;
-        }
-        if (checkWeaponType(chr.subWepLeft, GreatbowType)) {
-            return true;
-        }
-        if (checkWeaponType(chr.subWepRight, GreatbowType)) {
-            return true;
-        }
-        if (checkWeaponType(chr.subWepLeft3, GreatbowType)) {
-            return true;
-        }
-        if (checkWeaponType(chr.subWepRight3, GreatbowType)) {
-            return true;
-        }
-
-        return false;
-    }
-    private bool hasCrossbow(CharaInitParam chr) {
-        if (checkWeaponType(chr.wepRight, CrossbowType)) {
-            return true;
-        }
-        if (checkWeaponType(chr.wepleft, CrossbowType)) {
-            return true;
-        }
-        if (checkWeaponType(chr.subWepLeft, CrossbowType)) {
-            return true;
-        }
-        if (checkWeaponType(chr.subWepRight, CrossbowType)) {
-            return true;
-        }
-        if (checkWeaponType(chr.subWepLeft3, CrossbowType)) {
-            return true;
-        }
-        if (checkWeaponType(chr.subWepRight3, CrossbowType)) {
-            return true;
-        }
-
-        return false;
-    }
-    private bool hasBallista(CharaInitParam chr) {
-        if (checkWeaponType(chr.wepRight, BallistaType)) {
-            return true;
-        }
-        if (checkWeaponType(chr.wepleft, BallistaType)) {
-            return true;
-        }
-        if (checkWeaponType(chr.subWepLeft, BallistaType)) {
-            return true;
-        }
-        if (checkWeaponType(chr.subWepRight, BallistaType)) {
-            return true;
-        }
-        if (checkWeaponType(chr.subWepLeft3, BallistaType)) {
-            return true;
-        }
-        if (checkWeaponType(chr.subWepRight3, BallistaType)) {
+        if (checkWeaponType(chr.subWepRight3)) {
             return true;
         }
 
@@ -171,7 +105,7 @@ public partial class BingoRandomizer {
     }
     private void giveBallistaBolts(CharaInitParam chr) {
         chr.equipSubBolt = getRandomAmmo(BallistaBoltType);
-        chr.subBoltNum = (ushort)(_random.Next() % MaxBolts);
+        chr.subBoltNum = (ushort)(_random.Next() % MaxBallistaBolts);
     }
     private int getRandomAmmo(ushort type) {
         List<Row> arrows = _weaponTypeDictionary[type];

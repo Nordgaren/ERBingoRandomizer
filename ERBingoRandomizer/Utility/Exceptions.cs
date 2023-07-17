@@ -2,10 +2,10 @@
 
 namespace ERBingoRandomizer.Utility;
 
-class NoParamDefException : Exception {
-    public NoParamDefException(string paramType) : base($"Could not find ParamDef for {paramType}") { }
+class InvalidParamDefException : Exception {
+    public InvalidParamDefException(string paramType) : base($"Could not find ParamDef for {paramType}") { }
 
-    public NoParamDefException(string paramType, Exception inner) : base($"Could not find ParamDef for {paramType}", inner) { }
+    public InvalidParamDefException(string paramType, Exception inner) : base($"Could not find ParamDef for {paramType}", inner) { }
 }
 
 public class InvalidFileException : Exception {

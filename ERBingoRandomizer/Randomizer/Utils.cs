@@ -1,5 +1,6 @@
 ﻿using ERBingoRandomizer.Params;
 using ERBingoRandomizer.Utility;
+using SoulsFormats;
 using System;
 using System.Collections.Generic;
 using System.Collections.Specialized;
@@ -7,12 +8,12 @@ using System.Diagnostics;
 using System.IO;
 using System.Linq;
 using static ERBingoRandomizer.Utility.Config;
+using static ERBingoRandomizer.Utility.Const;
 
 namespace ERBingoRandomizer.Randomizer;
 
 public partial class BingoRandomizer {
     private List<string> _randomizerLog;
-
     private void logItem(string item) {
         _randomizerLog.Add(item);
     }
@@ -101,5 +102,219 @@ public partial class BingoRandomizer {
         return spell.requirementIntellect <= chr.baseMag
             && spell.requirementFaith <= chr.baseFai
             && spell.requirementLuck <= chr.baseLuc;
+    }
+    private void replaceShopLineupParam(ShopLineupParam lot, List<int> shopLineupParamDictionary, EquipParamWeapon wep, List<ShopLineupParam> shopLineupParamRememberanceList) {
+        if (lot.mtrlId == -1) {
+            int newId = getNewId(lot.equipId, shopLineupParamDictionary);
+            logItem($"{_weaponNameDictionary[lot.equipId]} -> {_weaponNameDictionary[newId]}");
+            lot.equipId = newId;
+            return;
+        }
+        ShopLineupParam newRemembrance = getNewId(lot.equipId, shopLineupParamRememberanceList);
+        logItem($"{_weaponNameDictionary[lot.equipId]} -> {_weaponNameDictionary[newRemembrance.equipId]}");
+        copyShopLineupParam(lot, newRemembrance);
+    }
+    private static void addToShopLineupParamDict(ShopLineupParam lot, OrderedDictionary shopLineupParamDictionary, EquipParamWeapon wep, List<ShopLineupParam> shopLineupParamRememberanceList) {
+        if (lot.mtrlId == -1) {
+            addToOrderedDict(shopLineupParamDictionary, wep, lot);
+            return;
+        }
+        shopLineupParamRememberanceList.Add(lot);
+    }
+    private void addDescriptionString(CharaInitParam chr, int id) {
+        List<string> str = new();
+        str.Add(_weaponFmg[chr.wepRight]);
+
+        if (chr.wepleft != -1) {
+            str.Add($"{_weaponNameDictionary[chr.wepleft]}");
+        }
+        if (chr.subWepLeft != -1) {
+            str.Add($"{_weaponNameDictionary[chr.subWepLeft]}");
+        }
+        if (chr.subWepRight != -1) {
+            str.Add($"{_weaponNameDictionary[chr.subWepRight]}");
+        }
+        if (chr.subWepLeft3 != -1) {
+            str.Add($"{_weaponNameDictionary[chr.subWepLeft3]}");
+        }
+        if (chr.subWepRight3 != -1) {
+            str.Add($"{_weaponNameDictionary[chr.subWepRight3]}");
+        }
+        if (chr.equipArrow != -1) {
+            str.Add($"{_weaponNameDictionary[chr.equipArrow]}[{chr.arrowNum}]");
+        }
+        if (chr.equipSubArrow != -1) {
+            str.Add($"{_weaponNameDictionary[chr.equipSubArrow]}[{chr.subArrowNum}]");
+        }
+        if (chr.equipBolt != -1) {
+            str.Add($"{_weaponNameDictionary[chr.equipBolt]}[{chr.boltNum}]");
+        }
+        if (chr.equipSubBolt != -1) {
+            str.Add($"{_weaponNameDictionary[chr.equipSubBolt]}[{chr.subBoltNum}]");
+        }
+        if (chr.equipSpell01 != -1) {
+            str.Add($"{_goodsFmg[chr.equipSpell01]}");
+        }
+        if (chr.equipSpell02 != -1) {
+            str.Add($"{_goodsFmg[chr.equipSpell02]}");
+        }
+
+        _lineHelpFmg[id] = string.Join(", ", str); //Util.SplitCharacterText(true, str);
+    }
+    private int getSeedFromHashData(byte[] hashData) {
+        IEnumerable<byte[]> chunks = hashData.Chunk(4);
+        int num = 0;
+        foreach (byte[] chunk in chunks) {
+            num ^= BitConverter.ToInt32(chunk);
+        }
+
+        return num;
+    }
+    private void writeFiles() {
+        if (Directory.Exists(BingoPath)) {
+            Directory.Delete(BingoPath, true);
+        }
+        Directory.CreateDirectory(Path.GetDirectoryName($"{BingoPath}/{RegulationName}"));
+        setBndFile(_regulationBnd, CharaInitParamName, _charaInitParam.Write());
+        setBndFile(_regulationBnd, ItemLotParam_mapName, _itemLotParam_map.Write());
+        setBndFile(_regulationBnd, ItemLotParam_enemyName, _itemLotParam_enemy.Write());
+        setBndFile(_regulationBnd, ShopLineupParamName, _shopLineupParam.Write());
+        SFUtil.EncryptERRegulation($"{BingoPath}/{RegulationName}", _regulationBnd);
+        Directory.CreateDirectory(Path.GetDirectoryName($"{BingoPath}/{MenuMsgBNDPath}"));
+        setBndFile(_menuMsgBND, GR_LineHelpName, _lineHelpFmg.Write());
+        File.WriteAllBytes($"{BingoPath}/{MenuMsgBNDPath}", _menuMsgBND.Write());
+
+    }
+    private void setBndFile(BND4 files, string fileName, byte[] bytes) {
+        foreach (BinderFile file in files.Files) {
+            if (file.Name.EndsWith(fileName)) {
+                file.Bytes = bytes;
+            }
+        }
+    }
+    private void logReplacementDictionary(Dictionary<int, int> dict) {
+        foreach (KeyValuePair<int, int> pair in dict) {
+            logItem($"{_weaponNameDictionary[pair.Key]} -> {_weaponNameDictionary[pair.Value]}");
+        }
+    }
+    private void logCharaInitEntry(CharaInitParam chr, int i) {
+        logItem($"{_menuTextFmg[i]} -");
+        logItem("Weapons");
+        if (chr.wepleft != -1) {
+            logItem($"Left: {_weaponFmg[chr.wepleft]}");
+        }
+        if (chr.wepRight != -1) {
+            logItem($"Right: {_weaponFmg[chr.wepRight]}");
+        }
+        if (chr.subWepLeft != -1) {
+            logItem($"Left 2: {_weaponFmg[chr.subWepLeft]}");
+        }
+        if (chr.subWepRight != -1) {
+            logItem($"Right 2: {_weaponFmg[chr.subWepRight]}");
+        }
+        if (chr.subWepLeft3 != -1) {
+            logItem($"Left 3: {_weaponFmg[chr.subWepLeft3]}");
+        }
+        if (chr.subWepRight3 != -1) {
+            logItem($"Right 3: {_weaponFmg[chr.subWepRight3]}");
+        }
+        logItem("\nArmor");
+        if (chr.equipHelm != -1) {
+            logItem($"Helm: {_protectorFmg[chr.equipHelm]}");
+        }
+        if (chr.equipArmer != -1) {
+            logItem($"Body: {_protectorFmg[chr.equipArmer]}");
+        }
+        if (chr.equipGaunt != -1) {
+            logItem($"Arms: {_protectorFmg[chr.equipGaunt]}");
+        }
+        if (chr.equipLeg != -1) {
+            logItem($"Legs: {_protectorFmg[chr.equipLeg]}");
+        }
+        logItem("\nLevels");
+        logItem($"Vigor: {chr.baseVit}");
+        logItem($"Attunement: {chr.baseWil}");
+        logItem($"Endurance: {chr.baseEnd}");
+        logItem($"Strength: {chr.baseStr}");
+        logItem($"Dexterity: {chr.baseDex}");
+        logItem($"Intelligence: {chr.baseMag}");
+        logItem($"Faith: {chr.baseFai}");
+        logItem($"Arcane: {chr.baseLuc}");
+        logItem("\nAmmo");
+        if (chr.equipArrow != -1) {
+            logItem($"{_weaponFmg[chr.equipArrow]}[{chr.arrowNum}]");
+        }
+        if (chr.equipSubArrow != -1) {
+            logItem($"{_weaponFmg[chr.equipSubArrow]}[{chr.subArrowNum}]");
+        }
+        if (chr.equipBolt != -1) {
+            logItem($"{_weaponFmg[chr.equipBolt]}[{chr.boltNum}]");
+        }
+        if (chr.equipSubBolt != -1) {
+            logItem($"{_weaponFmg[chr.equipSubBolt]}[{chr.subBoltNum}]");
+        }
+        logItem("\nSpells");
+        if (chr.equipSpell01 != -1) {
+            logItem($"{_goodsFmg[chr.equipSpell01]}");
+        }
+        if (chr.equipSpell02 != -1) {
+            logItem($"{_goodsFmg[chr.equipSpell02]}");
+        }
+        logItem("");
+    }
+    private void logShopId(int rowId) {
+        switch (rowId) {
+            case 100000:
+                logItem("\nGatekeeper Gostoc");
+                break;
+            case 100100:
+                logItem("\nPatches");
+                break;
+            case 100325:
+                logItem("\nPidia Carian Servant");
+                break;
+            case 100500:
+                logItem("\nMerchant Kale");
+                break;
+            case 100525:
+                logItem("\nMerchant - North Limgrave");
+                break;
+            case 100550:
+                logItem("\nMerchant - East Limgrave");
+                break;
+            case 100575:
+                logItem("\nMerchant - Coastal Cave");
+                break;
+            case 100600:
+                logItem("\nMerchant - East Weeping Peninsula");
+                break;
+            case 100625:
+                logItem("\nMerchant - Liurnia of the Lakes");
+                break;
+            case 100650:
+                logItem("\nIsolated Merchant - Weeping Peninsula");
+                break;
+            case 100700:
+                logItem("\nMerchant - North Liurnia");
+                break;
+            case 100725:
+                logItem("\nHermit Merchant - Leyndell");
+                break;
+            case 100750:
+                logItem("\nMerchant - Altus Plateau");
+                break;
+            case 100875:
+                logItem("\nIsolated Merchant - Dragonbarrow");
+                break;
+            case 100925:
+                logItem("\nMerchant - Siofra River");
+                break;
+            case 101800:
+                logItem("\nTwin Maiden Husks");
+                break;
+            case 101900:
+                logItem("\nRemembrances");
+                break;
+        }
     }
 }

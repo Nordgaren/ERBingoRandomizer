@@ -1,12 +1,12 @@
 ﻿using ERBingoRandomizer.FileHandler;
 using ERBingoRandomizer.Params;
-using ERBingoRandomizer.Resources.MSB;
 using ERBingoRandomizer.Utility;
 using FSParam;
 using SoulsFormats;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
+using System.Threading;
 using System.Threading.Tasks;
 using static ERBingoRandomizer.Utility.Const;
 using static ERBingoRandomizer.Utility.Config;
@@ -15,6 +15,13 @@ using static FSParam.Param;
 namespace ERBingoRandomizer.Randomizer;
 
 public partial class BingoRandomizer {
+    //static async method that behave like a constructor       
+    public static async Task<BingoRandomizer> BuildRandomizerAsync(string path, string seed, CancellationToken cancellationToken) {
+        BingoRandomizer rando = new(path, seed, cancellationToken);
+        cancellationToken.ThrowIfCancellationRequested();
+        await Task.Run(() => rando.init());
+        return rando;
+    }
     private Task init() {
         if (!allCacheFilesExist()) {
             _bhd5Reader = new BHD5Reader(_path, CacheBHDs, _cancellationToken);
@@ -30,29 +37,11 @@ public partial class BingoRandomizer {
         _cancellationToken.ThrowIfCancellationRequested();
         buildDictionaries();
         _cancellationToken.ThrowIfCancellationRequested();
-        // buildMsbList();
-        // _cancellationToken.ThrowIfCancellationRequested();
         Kernel32.FreeLibrary(_oodlePtr);
         return Task.CompletedTask;
     }
     private bool allCacheFilesExist() {
         return File.Exists(ItemMsgBNDPath) && File.Exists(MenuMsgBNDPath);
-    }
-    private void buildMsbList() {
-        _msbs = new List<MSBE>();
-        foreach (string path in MsbFiles.Files) {
-            MSBE msb = MSBE.Read(_bhd5Reader.GetFile(path));
-            addRefs(msb);
-            _msbs.Add(msb);
-        }
-    }
-    private void addRefs(MSBE msb) {
-        foreach (MSBE.Event.Treasure? treasure in msb.Events.Treasures) {
-            if (treasure == null) {
-                continue;
-            }
-            _itemLotParam_mapRefs.Add(treasure.ItemLotID);
-        }
     }
     private void getDefs() {
         _paramDefs = new List<PARAMDEF>();
@@ -109,13 +98,13 @@ public partial class BingoRandomizer {
                 continue;
             }
 
+            _weaponNameDictionary[row.ID] = rowString;
             EquipParamWeapon wep = new(row);
             if (!Enumerable.Range(81, 86).Contains(wep.wepType)) {
                 _weaponDictionary.Add(row.ID, new EquipParamWeapon(row));
             }
 
             List<Row>? rows;
-            _weaponNameDictionary[row.ID] = rowString;
             if (_weaponTypeDictionary.TryGetValue(wep.wepType, out rows)) {
                 rows.Add(row);
             }
@@ -132,7 +121,7 @@ public partial class BingoRandomizer {
             if (!_weaponDictionary.TryGetValue((int)row["baseWepId"].Value.Value, out EquipParamWeapon wep)) {
                 continue;
             }
-            EquipParamCustomWeapon customWep = new EquipParamCustomWeapon(row);
+            EquipParamCustomWeapon customWep = new(row);
             _weaponNameDictionary[row.ID] = $"{_weaponNameDictionary[customWep.baseWepId]} +{customWep.reinforceLv}";
             _customWeaponDictionary.Add(row.ID, wep);
 
@@ -147,7 +136,6 @@ public partial class BingoRandomizer {
             }
         }
 
-        _armorDictionary = new Dictionary<int, Row>();
         _armorTypeDictionary = new Dictionary<byte, List<Row>>();
         foreach (Row row in _equipParamProtector.Rows) {
             int sortId = (int)row["sortId"].Value.Value;
@@ -156,7 +144,6 @@ public partial class BingoRandomizer {
                 continue;
             }
 
-            _armorDictionary.Add(row.ID, row);
             byte protectorCategory = (byte)row["protectorCategory"].Value.Value;
             List<Row>? rows;
             if (_armorTypeDictionary.TryGetValue(protectorCategory, out rows)) {
@@ -199,17 +186,6 @@ public partial class BingoRandomizer {
                 _magicTypeDictionary.Add(magic.ezStateBehaviorType, rows);
             }
         }
-
-        _accessoryDictionary = new Dictionary<int, Row>();
-        foreach (Row row in _equipParamAccessory.Rows) {
-            int sortId = (int)row["sortId"].Value.Value;
-            string rowString = _accessoryFmg[row.ID];
-            if (sortId == 9999999 || string.IsNullOrWhiteSpace(rowString) || rowString.ToLower().Contains("error")) {
-                continue;
-            }
-
-            _accessoryDictionary.Add(row.ID, row);
-        }
     }
     private void getParams(BinderFile file) {
         string fileName = Path.GetFileName(file.Name);
@@ -217,61 +193,55 @@ public partial class BingoRandomizer {
             case EquipParamWeaponName:
                 _equipParamWeapon = Param.Read(file.Bytes);
                 if (!_equipParamWeapon.ApplyParamDefsCarefully(_paramDefs)) {
-                    throw new NoParamDefException(_equipParamWeapon.ParamType);
+                    throw new InvalidParamDefException(_equipParamWeapon.ParamType);
                 }
                 break;
             case EquipParamCustomWeaponName:
                 _equipParamCustomWeapon = Param.Read(file.Bytes);
                 if (!_equipParamCustomWeapon.ApplyParamDefsCarefully(_paramDefs)) {
-                    throw new NoParamDefException(_equipParamCustomWeapon.ParamType);
+                    throw new InvalidParamDefException(_equipParamCustomWeapon.ParamType);
                 }
                 break;
             case EquipParamGoodsName:
                 _equipParamGoods = Param.Read(file.Bytes);
                 if (!_equipParamGoods.ApplyParamDefsCarefully(_paramDefs)) {
-                    throw new NoParamDefException(_equipParamGoods.ParamType);
-                }
-                break;
-            case EquipParamAccessoryName:
-                _equipParamAccessory = Param.Read(file.Bytes);
-                if (!_equipParamAccessory.ApplyParamDefsCarefully(_paramDefs)) {
-                    throw new NoParamDefException(_equipParamAccessory.ParamType);
+                    throw new InvalidParamDefException(_equipParamGoods.ParamType);
                 }
                 break;
             case EquipParamProtectorName:
                 _equipParamProtector = Param.Read(file.Bytes);
                 if (!_equipParamProtector.ApplyParamDefsCarefully(_paramDefs)) {
-                    throw new NoParamDefException(_equipParamProtector.ParamType);
+                    throw new InvalidParamDefException(_equipParamProtector.ParamType);
                 }
                 break;
             case CharaInitParamName:
                 _charaInitParam = Param.Read(file.Bytes);
                 if (!_charaInitParam.ApplyParamDefsCarefully(_paramDefs)) {
-                    throw new NoParamDefException(_charaInitParam.ParamType);
+                    throw new InvalidParamDefException(_charaInitParam.ParamType);
                 }
                 break;
             case MagicName:
                 _magicParam = Param.Read(file.Bytes);
                 if (!_magicParam.ApplyParamDefsCarefully(_paramDefs)) {
-                    throw new NoParamDefException(_magicParam.ParamType);
+                    throw new InvalidParamDefException(_magicParam.ParamType);
                 }
                 break;
             case ItemLotParam_mapName:
                 _itemLotParam_map = Param.Read(file.Bytes);
                 if (!_itemLotParam_map.ApplyParamDefsCarefully(_paramDefs)) {
-                    throw new NoParamDefException(_itemLotParam_map.ParamType);
+                    throw new InvalidParamDefException(_itemLotParam_map.ParamType);
                 }
                 break;
             case ItemLotParam_enemyName:
                 _itemLotParam_enemy = Param.Read(file.Bytes);
                 if (!_itemLotParam_enemy.ApplyParamDefsCarefully(_paramDefs)) {
-                    throw new NoParamDefException(_itemLotParam_enemy.ParamType);
+                    throw new InvalidParamDefException(_itemLotParam_enemy.ParamType);
                 }
                 break;
             case ShopLineupParamName:
                 _shopLineupParam = Param.Read(file.Bytes);
                 if (!_shopLineupParam.ApplyParamDefsCarefully(_paramDefs)) {
-                    throw new NoParamDefException(_shopLineupParam.ParamType);
+                    throw new InvalidParamDefException(_shopLineupParam.ParamType);
                 }
                 break;
         }

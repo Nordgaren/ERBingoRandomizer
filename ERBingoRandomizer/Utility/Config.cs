@@ -17,9 +17,8 @@ public static class Config {
     public const byte MaxStat = 13;
     public const byte MinStat = 4;
     public const float StatRollChance = 0.6f;
-    public const byte NumStats = 8;
-    public const string ResourcesPath = "./Resources";
     // Paths
+    public const string ResourcesPath = "./Resources";
     public static readonly string CachePath = $"{ExeDir}\\Cache";
     public static readonly string SpoilerPath = $"{CachePath}/Spoilers";
     public static readonly string LastSeedPath = $"{CachePath}/LastSeed.json";
