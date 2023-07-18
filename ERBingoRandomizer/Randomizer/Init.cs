@@ -3,6 +3,7 @@ using ERBingoRandomizer.Params;
 using ERBingoRandomizer.Utility;
 using FSParam;
 using SoulsFormats;
+using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
@@ -38,6 +39,7 @@ public partial class BingoRandomizer {
         buildDictionaries();
         _cancellationToken.ThrowIfCancellationRequested();
         Kernel32.FreeLibrary(_oodlePtr);
+        _oodlePtr = IntPtr.Zero;
         return Task.CompletedTask;
     }
     private bool allCacheFilesExist() {
@@ -94,7 +96,7 @@ public partial class BingoRandomizer {
 
         foreach (Row row in _equipParamWeapon.Rows) {
             string rowString = _weaponFmg[row.ID];
-            if ((int)row["sortId"].Value.Value == 9999999 || row.ID == 17030000 || string.IsNullOrWhiteSpace(rowString) || rowString.ToLower().Contains("error")) {
+            if ((int)row["sortId"].Value.Value == 9999999 || row.ID == 17030000 || string.IsNullOrWhiteSpace(rowString) || rowString.ToLower().Contains("[error]")) {
                 continue;
             }
 
@@ -125,22 +127,22 @@ public partial class BingoRandomizer {
             _weaponNameDictionary[row.ID] = $"{_weaponNameDictionary[customWep.baseWepId]} +{customWep.reinforceLv}";
             _customWeaponDictionary.Add(row.ID, wep);
 
-            List<Row>? rows;
-            if (_weaponTypeDictionary.TryGetValue(wep.wepType, out rows)) {
-                rows.Add(row);
-            }
-            else {
-                rows = new List<Row>();
-                rows.Add(row);
-                _weaponTypeDictionary.Add(wep.wepType, rows);
-            }
+            // List<Row>? rows;
+            // if (_weaponTypeDictionary.TryGetValue(wep.wepType, out rows)) {
+            //     rows.Add(row);
+            // }
+            // else {
+            //     rows = new List<Row>();
+            //     rows.Add(row);
+            //     _weaponTypeDictionary.Add(wep.wepType, rows);
+            // }
         }
 
         _armorTypeDictionary = new Dictionary<byte, List<Row>>();
         foreach (Row row in _equipParamProtector.Rows) {
             int sortId = (int)row["sortId"].Value.Value;
             string rowString = _protectorFmg[row.ID];
-            if (sortId == 9999999 || sortId == 99999 || string.IsNullOrWhiteSpace(rowString) || rowString.ToLower().Contains("error")) {
+            if (sortId == 9999999 || sortId == 99999 || string.IsNullOrWhiteSpace(rowString) || rowString.ToLower().Contains("[error]")) {
                 continue;
             }
 
@@ -161,7 +163,7 @@ public partial class BingoRandomizer {
         foreach (Row row in _equipParamGoods.Rows) {
             int sortId = (int)row["sortId"].Value.Value;
             string rowString = _goodsFmg[row.ID];
-            if (sortId == 9999999 || sortId == 0 || string.IsNullOrWhiteSpace(rowString) || rowString.ToLower().Contains("error")) {
+            if (sortId == 9999999 || sortId == 0 || string.IsNullOrWhiteSpace(rowString) || rowString.ToLower().Contains("[error]")) {
                 continue;
             }
 
@@ -257,9 +259,6 @@ public partial class BingoRandomizer {
                 break;
             case GoodsNameName:
                 _goodsFmg = FMG.Read(file.Bytes);
-                break;
-            case AccessoryNameName:
-                _accessoryFmg = FMG.Read(file.Bytes);
                 break;
             case GR_LineHelpName:
                 _lineHelpFmg = FMG.Read(file.Bytes);

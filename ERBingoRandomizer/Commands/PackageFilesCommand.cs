@@ -1,11 +1,9 @@
 ﻿using ERBingoRandomizer.ViewModels;
 using ICSharpCode.SharpZipLib.Zip;
-using SoulsFormats.KF4;
 using System;
 using System.ComponentModel;
 using System.Diagnostics;
 using System.IO;
-using System.IO.Compression;
 using System.Threading.Tasks;
 using static ERBingoRandomizer.Utility.Config;
 using static ERBingoRandomizer.Utility.Const;

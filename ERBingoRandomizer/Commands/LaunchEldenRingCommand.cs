@@ -1,5 +1,4 @@
 ﻿using ERBingoRandomizer.ViewModels;
-using System;
 using System.ComponentModel;
 using System.Diagnostics;
 using static ERBingoRandomizer.Utility.Const;

@@ -21,12 +21,6 @@ public partial class BingoRandomizer {
         Directory.CreateDirectory(SpoilerPath);
         File.WriteAllLines($"{SpoilerPath}/spoiler-{_seed}.log", _randomizerLog);
     }
-    private void shuffleVectors(OrderedDictionary orderedDictionary) {
-        for (int i = 0; i < orderedDictionary.Count; i++) {
-            List<ShopLineupParam> value = (List<ShopLineupParam>)orderedDictionary[i];
-            orderedDictionary[i] = value.OrderBy(i => _random.Next()).ToList();
-        }
-    }
     private void copyShopLineupParam(ShopLineupParam lot, ShopLineupParam shopLineupParam) {
         lot.equipId = shopLineupParam.equipId;
         lot.costType = shopLineupParam.costType;
@@ -113,13 +107,6 @@ public partial class BingoRandomizer {
         ShopLineupParam newRemembrance = getNewId(lot.equipId, shopLineupParamRememberanceList);
         logItem($"{_weaponNameDictionary[lot.equipId]} -> {_weaponNameDictionary[newRemembrance.equipId]}");
         copyShopLineupParam(lot, newRemembrance);
-    }
-    private static void addToShopLineupParamDict(ShopLineupParam lot, OrderedDictionary shopLineupParamDictionary, EquipParamWeapon wep, List<ShopLineupParam> shopLineupParamRememberanceList) {
-        if (lot.mtrlId == -1) {
-            addToOrderedDict(shopLineupParamDictionary, wep, lot);
-            return;
-        }
-        shopLineupParamRememberanceList.Add(lot);
     }
     private void addDescriptionString(CharaInitParam chr, int id) {
         List<string> str = new();
@@ -265,55 +252,55 @@ public partial class BingoRandomizer {
     private void logShopId(int rowId) {
         switch (rowId) {
             case 100000:
-                logItem("\nGatekeeper Gostoc");
+                logItem("\n> Gatekeeper Gostoc");
                 break;
             case 100100:
-                logItem("\nPatches");
+                logItem("\n> Patches");
                 break;
             case 100325:
-                logItem("\nPidia Carian Servant");
+                logItem("\n> Pidia Carian Servant");
                 break;
             case 100500:
-                logItem("\nMerchant Kale");
+                logItem("\n> Merchant Kale");
                 break;
             case 100525:
-                logItem("\nMerchant - North Limgrave");
+                logItem("\n> Merchant - North Limgrave");
                 break;
             case 100550:
-                logItem("\nMerchant - East Limgrave");
+                logItem("\n> Merchant - East Limgrave");
                 break;
             case 100575:
-                logItem("\nMerchant - Coastal Cave");
+                logItem("\n> Merchant - Coastal Cave");
                 break;
             case 100600:
-                logItem("\nMerchant - East Weeping Peninsula");
+                logItem("\n> Merchant - East Weeping Peninsula");
                 break;
             case 100625:
-                logItem("\nMerchant - Liurnia of the Lakes");
+                logItem("\n> Merchant - Liurnia of the Lakes");
                 break;
             case 100650:
-                logItem("\nIsolated Merchant - Weeping Peninsula");
+                logItem("\n> Isolated Merchant - Weeping Peninsula");
                 break;
             case 100700:
-                logItem("\nMerchant - North Liurnia");
+                logItem("\n> Merchant - North Liurnia");
                 break;
             case 100725:
-                logItem("\nHermit Merchant - Leyndell");
+                logItem("\n> Hermit Merchant - Leyndell");
                 break;
             case 100750:
-                logItem("\nMerchant - Altus Plateau");
+                logItem("\n> Merchant - Altus Plateau");
                 break;
             case 100875:
-                logItem("\nIsolated Merchant - Dragonbarrow");
+                logItem("\n> Isolated Merchant - Dragonbarrow");
                 break;
             case 100925:
-                logItem("\nMerchant - Siofra River");
+                logItem("\n> Merchant - Siofra River");
                 break;
             case 101800:
-                logItem("\nTwin Maiden Husks");
+                logItem("\n> Twin Maiden Husks");
                 break;
             case 101900:
-                logItem("\nRemembrances");
+                logItem("\n> Remembrances");
                 break;
         }
     }

@@ -1,5 +1,4 @@
 ﻿using ERBingoRandomizer.Params;
-using ERBingoRandomizer.Utility;
 using System.Collections.Generic;
 using System.Linq;
 using static ERBingoRandomizer.Utility.Const;
@@ -9,20 +8,20 @@ using static FSParam.Param;
 namespace ERBingoRandomizer.Randomizer;
 
 public partial class BingoRandomizer {
-    private int getRandomWeapon(int id) {
+    private int getRandomWeapon(int id, List<int> weapons) {
         while (true) {
             int newWeapon = _weaponDictionary.Keys.ElementAt(_random.Next(_weaponDictionary.Keys.Count));
             if (_weaponDictionary.ContainsKey(newWeapon) && newWeapon != id) {
-                return removeWeaponMetadata(newWeapon);
+                return newWeapon;
             }
         }
     }
-    private int chanceGetRandomWeapon(int id) {
+    private int chanceGetRandomWeapon(int id, List<int> weapons) {
         if (ReturnNoItem(id)) {
             return NoItem;
         }
 
-        return getRandomWeapon(id);
+        return getRandomWeapon(id, weapons);
     }
     private int chanceGetRandomArmor(int id, byte type) {
         if (ReturnNoItem(id)) {

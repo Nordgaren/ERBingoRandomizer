@@ -1,13 +1,10 @@
 ﻿using ERBingoRandomizer.FileHandler;
 using ERBingoRandomizer.Params;
-using ERBingoRandomizer.Utility;
 using FSParam;
 using SoulsFormats;
 using System;
-using System.Collections;
 using System.Collections.Generic;
 using System.Collections.Specialized;
-using System.Diagnostics;
 using System.IO;
 using System.Linq;
 using System.Security.Cryptography;
@@ -24,13 +21,13 @@ namespace ERBingoRandomizer.Randomizer;
 
 public partial class BingoRandomizer {
     public SeedInfo SeedInfo { get; private set; }
-
-    private string _path;
-    private string _regulationPath;
+    
+    private readonly string _path;
+    private readonly string _regulationPath;
     private BND4 _regulationBnd;
-    private string _seed;
+    private readonly string _seed;
     private int _seedInt;
-    private Random _random;
+    private readonly Random _random;
     private BHD5Reader _bhd5Reader;
     private IntPtr _oodlePtr;
     // FMGs
@@ -40,12 +37,8 @@ public partial class BingoRandomizer {
     private FMG _weaponFmg;
     private FMG _protectorFmg;
     private FMG _goodsFmg;
-    private FMG _accessoryFmg;
-    // MSBs
-    private List<MSBE> _msbs;
-
-    private List<PARAMDEF> _paramDefs;
     // Params
+    private List<PARAMDEF> _paramDefs;
     private Param _equipParamWeapon;
     private Param _equipParamCustomWeapon;
     private Param _equipParamGoods;
@@ -55,17 +48,15 @@ public partial class BingoRandomizer {
     private Param _itemLotParam_map;
     private Param _itemLotParam_enemy;
     private Param _shopLineupParam;
-
     // Dictionaries
     private Dictionary<int, EquipParamWeapon> _weaponDictionary;
-    private Dictionary<int, string> _weaponNameDictionary;
     private Dictionary<int, EquipParamWeapon> _customWeaponDictionary;
+    private Dictionary<int, string> _weaponNameDictionary;
     private Dictionary<int, Row> _goodsDictionary;
     private Dictionary<int, Magic> _magicDictionary;
     private Dictionary<ushort, List<Row>> _weaponTypeDictionary;
     private Dictionary<byte, List<Row>> _armorTypeDictionary;
     private Dictionary<byte, List<Row>> _magicTypeDictionary;
-
     // Cancellation Token
     private readonly CancellationToken _cancellationToken;
     private BingoRandomizer(string path, string seed, CancellationToken cancellationToken) {
@@ -94,25 +85,26 @@ public partial class BingoRandomizer {
         return Task.CompletedTask;
     }
     private void randomizeCharaInitParam() {
-        logItem("Class Randomization - All items are randomized, with each class having a .001% chance to gain or lose and item. Spells given class meets min stat requirements");
-        logItem("Ammo is give if you get a ranged weapon. Catalyst is give if you have spells.");
+        logItem(">>Class Randomization - All items are randomized, with each class having a .001% chance to gain or lose and item. Spells given class meets min stat requirements");
+        logItem("Ammo is give if you get a ranged weapon. Catalyst is give if you have spells.\n");
+        List<int> weapons = _weaponDictionary.Keys.Select(id => removeWeaponMetadata(id)).Distinct().OrderBy(i => _random.Next()).ToList();
         for (int i = 0; i < 10; i++) {
             Row? row = _charaInitParam[i + 3000];
             if (row != null) {
                 CharaInitParam param = new(row);
-                randomizeCharaInitEntry(param);
+                randomizeCharaInitEntry(param, weapons);
                 logCharaInitEntry(param, i + 288100);
                 addDescriptionString(param, ChrInfoMapping[i]);
             }
         }
     }
-    private void randomizeCharaInitEntry(CharaInitParam chr) {
-        chr.wepleft = chanceGetRandomWeapon(chr.wepleft);
-        chr.wepRight = getRandomWeapon(chr.wepRight);
-        chr.subWepLeft = chanceGetRandomWeapon(chr.subWepLeft);
-        chr.subWepRight = chanceGetRandomWeapon(chr.subWepRight);
-        chr.subWepLeft3 = chanceGetRandomWeapon(chr.subWepLeft3);
-        chr.subWepRight3 = chanceGetRandomWeapon(chr.subWepRight3);
+    private void randomizeCharaInitEntry(CharaInitParam chr, List<int> weapons) {
+        chr.wepleft = chanceGetRandomWeapon(chr.wepleft, weapons);
+        chr.wepRight = getRandomWeapon(chr.wepRight, weapons);
+        chr.subWepLeft = chanceGetRandomWeapon(chr.subWepLeft, weapons);
+        chr.subWepRight = chanceGetRandomWeapon(chr.subWepRight, weapons);
+        chr.subWepLeft3 = chanceGetRandomWeapon(chr.subWepLeft3, weapons);
+        chr.subWepRight3 = chanceGetRandomWeapon(chr.subWepRight3, weapons);
 
         chr.equipHelm = chanceGetRandomArmor(chr.equipHelm, HelmType);
         chr.equipArmer = chanceGetRandomArmor(chr.equipArmer, BodyType);
@@ -247,7 +239,6 @@ public partial class BingoRandomizer {
     }
     private void randomizeShopLineupParam() {
         List<ShopLineupParam> shopLineupParamRemembranceList = new();
-
         foreach (Row row in _shopLineupParam.Rows) {
             if ((byte)row["equipType"].Value.Value != ShopLineupWeaponCategory || row.ID < 101900 || row.ID > 101929) {
                 continue;
@@ -259,9 +250,6 @@ public partial class BingoRandomizer {
                 if (lot.equipId != sanitizedId) {
                     _weaponNameDictionary[lot.equipId] = $"{_weaponNameDictionary[sanitizedId]} +{lot.equipId - sanitizedId}";
                 }
-                shopLineupParamRemembranceList.Add(lot);
-            }
-            else if (_customWeaponDictionary.TryGetValue(lot.equipId, out _)) {
                 shopLineupParamRemembranceList.Add(lot);
             }
         }
@@ -276,13 +264,9 @@ public partial class BingoRandomizer {
                 continue;
             }
 
-
             ShopLineupParam lot = new(row);
             EquipParamWeapon wep;
             if (_weaponDictionary.TryGetValue(removeWeaponLevels(lot.equipId), out wep)) {
-                replaceShopLineupParam(lot, shopLineupParamList, wep, shopLineupParamRemembranceList);
-            }
-            else if (_weaponDictionary.TryGetValue(removeWeaponLevels(lot.equipId), out wep)) {
                 replaceShopLineupParam(lot, shopLineupParamList, wep, shopLineupParamRemembranceList);
             }
         }

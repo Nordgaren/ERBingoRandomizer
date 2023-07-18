@@ -1,5 +1,4 @@
-﻿using FSParam;
-using System;
+﻿using System;
 using static FSParam.Param;
 
 namespace ERBingoRandomizer.Params;
