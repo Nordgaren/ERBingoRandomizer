@@ -166,6 +166,7 @@ public partial class BingoRandomizer {
         setBndFile(_regulationBnd, ItemLotParam_mapName, _itemLotParam_map.Write());
         setBndFile(_regulationBnd, ItemLotParam_enemyName, _itemLotParam_enemy.Write());
         setBndFile(_regulationBnd, ShopLineupParamName, _shopLineupParam.Write());
+        setBndFile(_regulationBnd, EquipParamWeaponName, _equipParamWeapon.Write());
         SFUtil.EncryptERRegulation($"{BingoPath}/{RegulationName}", _regulationBnd);
         Directory.CreateDirectory(Path.GetDirectoryName($"{BingoPath}/{MenuMsgBNDPath}"));
         setBndFile(_menuMsgBND, GR_LineHelpName, _lineHelpFmg.Write());

@@ -32,9 +32,10 @@ public class BHD5Reader {
             Directory.CreateDirectory(CachePath);
         }
 
+        bool cacheExists = File.Exists(Data0CachePath);
         byte[][] msbBytes = new byte[4][];
         List<Task> tasks = new();
-        if (!File.Exists(Data0CachePath)) {
+        if (!cacheExists) {
             tasks.Add(Task.Run(() => { msbBytes[0] = CryptoUtil.DecryptRsa($"{path}/{Data0}.bhd", Const.ArchiveKeys.DATA0, cancellationToken).ToArray(); }));
         }
         else {
@@ -71,7 +72,7 @@ public class BHD5Reader {
         _data0 = readBHD5(msbBytes[0]);
         cancellationToken.ThrowIfCancellationRequested();
 
-        if (cache && !File.Exists(Data0CachePath)) {
+        if (cache && !cacheExists) {
             File.WriteAllBytes($"{Data0CachePath}.bhd", msbBytes[0]);
         }
         // _data1 = readBHD5(msbBytes[1]);

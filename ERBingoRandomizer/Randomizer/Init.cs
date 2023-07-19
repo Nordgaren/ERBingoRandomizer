@@ -96,12 +96,18 @@ public partial class BingoRandomizer {
 
         foreach (Row row in _equipParamWeapon.Rows) {
             string rowString = _weaponFmg[row.ID];
-            if ((int)row["sortId"].Value.Value == 9999999 || row.ID == 17030000 || string.IsNullOrWhiteSpace(rowString) || rowString.ToLower().Contains("[error]")) {
+            if ((int)row["sortId"].Value.Value == 9999999 || string.IsNullOrWhiteSpace(rowString) || rowString.ToLower().Contains("[error]")) {
+                continue;
+            }
+            EquipParamWeapon wep = new(row);
+            if (row.ID == 17030000) {
+                wep.materialSetId = 0;
+                wep.reinforceTypeId = 3000;
+                wep.reinforceShopCategory = 0;
                 continue;
             }
 
             _weaponNameDictionary[row.ID] = rowString;
-            EquipParamWeapon wep = new(row);
             if (!Enumerable.Range(81, 86).Contains(wep.wepType)) {
                 _weaponDictionary.Add(row.ID, new EquipParamWeapon(row));
             }

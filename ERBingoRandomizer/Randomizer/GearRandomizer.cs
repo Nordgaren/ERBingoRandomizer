@@ -45,12 +45,12 @@ public partial class BingoRandomizer {
         // If the entry is -1, return -1 99.99% of the time. If it's not, return -1 0.01% of the time
         // This makes it a small chance for a no item to become an item, and a small chance for an item to become no item.
         if (id == -1) {
-            if (target > Chance) {
+            if (target > AddRemoveWeaponChance) {
                 return true;
             }
         }
         else {
-            if (target < Chance) {
+            if (target < AddRemoveWeaponChance) {
                 return true;
             }
         }

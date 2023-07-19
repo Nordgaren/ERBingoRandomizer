@@ -4,7 +4,7 @@ namespace ERBingoRandomizer.Utility;
 
 // Anything configurable will be in this class.
 public static class Config {
-    public const float Chance = 0.001f;
+    public const float AddRemoveWeaponChance = 0.001f;
     // Max
     public const ushort MaxArrows = 30;
     public const ushort MaxGreatArrows = 10;
@@ -14,8 +14,8 @@ public static class Config {
     public const byte MinInt = 13;
     public const byte MinFai = 12;
     // Level Randomizer  
-    public const byte MaxStat = 13;
-    public const byte MinStat = 4;
+    public const byte MaxStat = 16;
+    public const byte MinStat = 5;
     public const float StatRollChance = 0.6f;
     // Paths
     public const string ResourcesPath = "./Resources";
