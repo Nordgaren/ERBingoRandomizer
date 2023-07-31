@@ -12,13 +12,7 @@ using static ERBingoRandomizer.Utility.Const;
 
 namespace ERBingoRandomizer.Randomizer;
 
-public struct ItemLotWeapon : IEquatable<int> {
-    public int Id;
-    public int Category;
-    public ItemLotWeapon(int id, int category) {
-        Id = id;
-        Category = category;
-    }
+public readonly record struct ItemLotWeapon(int Id, int Category) : IEquatable<int> {
     public bool Equals(int other) {
         return other == Id;
     }
