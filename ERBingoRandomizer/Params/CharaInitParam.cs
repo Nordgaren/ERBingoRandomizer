@@ -4,6 +4,7 @@ namespace ERBingoRandomizer.Params;
 
 public class CharaInitParam {
     private Cell _arrowNum;
+    private Cell _soulLv;
     private Cell _baseDex;
     private Cell _baseEnd;
     private Cell _baseFai;
@@ -34,35 +35,36 @@ public class CharaInitParam {
     private Cell _wepRight;
 
     public CharaInitParam(Row chr) {
-        _wepLeft = chr["equip_Wep_Left"].Value;
-        _wepRight = chr["equip_Wep_Right"].Value;
-        _subWepLeft = chr["equip_Subwep_Left"].Value;
-        _subWepRight = chr["equip_Subwep_Right"].Value;
-        _subWepLeft3 = chr["equip_Subwep_Left3"].Value;
-        _subWepRight3 = chr["equip_Subwep_Right3"].Value;
-        _equipHelm = chr["equip_Helm"].Value;
-        _equipArmer = chr["equip_Armer"].Value;
-        _equipGaunt = chr["equip_Gaunt"].Value;
-        _equipLeg = chr["equip_Leg"].Value;
-        _equipArrow = chr["equip_Arrow"].Value;
-        _arrowNum = chr["arrowNum"].Value;
-        _equipSubArrow = chr["equip_SubArrow"].Value;
-        _subArrowNum = chr["subArrowNum"].Value;
-        _equipBolt = chr["equip_Bolt"].Value;
-        _boltNum = chr["boltNum"].Value;
-        _equipSubBolt = chr["equip_SubBolt"].Value;
-        _subBoltNum = chr["subBoltNum"].Value;
-        _equipSpell01 = chr["equip_Spell_01"].Value;
-        _equipSpell02 = chr["equip_Spell_02"].Value;
+        _wepLeft = chr["equip_Wep_Left"]!.Value;
+        _wepRight = chr["equip_Wep_Right"]!.Value;
+        _subWepLeft = chr["equip_Subwep_Left"]!.Value;
+        _subWepRight = chr["equip_Subwep_Right"]!.Value;
+        _subWepLeft3 = chr["equip_Subwep_Left3"]!.Value;
+        _subWepRight3 = chr["equip_Subwep_Right3"]!.Value;
+        _equipHelm = chr["equip_Helm"]!.Value;
+        _equipArmer = chr["equip_Armer"]!.Value;
+        _equipGaunt = chr["equip_Gaunt"]!.Value;
+        _equipLeg = chr["equip_Leg"]!.Value;
+        _equipArrow = chr["equip_Arrow"]!.Value;
+        _arrowNum = chr["arrowNum"]!.Value;
+        _equipSubArrow = chr["equip_SubArrow"]!.Value;
+        _subArrowNum = chr["subArrowNum"]!.Value;
+        _equipBolt = chr["equip_Bolt"]!.Value;
+        _boltNum = chr["boltNum"]!.Value;
+        _equipSubBolt = chr["equip_SubBolt"]!.Value;
+        _subBoltNum = chr["subBoltNum"]!.Value;
+        _equipSpell01 = chr["equip_Spell_01"]!.Value;
+        _equipSpell02 = chr["equip_Spell_02"]!.Value;
 
-        _baseVit = chr["baseVit"].Value;
-        _baseWil = chr["baseWil"].Value;
-        _baseEnd = chr["baseEnd"].Value;
-        _baseStr = chr["baseStr"].Value;
-        _baseDex = chr["baseDex"].Value;
-        _baseMag = chr["baseMag"].Value;
-        _baseFai = chr["baseFai"].Value;
-        _baseLuc = chr["baseLuc"].Value;
+        _soulLv = chr["soulLv"]!.Value;
+        _baseVit = chr["baseVit"]!.Value;
+        _baseWil = chr["baseWil"]!.Value;
+        _baseEnd = chr["baseEnd"]!.Value;
+        _baseStr = chr["baseStr"]!.Value;
+        _baseDex = chr["baseDex"]!.Value;
+        _baseMag = chr["baseMag"]!.Value;
+        _baseFai = chr["baseFai"]!.Value;
+        _baseLuc = chr["baseLuc"]!.Value;
 
     }
     public int wepleft { get => (int)_wepLeft.Value; set => _wepLeft.Value = value; }
@@ -85,6 +87,7 @@ public class CharaInitParam {
     public ushort subBoltNum { get => (ushort)_subBoltNum.Value; set => _subBoltNum.Value = value; }
     public int equipSpell01 { get => (int)_equipSpell01.Value; set => _equipSpell01.Value = value; }
     public int equipSpell02 { get => (int)_equipSpell02.Value; set => _equipSpell02.Value = value; }
+    public short soulLv { get => (short)_soulLv.Value; set => _soulLv.Value = value; }
     public byte baseVit { get => (byte)_baseVit.Value; set => _baseVit.Value = value; }
     public byte baseWil { get => (byte)_baseWil.Value; set => _baseWil.Value = value; }
     public byte baseEnd { get => (byte)_baseEnd.Value; set => _baseEnd.Value = value; }

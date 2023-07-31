@@ -16,7 +16,9 @@ public static class Config {
     // Level Randomizer  
     public const byte MaxStat = 16;
     public const byte MinStat = 5;
-    public const float StatRollChance = 0.6f;
+    public const byte SoulLevel = 9;
+    public const byte PoolSize = 88;
+    public const float StatRollChance = 0.001f;
     // Paths
     public const string ResourcesPath = "./Resources";
     public static readonly string CachePath = $"{ExeDir}\\Cache";

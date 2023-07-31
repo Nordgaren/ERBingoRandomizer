@@ -28,7 +28,7 @@ static class CryptoUtil {
             throw new ArgumentNullException(nameof(key));
         }
 
-        AsymmetricKeyParameter keyParameter = GetKeyOrDefault(key);
+        AsymmetricKeyParameter keyParameter = getKeyOrDefault(key) ?? throw new InvalidOperationException();
         RsaEngine engine = new();
         engine.Init(false, keyParameter);
 
@@ -58,7 +58,7 @@ static class CryptoUtil {
         return outputStream;
     }
 
-    public static AsymmetricKeyParameter GetKeyOrDefault(string key) {
+    private static AsymmetricKeyParameter? getKeyOrDefault(string key) {
         try {
             PemReader pemReader = new(new StringReader(key));
             return (AsymmetricKeyParameter)pemReader.ReadObject();

@@ -24,6 +24,7 @@ public static class Const {
     public const string ItemLotParam_mapName = "ItemLotParam_map.param";
     public const string ItemLotParam_enemyName = "ItemLotParam_enemy.param";
     public const string ShopLineupParamName = "ShopLineupParam.param";
+    public const string AtkParamPcName = "AtkParam_Pc.param";
     // FMGS  
     public const string WeaponNameName = "WeaponName.fmg";
     public const string ProtectorNameName = "ProtectorName.fmg";
@@ -48,12 +49,16 @@ public static class Const {
     public const ushort BallistaBoltType = 86;
     public const byte SorceryType = 0;
     public const byte IncantationType = 1;
+    public const byte GoodsSorceryType = 5;
+    public const byte GoodsIncantationType = 16;
+    public const byte GoodsSelfSorceryType = 17;
+    public const byte GoodsSelfIncantationType = 18;
     public const ushort StaffType = 57;
     public const ushort SealType = 61;
     public static readonly string ExeDir = Environment.CurrentDirectory;
     // Level Randomizer  
     public const byte NumStats = 8;
-    
+
     // Item Lot offsets
     public const int ItemLots = 8;
     public const int CategoriesStart = 8;
@@ -63,6 +68,7 @@ public static class Const {
     public const int ItemLotCustomWeaponCategory = 6;
     // Shop Lineup constants
     public const byte ShopLineupWeaponCategory = 0;
+    public const byte ShopLineupGoodsCategory = 3;
 
     //CharaInitParam Msg Bnd Entries  
     public static readonly int[] ChrInfoMapping = {
@@ -106,7 +112,7 @@ eDbqepyJWHpP6I565ySqlol1p/BScVjbEsVyvZGtWIXLPDbx4EYFKA5B52uK6Gdz
 PHDZn03q6QDvZd23UW2d9J+/HeBt52j08+qoBXPwhndZsmPMWngQDaik6FM7EVRQ
 etKPi6h5uprVmMAS5wR/jQIVTMpTj/zJdwIEXszeQw==
 -----END RSA PUBLIC KEY-----";
-        
+
         public const string SD = @"-----BEGIN RSA PUBLIC KEY-----
 MIIBCwKCAQEAmYJ/5GJU4boJSvZ81BFOHYTGdBWPHnWYly3yWo01BYjGRnz8NTkz
 DHUxsbjIgtG5XqsQfZstZILQ97hgSI5AaAoCGrT8sn0PeXg2i0mKwL21gRjRUdvP
@@ -115,8 +121,5 @@ pdCQ3+HuoaFiJ0dW0ly5qdEXjbSv2QEYe36nWCtsd6hEY9LjbBX8D1fK3D2c6C0g
 NdHJGH2iEONUN6DMK9t0v2JBnwCOZQ7W+Gt7SpNNrkx8xKEM8gH9na10g9ne11Mi
 O1FnLm8i4zOxVdPHQBKICkKcGS1o3C2dfwIEXw/f3w==
 -----END RSA PUBLIC KEY-----";
-
     }
-
-
 }

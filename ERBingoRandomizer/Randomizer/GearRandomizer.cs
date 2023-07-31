@@ -1,4 +1,5 @@
 ﻿using ERBingoRandomizer.Params;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using static ERBingoRandomizer.Utility.Const;
@@ -10,9 +11,9 @@ namespace ERBingoRandomizer.Randomizer;
 public partial class BingoRandomizer {
     private int getRandomWeapon(int id, List<int> weapons) {
         while (true) {
-            int newWeapon = _weaponDictionary.Keys.ElementAt(_random.Next(_weaponDictionary.Keys.Count));
+            int newWeapon = weapons[_random.Next(weapons.Count)];
             if (_weaponDictionary.ContainsKey(newWeapon) && newWeapon != id) {
-                return newWeapon;
+                return removeWeaponMetadata(newWeapon);
             }
         }
     }
@@ -58,38 +59,62 @@ public partial class BingoRandomizer {
         return false;
     }
     private bool hasWeaponOfType(CharaInitParam chr, params ushort[] types) {
-        if (checkWeaponType(chr.wepRight)) {
+        if (types == null || types.Length < 1) {
+            throw new ArgumentException("types cannot be null, and must contain 1 or more values. Please pass in a valid weapon type." , nameof(types));
+        }
+        
+        if (checkWeaponType(chr.wepRight, types)) {
             return true;
         }
-        if (checkWeaponType(chr.wepleft)) {
+        if (checkWeaponType(chr.wepleft, types)) {
             return true;
         }
-        if (checkWeaponType(chr.subWepLeft)) {
+        if (checkWeaponType(chr.subWepLeft, types)) {
             return true;
         }
-        if (checkWeaponType(chr.subWepRight)) {
+        if (checkWeaponType(chr.subWepRight, types)) {
             return true;
         }
-        if (checkWeaponType(chr.subWepLeft3)) {
+        if (checkWeaponType(chr.subWepLeft3, types)) {
             return true;
         }
-        if (checkWeaponType(chr.subWepRight3)) {
+        if (checkWeaponType(chr.subWepRight3, types)) {
             return true;
         }
 
         return false;
     }
     private bool checkWeaponType(int id, params ushort[] types) {
-        if (id != -1) {
+        if (id == -1) {
             return false;
         }
-        if (_weaponDictionary.TryGetValue(id, out EquipParamWeapon wep)) {
+        if (_weaponDictionary.TryGetValue(id, out EquipParamWeapon? wep)) {
             return types.Contains(wep.wepType);
         }
 
         return false;
     }
+    private bool hasSpellOfType(CharaInitParam chr, params byte[] types) {
+        if (types == null || types.Length < 1) {
+            throw new ArgumentException("types cannot be null, and must contain 1 or more values. Please pass in a valid weapon type." , nameof(types));
+        }
+        
+        if (checkSpellType(chr.equipSpell01, types)) {
+            return true;
+        }
+        if (checkSpellType(chr.equipSpell02, types)) {
+            return true;
+        }
 
+        return false;
+    }
+    private bool checkSpellType(int id, params byte[] types) {
+        if (id == -1) {
+            return false;
+        }
+        return _magicDictionary.TryGetValue(id, out Magic? magic) && types.Contains(magic.ezStateBehaviorType);
+
+    }
     private void giveArrows(CharaInitParam chr) {
         chr.equipArrow = getRandomAmmo(ArrowType);
         chr.arrowNum = (ushort)(_random.Next() % MaxArrows);
@@ -110,41 +135,41 @@ public partial class BingoRandomizer {
         List<Row> arrows = _weaponTypeDictionary[type];
         return arrows[_random.Next() % arrows.Count].ID;
     }
-    private void randomizeSorceries(CharaInitParam chr) {
-        chr.equipSpell01 = getRandomMagic(chr, SorceryType);
+    private void randomizeSorceries(CharaInitParam chr, List<int> spells) {
+        chr.equipSpell01 = getRandomMagic(chr, SorceryType, spells);
         if (chr.equipSpell02 == -1) {
-            chr.equipSpell02 = chanceRandomMagic(chr.equipSpell02, chr, SorceryType);
+            chr.equipSpell02 = chanceRandomMagic(chr.equipSpell02, chr, SorceryType, spells);
         }
         giveRandomWeapon(chr, StaffType);
     }
-    private void randomizeIncantations(CharaInitParam chr) {
-        chr.equipSpell02 = getRandomMagic(chr, IncantationType);
+    private void randomizeIncantations(CharaInitParam chr, List<int> spells) {
+        chr.equipSpell02 = getRandomMagic(chr, IncantationType, spells);
         if (chr.equipSpell01 == -1) {
-            chr.equipSpell01 = chanceRandomMagic(chr.equipSpell01, chr, IncantationType);
+            chr.equipSpell01 = chanceRandomMagic(chr.equipSpell01, chr, IncantationType, spells);
         }
         giveRandomWeapon(chr, SealType);
     }
-    private int getRandomMagic(CharaInitParam chr, byte type) {
+    private int getRandomMagic(CharaInitParam chr, byte type, List<int> spells) {
         List<Row> table = _magicTypeDictionary[type];
         while (true) {
             int i = _random.Next() % table.Count;
             Magic entry = _magicDictionary[table[i].ID];
-            if (ChrCanUseSpell(entry, chr)) {
+            if (chrCanUseSpell(entry, chr) && spells.Contains(table[i].ID)) {
                 return table[i].ID;
             }
         }
     }
-    private int chanceRandomMagic(int id, CharaInitParam chr, byte type) {
+    private int chanceRandomMagic(int id, CharaInitParam chr, byte type, List<int> spells) {
         if (ReturnNoItem(id)) {
             return -1;
         }
 
-        return getRandomMagic(chr, type);
+        return getRandomMagic(chr, type, spells);
     }
     private void giveRandomWeapon(CharaInitParam chr, ushort type) {
-        EquipParamWeapon wep;
+        EquipParamWeapon? wep;
         if (_weaponDictionary.TryGetValue(chr.wepleft, out wep)) {
-            if (wep.wepType == type && ChrCanUseWeapon(wep, chr)) {
+            if (wep.wepType == type && chrCanUseWeapon(wep, chr)) {
                 return;
             }
         }
@@ -152,8 +177,9 @@ public partial class BingoRandomizer {
             chr.wepleft = getRandomWeapon(chr, type);
             return;
         }
+        
         if (_weaponDictionary.TryGetValue(chr.wepRight, out wep)) {
-            if (wep.wepType == type && ChrCanUseWeapon(wep, chr)) {
+            if (wep.wepType == type && chrCanUseWeapon(wep, chr)) {
                 return;
             }
         }
@@ -161,8 +187,9 @@ public partial class BingoRandomizer {
             chr.wepRight = getRandomWeapon(chr, type);
             return;
         }
+        
         if (_weaponDictionary.TryGetValue(chr.subWepLeft, out wep)) {
-            if (wep.wepType == type && ChrCanUseWeapon(wep, chr)) {
+            if (wep.wepType == type && chrCanUseWeapon(wep, chr)) {
                 return;
             }
         }
@@ -170,8 +197,9 @@ public partial class BingoRandomizer {
             chr.subWepLeft = getRandomWeapon(chr, type);
             return;
         }
+        
         if (_weaponDictionary.TryGetValue(chr.subWepRight, out wep)) {
-            if (wep.wepType == type && ChrCanUseWeapon(wep, chr)) {
+            if (wep.wepType == type && chrCanUseWeapon(wep, chr)) {
                 return;
             }
         }
@@ -179,8 +207,9 @@ public partial class BingoRandomizer {
             chr.subWepRight = getRandomWeapon(chr, type);
             return;
         }
+        
         if (_weaponDictionary.TryGetValue(chr.subWepLeft3, out wep)) {
-            if (wep.wepType == type && ChrCanUseWeapon(wep, chr)) {
+            if (wep.wepType == type && chrCanUseWeapon(wep, chr)) {
                 return;
             }
         }
@@ -188,22 +217,23 @@ public partial class BingoRandomizer {
             chr.subWepLeft3 = getRandomWeapon(chr, type);
             return;
         }
+        
         chr.subWepRight3 = getRandomWeapon(chr, type);
     }
     private int getRandomWeapon(CharaInitParam chr, ushort type) {
         List<Row> table = _weaponTypeDictionary[type];
         while (true) {
             int i = _random.Next() % table.Count;
-            EquipParamWeapon entry;
+            EquipParamWeapon? entry;
             if (_weaponDictionary.TryGetValue(table[i].ID, out entry)) {
-                if (ChrCanUseWeapon(entry, chr)) {
+                if (chrCanUseWeapon(entry, chr)) {
                     return table[i].ID;
                 }
                 continue;
             }
 
             entry = _customWeaponDictionary[table[i].ID];
-            if (ChrCanUseWeapon(entry, chr)) {
+            if (chrCanUseWeapon(entry, chr)) {
                 return table[i].ID;
             }
         }

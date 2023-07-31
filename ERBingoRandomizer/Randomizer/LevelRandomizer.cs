@@ -9,14 +9,9 @@ namespace ERBingoRandomizer.Randomizer;
 public partial class BingoRandomizer {
     private void randomizeLevels(CharaInitParam chr) {
 
-        int pool = chr.baseVit
-            + chr.baseWil
-            + chr.baseEnd
-            + chr.baseStr
-            + chr.baseDex
-            + chr.baseMag
-            + chr.baseFai
-            + chr.baseLuc;
+        chr.soulLv = SoulLevel;
+
+        int pool = PoolSize;
 
         pool -= MinStat * NumStats;
 

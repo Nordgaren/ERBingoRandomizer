@@ -16,17 +16,17 @@ public class EquipParamWeapon {
     private Cell _reinforceShopCategory;
 
     public EquipParamWeapon(Row wep) {
-        _wepType = wep["wepType"].Value;
-        _materialSetId = wep["materialSetId"].Value;
-        _reinforceTypeId = wep["reinforceTypeId"].Value;
-        _reinforceShopCategory = wep["reinforceShopCategory"].Value;
+        _wepType = wep["wepType"]!.Value;
+        _materialSetId = wep["materialSetId"]!.Value;
+        _reinforceTypeId = wep["reinforceTypeId"]!.Value;
+        _reinforceShopCategory = wep["reinforceShopCategory"]!.Value;
         //reinforceShopCategory
 
-        _properStrength = wep["properStrength"].Value;
-        _properAgility = wep["properAgility"].Value;
-        _properMagic = wep["properMagic"].Value;
-        _properFaith = wep["properFaith"].Value;
-        _properLuck = wep["properLuck"].Value;
+        _properStrength = wep["properStrength"]!.Value;
+        _properAgility = wep["properAgility"]!.Value;
+        _properMagic = wep["properMagic"]!.Value;
+        _properFaith = wep["properFaith"]!.Value;
+        _properLuck = wep["properLuck"]!.Value;
     }
 
     public ushort wepType { get => (ushort)_wepType.Value; set => _wepType.Value = value; }

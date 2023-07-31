@@ -5,6 +5,7 @@ using SoulsFormats;
 using System;
 using System.Collections.Generic;
 using System.Collections.Specialized;
+using System.Diagnostics;
 using System.IO;
 using System.Linq;
 using System.Security.Cryptography;
@@ -21,7 +22,7 @@ namespace ERBingoRandomizer.Randomizer;
 
 public partial class BingoRandomizer {
     public SeedInfo SeedInfo { get; private set; }
-    
+
     private readonly string _path;
     private readonly string _regulationPath;
     private BND4 _regulationBnd;
@@ -44,15 +45,16 @@ public partial class BingoRandomizer {
     private Param _equipParamGoods;
     private Param _equipParamProtector;
     private Param _charaInitParam;
-    private Param _magicParam;
+    private Param _goodsParam;
     private Param _itemLotParam_map;
     private Param _itemLotParam_enemy;
     private Param _shopLineupParam;
+    private Param _atkParam_Pc;
     // Dictionaries
     private Dictionary<int, EquipParamWeapon> _weaponDictionary;
     private Dictionary<int, EquipParamWeapon> _customWeaponDictionary;
     private Dictionary<int, string> _weaponNameDictionary;
-    private Dictionary<int, Row> _goodsDictionary;
+    private Dictionary<int, EquipParamGoods> _goodsDictionary;
     private Dictionary<int, Magic> _magicDictionary;
     private Dictionary<ushort, List<Row>> _weaponTypeDictionary;
     private Dictionary<byte, List<Row>> _armorTypeDictionary;
@@ -69,12 +71,17 @@ public partial class BingoRandomizer {
         _cancellationToken = cancellationToken;
     }
     public Task RandomizeRegulation() {
+        //calculateLevels();
         _randomizerLog = new List<string>();
         randomizeCharaInitParam();
         _cancellationToken.ThrowIfCancellationRequested();
         randomizeItemLotParams();
         _cancellationToken.ThrowIfCancellationRequested();
         randomizeShopLineupParam();
+        _cancellationToken.ThrowIfCancellationRequested();
+        randomizeShopLineupParamMagic();
+        _cancellationToken.ThrowIfCancellationRequested();
+        patchAtkParam();
         _cancellationToken.ThrowIfCancellationRequested();
         writeFiles();
         writeLog();
@@ -84,27 +91,108 @@ public partial class BingoRandomizer {
         File.WriteAllText(LastSeedPath, seedJson);
         return Task.CompletedTask;
     }
+    private void patchAtkParam() {
+        Row? swarmOfFlies1 = _atkParam_Pc[72100];
+        Row? swarmOfFlies2 = _atkParam_Pc[72101];
+
+        AtkParam swarmAtkParam1 = new(swarmOfFlies1 ?? throw new InvalidOperationException());
+        AtkParam swarmAtkParam2 = new(swarmOfFlies2 ?? throw new InvalidOperationException());
+        patchSpEffectAtkPowerCorrectRate(swarmAtkParam1);
+        patchSpEffectAtkPowerCorrectRate(swarmAtkParam2);
+    }
+    private void calculateLevels() {
+        for (int i = 0; i < 10; i++) {
+            Row? row = _charaInitParam[i + 3000];
+            if (row != null) {
+                CharaInitParam chr = new(row);
+
+                Debug.WriteLine($"{_menuTextFmg[i + 288100]} {chr.soulLv} {addLevels(chr)}");
+            }
+        }
+    }
+    private int addLevels(CharaInitParam chr) {
+        return chr.baseVit
+            + chr.baseWil
+            + chr.baseEnd
+            + chr.baseStr
+            + chr.baseDex
+            + chr.baseMag
+            + chr.baseFai
+            + chr.baseLuc;;
+    }
     private void randomizeCharaInitParam() {
         logItem(">>Class Randomization - All items are randomized, with each class having a .001% chance to gain or lose and item. Spells given class meets min stat requirements");
         logItem("Ammo is give if you get a ranged weapon. Catalyst is give if you have spells.\n");
-        List<int> weapons = _weaponDictionary.Keys.Select(id => removeWeaponMetadata(id)).Distinct().OrderBy(i => _random.Next()).ToList();
+        IEnumerable<int> remembranceItems = _shopLineupParam.Rows.Where(r => r.ID >= 101900 && r.ID <= 101929).Select(r => new ShopLineupParam(r).equipId);
+        List<Row> staves = _weaponTypeDictionary[StaffType];
+        List<Row> seals = _weaponTypeDictionary[SealType];
+        List<int> weapons = _weaponDictionary.Keys.Select(id => removeWeaponMetadata(id)).Distinct()
+            .Where(id => remembranceItems.All(i=> i != id)).Where(id => staves.All(s => s.ID != id) && seals.All(s => s.ID != id))
+            .OrderBy(i => _random.Next()).ToList();
+       
+        List<int> spells = _magicDictionary.Keys.Select(id => id).Distinct()
+            .Where(id => remembranceItems.All(r=> r != id))
+            .Where(id => staves.All(s => s.ID != id) && seals.All(s => s.ID != id)).OrderBy(i => _random.Next()).ToList();
+        
         for (int i = 0; i < 10; i++) {
             Row? row = _charaInitParam[i + 3000];
             if (row != null) {
                 CharaInitParam param = new(row);
-                randomizeCharaInitEntry(param, weapons);
+                randomizeCharaInitEntry(param, weapons, spells);
+                if (row.ID == 3008) {
+                    guaranteePrisonerHasSpells(param, spells);
+                }
+                if (row.ID == 3006) {
+                    guaranteeConfessorHasIncantation(param, spells);
+                }
                 logCharaInitEntry(param, i + 288100);
                 addDescriptionString(param, ChrInfoMapping[i]);
             }
         }
     }
-    private void randomizeCharaInitEntry(CharaInitParam chr, List<int> weapons) {
-        chr.wepleft = chanceGetRandomWeapon(chr.wepleft, weapons);
+    private void guaranteePrisonerHasSpells(CharaInitParam chr, List<int> spells) {
+        if (hasSpellOfType(chr, SorceryType)) {
+            return;
+        }
+        // Get a new random chr until it has the required stats.
+        while (chr.baseMag < MinInt) {
+            randomizeLevels(chr);
+        }
+        
+        chr.equipSpell01 = -1;
+        chr.equipSpell02 = -1;
+        randomizeSorceries(chr, spells);
+        
+        // Get Incantations if the new class has the requirements. 
+        // if (chr.baseFai >= MinFai) {
+        //     randomizeIncantations(chr, spells);
+        // }
+    }
+    private void guaranteeConfessorHasIncantation(CharaInitParam chr, List<int> spells) {
+        if (hasSpellOfType(chr, IncantationType)) {
+            return;
+        }
+        // Get a new random chr until it has the required stats.
+        while (chr.baseFai < MinFai) {
+            randomizeLevels(chr);
+        }
+        
+        chr.equipSpell01 = -1;
+        chr.equipSpell02 = -1;
+        randomizeIncantations(chr, spells);
+        
+        // Get Sorceries if the new class has the requirements. 
+        // if (chr.baseMag >= MinInt) {
+        //     randomizeSorceries(chr, spells);
+        // }
+    }
+    private void randomizeCharaInitEntry(CharaInitParam chr, List<int> weapons, List<int> spells) {
+        chr.wepleft = getRandomWeapon(chr.wepleft, weapons);
         chr.wepRight = getRandomWeapon(chr.wepRight, weapons);
-        chr.subWepLeft = chanceGetRandomWeapon(chr.subWepLeft, weapons);
-        chr.subWepRight = chanceGetRandomWeapon(chr.subWepRight, weapons);
-        chr.subWepLeft3 = chanceGetRandomWeapon(chr.subWepLeft3, weapons);
-        chr.subWepRight3 = chanceGetRandomWeapon(chr.subWepRight3, weapons);
+        chr.subWepLeft = -1;
+        chr.subWepRight = -1;
+        chr.subWepLeft3 = -1;
+        chr.subWepRight3 = -1;
 
         chr.equipHelm = chanceGetRandomArmor(chr.equipHelm, HelmType);
         chr.equipArmer = chanceGetRandomArmor(chr.equipArmer, BodyType);
@@ -136,12 +224,12 @@ public partial class BingoRandomizer {
 
         chr.equipSpell01 = -1;
         chr.equipSpell02 = -1;
-        if (chr.baseMag >= MinInt) {
-            randomizeSorceries(chr);
-        }
-        if (chr.baseFai >= MinFai) {
-            randomizeIncantations(chr);
-        }
+        // if (chr.baseMag >= MinInt) {
+        //     randomizeSorceries(chr, spells);
+        // }
+        // if (chr.baseFai >= MinFai) {
+        //     randomizeIncantations(chr, spells);
+        // }
     }
     private void randomizeItemLotParams() {
         OrderedDictionary categoryDictEnemy = new();
@@ -159,7 +247,7 @@ public partial class BingoRandomizer {
                 }
 
 
-                EquipParamWeapon wep;
+                EquipParamWeapon? wep;
                 int id = (int)itemIds[i].GetValue(row);
                 int sanitizedId = removeWeaponLevels(id);
                 if (category == ItemLotWeaponCategory) {
@@ -169,11 +257,11 @@ public partial class BingoRandomizer {
                         }
                         ushort chance = (ushort)chances[i].GetValue(row);
                         if (chance == totalWeight) {
-                            addToOrderedDict(categoryDictMap, wep, id);
+                            addToOrderedDict(categoryDictMap, wep.wepType, new ItemLotWeapon(id, category));
                             break;
                         }
 
-                        addToOrderedDict(categoryDictEnemy, wep, id);
+                        addToOrderedDict(categoryDictEnemy, wep.wepType, new ItemLotWeapon(id, category));
                     }
                     continue;
                 }
@@ -181,10 +269,10 @@ public partial class BingoRandomizer {
                 if (_customWeaponDictionary.TryGetValue(id, out wep)) {
                     ushort chance = (ushort)chances[i].GetValue(row);
                     if (chance == totalWeight) {
-                        addToOrderedDict(categoryDictMap, wep, id);
+                        addToOrderedDict(categoryDictMap, wep.wepType, new ItemLotWeapon(id, category));
                     }
                     else {
-                        addToOrderedDict(categoryDictEnemy, wep, id);
+                        addToOrderedDict(categoryDictEnemy, wep.wepType, new ItemLotWeapon(id, category));
                     }
                 }
 
@@ -192,11 +280,11 @@ public partial class BingoRandomizer {
             }
         }
 
-        dedupVectors(categoryDictMap);
-        dedupVectors(categoryDictEnemy);
+        dedupeAndRandomizeVectors(categoryDictMap);
+        dedupeAndRandomizeVectors(categoryDictEnemy);
 
-        Dictionary<int, int> guaranteedDropReplace = getReplacementHashmap(categoryDictMap);
-        Dictionary<int, int> chanceDropReplace = getReplacementHashmap(categoryDictEnemy);
+        Dictionary<int, ItemLotWeapon> guaranteedDropReplace = getReplacementHashmap(categoryDictMap);
+        Dictionary<int, ItemLotWeapon> chanceDropReplace = getReplacementHashmap(categoryDictEnemy);
         logItem(">>Item Replacements - all instances of item on left will be replaced with item on right");
         logReplacementDictionary(guaranteedDropReplace);
         logReplacementDictionary(chanceDropReplace);
@@ -215,23 +303,30 @@ public partial class BingoRandomizer {
                 int id = (int)itemIds[i].GetValue(row);
                 if (category == ItemLotWeaponCategory) {
                     if (_weaponDictionary.TryGetValue(removeWeaponLevels(id), out EquipParamWeapon _)) {
-                        int newId;
-                        if (guaranteedDropReplace.TryGetValue(id, out newId)) {
-                            itemIds[i].SetValue(row, newId);
+
+                        ItemLotWeapon weapon;
+                        if (guaranteedDropReplace.TryGetValue(id, out weapon)) {
+                            itemIds[i].SetValue(row, weapon.Id);
+                            categories[i].SetValue(row ,weapon.Category);
                         }
-                        else if (chanceDropReplace.TryGetValue(id, out newId)) {
-                            itemIds[i].SetValue(row, newId);
+                        else if (chanceDropReplace.TryGetValue(id, out weapon)) {
+                            itemIds[i].SetValue(row, weapon.Id);
+                            categories[i].SetValue(row, weapon.Category);
                         }
                     }
                     continue;
                 }
                 if (_customWeaponDictionary.TryGetValue(id, out EquipParamWeapon _)) {
-                    int newId;
-                    if (guaranteedDropReplace.TryGetValue(id, out newId)) {
-                        itemIds[i].SetValue(row, newId);
+                    categories[i].SetValue(row ,ItemLotCustomWeaponCategory);
+                    
+                    ItemLotWeapon weapon;
+                    if (guaranteedDropReplace.TryGetValue(id, out weapon)) {
+                        itemIds[i].SetValue(row, weapon.Id);
+                        categories[i].SetValue(row, weapon.Category);
                     }
-                    else if (chanceDropReplace.TryGetValue(id, out newId)) {
-                        itemIds[i].SetValue(row, newId);
+                    else if (chanceDropReplace.TryGetValue(id, out weapon)) {
+                        itemIds[i].SetValue(row, weapon.Id);
+                        categories[i].SetValue(row, weapon.Category);
                     }
                 }
             }
@@ -240,7 +335,7 @@ public partial class BingoRandomizer {
     private void randomizeShopLineupParam() {
         List<ShopLineupParam> shopLineupParamRemembranceList = new();
         foreach (Row row in _shopLineupParam.Rows) {
-            if ((byte)row["equipType"].Value.Value != ShopLineupWeaponCategory || row.ID < 101900 || row.ID > 101929) {
+            if ((byte)row["equipType"]!.Value.Value != ShopLineupWeaponCategory || row.ID < 101900 || row.ID > 101980) {
                 continue;
             }
 
@@ -254,20 +349,56 @@ public partial class BingoRandomizer {
             }
         }
 
-        List<int> shopLineupParamList = _weaponDictionary.Keys.Select(i => removeWeaponMetadata(i)).Distinct().OrderBy(i => _random.Next()).ToList();
+        List<int> shopLineupParamList = _weaponDictionary.Keys.Select(removeWeaponMetadata).Distinct().Where(i => shopLineupParamRemembranceList.All(s => s.equipId != i)).OrderBy(i => _random.Next()).ToList();
         shopLineupParamRemembranceList = shopLineupParamRemembranceList.OrderBy(i => _random.Next()).ToList();
         logItem(">> Shop Replacements - Random item selected from pool of all weapons (not including infused weapons). Remembrances are randomized amongst each-other.");
 
         foreach (Row row in _shopLineupParam.Rows) {
             logShopId(row.ID);
-            if ((byte)row["equipType"].Value.Value != ShopLineupWeaponCategory || row.ID > 112091) {
+            if ((byte)row["equipType"]!.Value.Value != ShopLineupWeaponCategory || row.ID > 101980) {
                 continue;
             }
 
             ShopLineupParam lot = new(row);
-            EquipParamWeapon wep;
-            if (_weaponDictionary.TryGetValue(removeWeaponLevels(lot.equipId), out wep)) {
-                replaceShopLineupParam(lot, shopLineupParamList, wep, shopLineupParamRemembranceList);
+            if (_weaponDictionary.TryGetValue(removeWeaponLevels(lot.equipId), out _)) {
+                replaceShopLineupParam(lot, shopLineupParamList, shopLineupParamRemembranceList);
+            }
+        }
+    }
+    private void randomizeShopLineupParamMagic() {
+        OrderedDictionary magicCategoryDictMap = new();
+        List<ShopLineupParam> shopLineupParamRemembranceList = new();
+        foreach (Row row in _shopLineupParam.Rows) {
+            if ((byte)row["equipType"]!.Value.Value != ShopLineupGoodsCategory || row.ID > 101980) {
+                continue;
+            }
+
+            ShopLineupParam lot = new(new Row(row));
+            if (_magicDictionary.TryGetValue(lot.equipId, out Magic? magic)) {
+                if (lot.mtrlId == -1) {
+                    addToOrderedDict(magicCategoryDictMap, magic.ezStateBehaviorType, lot);
+                    continue;
+                }
+                shopLineupParamRemembranceList.Add(lot);
+            }
+        }
+
+        for (int i = 0; i < magicCategoryDictMap.Count; i++) {
+            List<ShopLineupParam> value = (List<ShopLineupParam>)magicCategoryDictMap[i]!;
+            magicCategoryDictMap[i] = value.Where(s => shopLineupParamRemembranceList.All(r => r.equipId != s.equipId)).OrderBy(_ => _random.Next()).ToList();
+        }
+        shopLineupParamRemembranceList = shopLineupParamRemembranceList.OrderBy(i => _random.Next()).ToList();
+        logItem("\n>> Shop Magic - Random item selected from pool of all weapons (not including infused weapons). Remembrances are randomized amongst each-other.");
+
+        foreach (Row row in _shopLineupParam.Rows) {
+            logShopIdMagic(row.ID);
+            if ((byte)row["equipType"]!.Value.Value != ShopLineupGoodsCategory || row.ID > 101980) {
+                continue;
+            }
+
+            ShopLineupParam lot = new(row);
+            if (_magicDictionary.TryGetValue(lot.equipId, out Magic magic)) {
+                replaceShopLineupParamMagic(lot, magicCategoryDictMap[(object)magic.ezStateBehaviorType] as List<ShopLineupParam>, shopLineupParamRemembranceList);
             }
         }
     }

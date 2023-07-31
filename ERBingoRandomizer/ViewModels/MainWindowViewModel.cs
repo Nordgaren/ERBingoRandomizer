@@ -28,7 +28,7 @@ public class MainWindowViewModel : ViewModelBase, IDisposable {
         }
         ListBoxDisplay = new ObservableCollection<string>();
         DisplayView = CollectionViewSource.GetDefaultView(ListBoxDisplay);
-        GetNewCancellationToken();
+        getNewCancellationToken();
         _watcher = new FileSystemWatcher(ME2Path);
         _watcher.NotifyFilter = NotifyFilters.Attributes
             | NotifyFilters.CreationTime
@@ -53,13 +53,13 @@ public class MainWindowViewModel : ViewModelBase, IDisposable {
         get => _seed;
         set => SetField(ref _seed, value);
     }
-    private string? _path = Util.TryGetGameInstallLocation("\\steamapps\\common\\ELDEN RING\\Game\\eldenring.exe");
-    public string? Path {
+    private string _path = Util.TryGetGameInstallLocation("\\steamapps\\common\\ELDEN RING\\Game\\eldenring.exe") ?? string.Empty;
+    public string Path {
         get => _path;
         set => SetField(ref _path, value);
     }
     private string _randoButtonText = "Randomize";
-    public string? RandoButtonText {
+    public string RandoButtonText {
         get => _randoButtonText;
         set => SetField(ref _randoButtonText, value);
     }
@@ -166,12 +166,9 @@ public class MainWindowViewModel : ViewModelBase, IDisposable {
             PrintException(ex.InnerException);
         }
     }
-    public void GetNewCancellationToken() {
+    private void getNewCancellationToken() {
         CancellationTokenSource = new CancellationTokenSource();
         CancellationToken = CancellationTokenSource.Token;
-        CancellationToken.Register(GetNewCancellationToken);
-    }
-    private void CancelCalled() {
-        GetNewCancellationToken();
+        CancellationToken.Register(getNewCancellationToken);
     }
 }

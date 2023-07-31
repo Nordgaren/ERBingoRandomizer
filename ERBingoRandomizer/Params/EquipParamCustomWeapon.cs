@@ -8,9 +8,9 @@ public class EquipParamCustomWeapon {
     private Cell _reinforceLv;
 
     public EquipParamCustomWeapon(Row wep) {
-        _baseWepId = wep["baseWepId"].Value;
-        _gemId = wep["gemId"].Value;
-        _reinforceLv = wep["reinforceLv"].Value;
+        _baseWepId = wep["baseWepId"]!.Value;
+        _gemId = wep["gemId"]!.Value;
+        _reinforceLv = wep["reinforceLv"]!.Value;
     }
     
     public int baseWepId { get => (int)_baseWepId.Value; set => _baseWepId.Value = value; }

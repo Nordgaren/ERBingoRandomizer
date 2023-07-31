@@ -6,9 +6,7 @@ using System.Windows.Input;
 
 namespace ERBingoRandomizer.ViewModels;
 
-public class ViewModelBase : INotifyPropertyChanged {
-    private ObservableCollection<ICommand> _commands;
-
+public abstract class ViewModelBase : INotifyPropertyChanged {
     public event PropertyChangedEventHandler? PropertyChanged;
 
     protected void OnPropertyChanged([CallerMemberName]string? name = null) {

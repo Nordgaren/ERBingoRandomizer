@@ -7,20 +7,20 @@ namespace ERBingoRandomizer.Converter;
 
 public class InverseBoolToVisibilityConverter : IValueConverter {
     public object Convert(object? value, Type targetType, object? parameter, CultureInfo culture) {
-        bool val = (bool)value;
 
-        if (val == null)
-            throw new ArgumentNullException(nameof(val));
+        if (value is bool val) {
+            return val ? Visibility.Hidden : Visibility.Visible;
+        }
 
-        return val ? Visibility.Hidden : Visibility.Visible;
+        throw new ArgumentNullException(nameof(value));
     }
 
-    public object ConvertBack(object value, Type targetType, object parameter, CultureInfo culture) {
-        Visibility? visibility = (Visibility)value;
+    public object ConvertBack(object? value, Type targetType, object parameter, CultureInfo culture) {
 
-        if (visibility == null)
-            throw new ArgumentNullException(nameof(visibility));
+        if (value is Visibility visibility) {
+            return visibility == Visibility.Hidden;
+        }
 
-        return visibility == Visibility.Hidden;
+        throw new ArgumentNullException(nameof(value));
     }
 }

@@ -20,20 +20,20 @@ public class ShopLineupParam : IEquatable<int> {
     private Cell _menuTitleMsgId;
 
     public ShopLineupParam(Row lot) {
-        _equipId = lot["equipId"].Value;
-        _costType = lot["costType"].Value;
-        _mtrlId = lot["mtrlId"].Value;
-        _sellQuantity = lot["sellQuantity"].Value;
-        _setNum = lot["setNum"].Value;
-        _value = lot["value"].Value;
-        _value_Add = lot["value_Add"].Value;
-        _value_Magnification = lot["value_Magnification"].Value;
-        _eventFlag_forStock = lot["eventFlag_forStock"].Value;
-        _eventFlag_forRelease = lot["eventFlag_forRelease"].Value;
-        _iconId = lot["iconId"].Value;
-        _nameMsgId = lot["nameMsgId"].Value;
-        _menuIconId = lot["menuIconId"].Value;
-        _menuTitleMsgId = lot["menuTitleMsgId"].Value;
+        _equipId = lot["equipId"]!.Value;
+        _costType = lot["costType"]!.Value;
+        _mtrlId = lot["mtrlId"]!.Value;
+        _sellQuantity = lot["sellQuantity"]!.Value;
+        _setNum = lot["setNum"]!.Value;
+        _value = lot["value"]!.Value;
+        _value_Add = lot["value_Add"]!.Value;
+        _value_Magnification = lot["value_Magnification"]!.Value;
+        _eventFlag_forStock = lot["eventFlag_forStock"]!.Value;
+        _eventFlag_forRelease = lot["eventFlag_forRelease"]!.Value;
+        _iconId = lot["iconId"]!.Value;
+        _nameMsgId = lot["nameMsgId"]!.Value;
+        _menuIconId = lot["menuIconId"]!.Value;
+        _menuTitleMsgId = lot["menuTitleMsgId"]!.Value;
 
     }
     public int equipId { get => (int)_equipId.Value; set => _equipId.Value = value; }

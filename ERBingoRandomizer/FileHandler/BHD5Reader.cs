@@ -21,9 +21,9 @@ public class BHD5Reader {
     private static readonly string Data3CachePath = $"{CachePath}/{Data3}";
 
     private readonly BHD5 _data0;
-    private BHD5 _data1;
-    private BHD5 _data2;
-    private BHD5 _data3;
+    private readonly BHD5 _data1;
+    private readonly BHD5 _data2;
+    private readonly BHD5 _data3;
 
     private readonly Dictionary<ulong, BHDInfo> _fileDictionary;
     public BHD5Reader(string path, bool cache, CancellationToken cancellationToken) {
@@ -35,14 +35,14 @@ public class BHD5Reader {
         bool cacheExists = File.Exists(Data0CachePath);
         byte[][] msbBytes = new byte[4][];
         List<Task> tasks = new();
-        if (!cacheExists) {
-            tasks.Add(Task.Run(() => { msbBytes[0] = CryptoUtil.DecryptRsa($"{path}/{Data0}.bhd", Const.ArchiveKeys.DATA0, cancellationToken).ToArray(); }));
+        switch (cacheExists) {
+            case false:
+                tasks.Add(Task.Run(() => { msbBytes[0] = CryptoUtil.DecryptRsa($"{path}/{Data0}.bhd", Const.ArchiveKeys.DATA0, cancellationToken).ToArray(); }));
+                break;
+            default:
+                msbBytes[0] = File.ReadAllBytes(Data0CachePath);
+                break;
         }
-        else {
-            msbBytes[0] = File.ReadAllBytes(Data0CachePath);
-        }
-        cancellationToken.ThrowIfCancellationRequested();
-        ;
         // if (!File.Exists(Data1CachePath)) {
         //     tasks.Add(Task.Run(() => {
         //         msbBytes[1] = CryptoUtil.DecryptRsa($"{path}/{Data1}.bhd", Const.ArchiveKeys.DATA1).ToArray();
@@ -58,11 +58,10 @@ public class BHD5Reader {
         //         msbBytes[3] = CryptoUtil.DecryptRsa($"{path}/{Data3}.bhd", Const.ArchiveKeys.DATA3).ToArray();
         //     }));
         // }
-
         try {
-            Task.WaitAll(tasks.ToArray());
+            Task.WaitAll(tasks.ToArray(), cancellationToken);
         }
-        catch (AggregateException e) {
+        catch (AggregateException) {
             if (!cancellationToken.IsCancellationRequested) {
                 throw;
             }
@@ -79,7 +78,6 @@ public class BHD5Reader {
         // _data2 = readBHD5(msbBytes[2]);
         // _data3 = readBHD5(msbBytes[3]);
         cancellationToken.ThrowIfCancellationRequested();
-        ;
 
         _fileDictionary = new Dictionary<ulong, BHDInfo>();
         foreach (BHD5.Bucket bucket in _data0.Buckets) {
