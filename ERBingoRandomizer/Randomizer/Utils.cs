@@ -40,16 +40,28 @@ public partial class BingoRandomizer {
     private static int removeWeaponLevels(int id) {
         return id / 100 * 100;
     }
-    private Dictionary<int, ItemLotWeapon> getReplacementHashmap(OrderedDictionary orderedDictionary) {
-        Dictionary<int, ItemLotWeapon> dict = new();
+    private Dictionary<int, ItemLotEntry> getReplacementHashmap(OrderedDictionary orderedDictionary) {
+        Dictionary<int, ItemLotEntry> dict = new();
         for (int i = 0; i < orderedDictionary.Count; i++) {
-            List<ItemLotWeapon> value = (List<ItemLotWeapon>)orderedDictionary[i]!;
-            List<ItemLotWeapon> weapons = new(value);
-            foreach (ItemLotWeapon weapon in weapons) {
-                dict.Add(weapon.Id, getNewId(weapon.Id, value));
+            List<ItemLotEntry> value = (List<ItemLotEntry>)orderedDictionary[i]!;
+            List<ItemLotEntry> itemLotEntries = new(value);
+            foreach (ItemLotEntry entry in itemLotEntries) {
+                dict.Add(entry.Id, getNewId(entry.Id, value));
             }
         }
-
+        
+        return dict;
+    }
+    private Dictionary<int, ShopLineupParam> getShopReplacementHashmap(OrderedDictionary orderedDictionary) {
+        Dictionary<int, ShopLineupParam> dict = new();
+        for (int i = 0; i < orderedDictionary.Count; i++) {
+            List<ShopLineupParam> value = (List<ShopLineupParam>)orderedDictionary[i]!;
+            List<ShopLineupParam> itemLotEntries = new(value);
+            foreach (ShopLineupParam entry in itemLotEntries) {
+                dict.Add(entry.equipId, getNewId(entry.equipId, value));
+            }
+        }
+        
         return dict;
     }
     private T getNewId<T>(int oldId, List<T> vec) where T : IEquatable<int> {
@@ -68,8 +80,15 @@ public partial class BingoRandomizer {
     }
     private void dedupeAndRandomizeVectors(OrderedDictionary orderedDictionary) {
         for (int i = 0; i < orderedDictionary.Count; i++) {
-            List<ItemLotWeapon> value = (List<ItemLotWeapon>)orderedDictionary[i]!;
-            List<ItemLotWeapon> distinct = value.Distinct().ToList();
+            List<ItemLotEntry> value = (List<ItemLotEntry>)orderedDictionary[i]!;
+            List<ItemLotEntry> distinct = value.Distinct().ToList();
+            orderedDictionary[i] = distinct.OrderBy(_ => _random.Next()).ToList();
+        }
+    }
+    private void dedupeAndRandomizeShopVectors(OrderedDictionary orderedDictionary) {
+        for (int i = 0; i < orderedDictionary.Count; i++) {
+            List<ShopLineupParam> value = (List<ShopLineupParam>)orderedDictionary[i]!;
+            List<ShopLineupParam> distinct = value.Distinct().ToList();
             orderedDictionary[i] = distinct.OrderBy(_ => _random.Next()).ToList();
         }
     }
@@ -108,9 +127,9 @@ public partial class BingoRandomizer {
         logItem($"{_weaponNameDictionary[lot.equipId]} -> {_weaponNameDictionary[newRemembrance.equipId]}");
         copyShopLineupParam(lot, newRemembrance);
     }
-    private void replaceShopLineupParamMagic(ShopLineupParam lot, List<ShopLineupParam> shopLineupParamDictionary, List<ShopLineupParam> shopLineupParamRemembranceList) {
+    private void replaceShopLineupParamMagic(ShopLineupParam lot, Dictionary<int, ShopLineupParam> shopLineupParamDictionary, List<ShopLineupParam> shopLineupParamRemembranceList) {
         if (lot.mtrlId == -1) {
-            ShopLineupParam newItem = getNewId(lot.equipId, shopLineupParamDictionary);
+            ShopLineupParam newItem = shopLineupParamDictionary[lot.equipId];
             logItem($"{_goodsFmg[lot.equipId]} -> {_goodsFmg[newItem.equipId]}");
             copyShopLineupParam(lot, newItem);
             return;
@@ -189,9 +208,14 @@ public partial class BingoRandomizer {
             }
         }
     }
-    private void logReplacementDictionary(Dictionary<int, ItemLotWeapon> dict) {
-        foreach (KeyValuePair<int, ItemLotWeapon> pair in dict) {
+    private void logReplacementDictionary(Dictionary<int, ItemLotEntry> dict) {
+        foreach (KeyValuePair<int, ItemLotEntry> pair in dict) {
             logItem($"{_weaponNameDictionary[pair.Key]} -> {_weaponNameDictionary[pair.Value.Id]}");
+        }
+    }
+    private void logReplacementDictionaryMagic(Dictionary<int, ItemLotEntry> dict) {
+        foreach (KeyValuePair<int, ItemLotEntry> pair in dict) {
+            logItem($"{_goodsFmg[pair.Key]} -> {_goodsFmg[pair.Value.Id]}");
         }
     }
     private void logCharaInitEntry(CharaInitParam chr, int i) {

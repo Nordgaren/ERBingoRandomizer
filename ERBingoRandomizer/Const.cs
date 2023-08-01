@@ -64,6 +64,7 @@ public static class Const {
     public const int CategoriesStart = 8;
     public const int ChanceStart = 16;
     // Item Lot constants 
+    public const int ItemLotGoodsCategory = 1;
     public const int ItemLotWeaponCategory = 2;
     public const int ItemLotCustomWeaponCategory = 6;
     // Shop Lineup constants

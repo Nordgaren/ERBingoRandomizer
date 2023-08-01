@@ -47,7 +47,7 @@ public partial class BingoRandomizer {
     }
     private void getDefs() {
         _paramDefs = new List<PARAMDEF>();
-        string[] defs = Util.GetResources("Params/Defs");
+        string[] defs = Util.GetResourcesInFolder("Params/Defs");
         foreach (string def in defs) {
             _paramDefs.Add(Util.XmlDeserialize(def));
         }

@@ -1,9 +1,10 @@
 ﻿using System;
+using System.Collections.Generic;
 using static FSParam.Param;
 
 namespace ERBingoRandomizer.Params;
 
-public class ShopLineupParam : IEquatable<int> {
+public class ShopLineupParam : IEquatable<int>, IEquatable<ShopLineupParam> {
     private Cell _equipId;
     private Cell _costType;
     private Cell _mtrlId;
@@ -52,5 +53,11 @@ public class ShopLineupParam : IEquatable<int> {
     public int menuTitleMsgId { get => (int)_menuTitleMsgId.Value; set => _menuTitleMsgId.Value = value; }
     public bool Equals(int other) {
         return other == equipId;
+    }
+    public bool Equals(ShopLineupParam? other) {
+        return other?.equipId == equipId;
+    }
+    public override int GetHashCode() {
+        return equipId.GetHashCode();
     }
 }

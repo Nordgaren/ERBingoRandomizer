@@ -16,6 +16,7 @@ public static class ExtensionMethods {
 
         return false;
     }
+    // Because why use Queue when you can just make your own pop method?!
     public static T Pop<T>(this List<T> list) {
         T last = list.Last();
         list.RemoveAt(list.Count - 1);

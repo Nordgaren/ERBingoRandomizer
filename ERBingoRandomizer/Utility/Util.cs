@@ -101,51 +101,14 @@ static class Util {
 
         return null;
     }
-    public static string GetEmbeddedResource(string item) {
-        string resourceName = $"ERBingoRandomizer.{item}";
-        return ReadToString(resourceName);
-    }
-    public static string[] GetResources(string item) {
+    public static string[] GetResourcesInFolder(string item) {
         string[] resources = Directory.GetFiles($"{ResourcesPath}/{item}");
         return resources.Select(s => ReadToString(s)).ToArray();
-    }
-    public static byte[] GetEmbeddedResourceBytes(string item) {
-        string resourceName = $"ERBingoRandomizer.{item}";
-        return ReadToBytes(resourceName);
-    }
-    public static byte[][] GetEmbeddedFolderBytes(string item) {
-        Assembly assembly = Assembly.GetCallingAssembly();
-        string resourceName = $"ERBingoRandomizer.{item}";
-        if (!resourceName.EndsWith(".")) {
-            resourceName += ".";
-        }
-
-        string[] resources = assembly.GetManifestResourceNames();
-        List<byte[]> files = new();
-
-        foreach (string res in resources) {
-            if (res.StartsWith(resourceName)) {
-                files.Add(ReadToBytes(res));
-            }
-        }
-        return files.ToArray();
     }
     private static string ReadToString(string resourceName) {
         return File.ReadAllText(resourceName);
     }
-    private static byte[] ReadToBytes(string resourceName) {
-        Assembly assembly = Assembly.GetCallingAssembly();
-        using (Stream? stream = assembly.GetManifestResourceStream(resourceName)) {
-            if (stream == null)
-                throw new NullReferenceException($"Could not find embedded resource: {resourceName} in the {Assembly.GetCallingAssembly().GetName()} assembly");
 
-            byte[] bytes = new byte[stream.Length];
-            int read = stream.Read(bytes);
-
-            return bytes[..read];
-
-        }
-    }
     public static PARAMDEF XmlDeserialize(string xml_string) {
         XmlDocument xml = new();
         xml.LoadXml(xml_string);
