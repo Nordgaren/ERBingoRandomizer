@@ -1,7 +1,7 @@
 ﻿using ERBingoRandomizer.Params;
 using static FSParam.Param;
 using static ERBingoRandomizer.Utility.Config;
-using static ERBingoRandomizer.Utility.Const;
+using static ERBingoRandomizer.Const;
 
 
 namespace ERBingoRandomizer.Randomizer;

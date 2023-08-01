@@ -13,7 +13,7 @@ using System.Text;
 using System.Text.Json;
 using System.Threading;
 using System.Threading.Tasks;
-using static ERBingoRandomizer.Utility.Const;
+using static ERBingoRandomizer.Const;
 using static ERBingoRandomizer.Utility.Config;
 using static FSParam.Param;
 

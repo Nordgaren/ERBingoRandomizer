@@ -6,7 +6,7 @@ using System.Diagnostics;
 using System.IO;
 using System.Threading.Tasks;
 using static ERBingoRandomizer.Utility.Config;
-using static ERBingoRandomizer.Utility.Const;
+using static ERBingoRandomizer.Const;
 
 namespace ERBingoRandomizer.Commands;
 

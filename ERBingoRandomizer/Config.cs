@@ -1,4 +1,4 @@
-﻿using static ERBingoRandomizer.Utility.Const;
+﻿using static ERBingoRandomizer.Const;
 
 namespace ERBingoRandomizer.Utility;
 

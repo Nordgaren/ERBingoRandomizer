@@ -1,7 +1,7 @@
 ﻿using ERBingoRandomizer.ViewModels;
 using System.ComponentModel;
 using System.Diagnostics;
-using static ERBingoRandomizer.Utility.Const;
+using static ERBingoRandomizer.Const;
 
 namespace ERBingoRandomizer.Commands;
 

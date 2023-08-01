@@ -2,7 +2,7 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using static ERBingoRandomizer.Utility.Const;
+using static ERBingoRandomizer.Const;
 using static ERBingoRandomizer.Utility.Config;
 using static FSParam.Param;
 

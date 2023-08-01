@@ -1,8 +1,7 @@
 ﻿using System;
 using static ERBingoRandomizer.Utility.Config;
 
-namespace ERBingoRandomizer.Utility;
-
+namespace ERBingoRandomizer;
 // Non configurable constants  
 public static class Const {
     // Paths  
@@ -58,7 +57,6 @@ public static class Const {
     public static readonly string ExeDir = Environment.CurrentDirectory;
     // Level Randomizer  
     public const byte NumStats = 8;
-
     // Item Lot offsets
     public const int ItemLots = 8;
     public const int CategoriesStart = 8;
@@ -70,12 +68,10 @@ public static class Const {
     // Shop Lineup constants
     public const byte ShopLineupWeaponCategory = 0;
     public const byte ShopLineupGoodsCategory = 3;
-
     //CharaInitParam Msg Bnd Entries  
     public static readonly int[] ChrInfoMapping = {
         297130, 297131, 297132, 297133, 297134, 297135, 297138, 297136, 297137, 297139,
     };
-
     // BHD5  
     public static class ArchiveKeys {
         public const string DATA0 = @"-----BEGIN RSA PUBLIC KEY-----

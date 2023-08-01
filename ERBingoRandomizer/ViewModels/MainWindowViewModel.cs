@@ -10,7 +10,7 @@ using System.Text.Json;
 using System.Threading;
 using System.Windows.Data;
 using System.Windows.Input;
-using static ERBingoRandomizer.Utility.Const;
+using static ERBingoRandomizer.Const;
 using static ERBingoRandomizer.Utility.Config;
 
 namespace ERBingoRandomizer.ViewModels;
