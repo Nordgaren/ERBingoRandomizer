@@ -92,14 +92,13 @@ public partial class BingoRandomizer {
         }
     }
     private byte[] getOrOpenFile(string path) {
-        if (!File.Exists($"{Config.CachePath}/{path}")) {
-            byte[] file = _bhd5Reader.GetFile(path) ?? throw new InvalidOperationException($"Could not find file {Config.CachePath}/{path}");
-            Directory.CreateDirectory(Path.GetDirectoryName($"{Config.CachePath}/{path}") ?? throw new InvalidOperationException($"Could not get directory name for file {Config.CachePath}/{path}"));
-            File.WriteAllBytes($"{Config.CachePath}/{path}", file);
-            return file;
-        }
-
-        return File.ReadAllBytes($"{Config.CachePath}/{path}");
+        if (File.Exists($"{Config.CachePath}/{path}"))
+            return File.ReadAllBytes($"{Config.CachePath}/{path}");
+        
+        byte[] file = _bhd5Reader.GetFile(path) ?? throw new InvalidOperationException($"Could not find file {Config.CachePath}/{path}");
+        Directory.CreateDirectory(Path.GetDirectoryName($"{Config.CachePath}/{path}") ?? throw new InvalidOperationException($"Could not get directory name for file {Config.CachePath}/{path}"));
+        File.WriteAllBytes($"{Config.CachePath}/{path}", file);
+        return file;
     }
     private void buildDictionaries() {
         _weaponDictionary = new Dictionary<int, EquipParamWeapon>();
@@ -135,7 +134,7 @@ public partial class BingoRandomizer {
             }
         }
 
-        _customWeaponDictionary = new();
+        _customWeaponDictionary = new Dictionary<int, EquipParamWeapon>();
 
         foreach (Param.Row row in _equipParamCustomWeapon.Rows) {
             if (!_weaponDictionary.TryGetValue((int)row["baseWepId"]!.Value.Value, out EquipParamWeapon? wep)) {
