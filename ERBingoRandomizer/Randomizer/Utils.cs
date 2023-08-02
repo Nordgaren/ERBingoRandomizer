@@ -40,11 +40,12 @@ public partial class BingoRandomizer {
     private static int removeWeaponLevels(int id) {
         return id / 100 * 100;
     }
-    private Dictionary<int, ItemLotEntry> getReplacementHashmap(OrderedDictionary orderedDictionary) {
+    private Dictionary<int, ItemLotEntry> getReplacementHashmap(IOrderedDictionary orderedDictionary) {
         Dictionary<int, ItemLotEntry> dict = new();
         for (int i = 0; i < orderedDictionary.Count; i++) {
             List<ItemLotEntry> value = (List<ItemLotEntry>)orderedDictionary[i]!;
             List<ItemLotEntry> itemLotEntries = new(value);
+            itemLotEntries.Shuffle(_random);
             foreach (ItemLotEntry entry in itemLotEntries) {
                 dict.Add(entry.Id, getNewId(entry.Id, value));
             }
@@ -52,19 +53,20 @@ public partial class BingoRandomizer {
         
         return dict;
     }
-    private Dictionary<int, ShopLineupParam> getShopReplacementHashmap(OrderedDictionary orderedDictionary) {
-        Dictionary<int, ShopLineupParam> dict = new();
+    private Dictionary<int, int> getShopReplacementHashmap(IOrderedDictionary orderedDictionary) {
+        Dictionary<int, int> dict = new();
         for (int i = 0; i < orderedDictionary.Count; i++) {
-            List<ShopLineupParam> value = (List<ShopLineupParam>)orderedDictionary[i]!;
-            List<ShopLineupParam> itemLotEntries = new(value);
-            foreach (ShopLineupParam entry in itemLotEntries) {
-                dict.Add(entry.equipId, getNewId(entry.equipId, value));
+            List<int> value = (List<int>)orderedDictionary[i]!;
+            List<int> itemLotEntries = new(value);
+            itemLotEntries.Shuffle(_random);
+            foreach (int entry in itemLotEntries) {
+                dict.Add(entry, getNewId(entry, value));
             }
         }
         
         return dict;
     }
-    private T getNewId<T>(int oldId, List<T> vec) where T : IEquatable<int> {
+    private static T getNewId<T>(int oldId, IList<T> vec) where T : IEquatable<int> {
         if (vec.All(i => i.Equals(oldId))) {
             Debug.WriteLine($"No New Ids for {oldId}");
             return vec.Pop();
@@ -78,28 +80,31 @@ public partial class BingoRandomizer {
 
         return newId;
     }
-    private void dedupeAndRandomizeVectors(OrderedDictionary orderedDictionary) {
+    private void dedupeAndRandomizeVectors(IOrderedDictionary orderedDictionary) {
         for (int i = 0; i < orderedDictionary.Count; i++) {
             List<ItemLotEntry> value = (List<ItemLotEntry>)orderedDictionary[i]!;
             List<ItemLotEntry> distinct = value.Distinct().ToList();
-            orderedDictionary[i] = distinct.OrderBy(_ => _random.Next()).ToList();
+            distinct.Shuffle(_random);
+            orderedDictionary[i] = distinct;
         }
     }
-    private void dedupeAndRandomizeShopVectors(OrderedDictionary orderedDictionary) {
+    private void dedupeAndRandomizeShopVectors(IOrderedDictionary orderedDictionary) {
         for (int i = 0; i < orderedDictionary.Count; i++) {
-            List<ShopLineupParam> value = (List<ShopLineupParam>)orderedDictionary[i]!;
-            List<ShopLineupParam> distinct = value.Distinct().ToList();
-            orderedDictionary[i] = distinct.OrderBy(_ => _random.Next()).ToList();
+            List<int> value = (List<int>)orderedDictionary[i]!;
+            List<int> distinct = value.Distinct().ToList();
+            distinct.Shuffle(_random);
+            orderedDictionary[i] = distinct;
         }
     }
-    private static void addToOrderedDict<T>(OrderedDictionary orderedDict, object key, T type) {
+    // ReSharper disable once SuggestBaseTypeForParameter
+    private static void addToOrderedDict<T>(IOrderedDictionary orderedDict, object key, T type) {
         List<T>? ids = (List<T>?)orderedDict[key];
         if (ids != null) {
             ids.Add(type);
         }
         else {
             ids = new List<T> {
-                type
+                type,
             };
             orderedDict.Add(key, ids);
         }
@@ -116,7 +121,7 @@ public partial class BingoRandomizer {
             && spell.requirementFaith <= chr.baseFai
             && spell.requirementLuck <= chr.baseLuc;
     }
-    private void replaceShopLineupParam(ShopLineupParam lot, List<int> shopLineupParamDictionary, List<ShopLineupParam> shopLineupParamRemembranceList) {
+    private void replaceShopLineupParam(ShopLineupParam lot, IList<int> shopLineupParamDictionary, IList<ShopLineupParam> shopLineupParamRemembranceList) {
         if (lot.mtrlId == -1) {
             int newId = getNewId(lot.equipId, shopLineupParamDictionary);
             logItem($"{_weaponNameDictionary[lot.equipId]} -> {_weaponNameDictionary[newId]}");
@@ -127,11 +132,11 @@ public partial class BingoRandomizer {
         logItem($"{_weaponNameDictionary[lot.equipId]} -> {_weaponNameDictionary[newRemembrance.equipId]}");
         copyShopLineupParam(lot, newRemembrance);
     }
-    private void replaceShopLineupParamMagic(ShopLineupParam lot, Dictionary<int, ShopLineupParam> shopLineupParamDictionary, List<ShopLineupParam> shopLineupParamRemembranceList) {
+    private void replaceShopLineupParamMagic(ShopLineupParam lot, IReadOnlyDictionary<int, int> shopLineupParamDictionary, IList<ShopLineupParam> shopLineupParamRemembranceList) {
         if (lot.mtrlId == -1) {
-            ShopLineupParam newItem = shopLineupParamDictionary[lot.equipId];
-            logItem($"{_goodsFmg[lot.equipId]} -> {_goodsFmg[newItem.equipId]}");
-            copyShopLineupParam(lot, newItem);
+            int newItem = shopLineupParamDictionary[lot.equipId];
+            logItem($"{_goodsFmg[lot.equipId]} -> {_goodsFmg[newItem]}");
+            lot.equipId = newItem;
             return;
         }
         ShopLineupParam newRemembrance = getNewId(lot.equipId, shopLineupParamRemembranceList);
@@ -139,9 +144,10 @@ public partial class BingoRandomizer {
         copyShopLineupParam(lot, newRemembrance);
     }
     private void addDescriptionString(CharaInitParam chr, int id) {
-        List<string> str = new();
-        str.Add($"{_weaponNameDictionary[chr.wepleft]}{getRequiredLevelsWeapon(chr, chr.wepleft)}");
-        str.Add($"{_weaponNameDictionary[chr.wepRight]}{getRequiredLevelsWeapon(chr, chr.wepRight)}");
+        List<string> str = new() {
+            $"{_weaponNameDictionary[chr.wepleft]}{getRequiredLevelsWeapon(chr, chr.wepleft)}",
+            $"{_weaponNameDictionary[chr.wepRight]}{getRequiredLevelsWeapon(chr, chr.wepRight)}",
+        };
         if (chr.subWepLeft != -1) {
             str.Add($"{_weaponNameDictionary[chr.subWepLeft]}{getRequiredLevelsWeapon(chr, chr.subWepLeft)}");
         }
@@ -175,14 +181,9 @@ public partial class BingoRandomizer {
 
         _lineHelpFmg[id] = string.Join(", ", str);
     }
-    private static int getSeedFromHashData(byte[] hashData) {
+    private static int getSeedFromHashData(IEnumerable<byte> hashData) {
         IEnumerable<byte[]> chunks = hashData.Chunk(4);
-        int num = 0;
-        foreach (byte[] chunk in chunks) {
-            num ^= BitConverter.ToInt32(chunk);
-        }
-
-        return num;
+        return chunks.Aggregate(0, (current, chunk) => current ^ BitConverter.ToInt32(chunk));
     }
     private void writeFiles() {
         if (Directory.Exists(BingoPath)) {
@@ -201,21 +202,18 @@ public partial class BingoRandomizer {
         File.WriteAllBytes($"{BingoPath}/{MenuMsgBNDPath}", _menuMsgBND.Write());
 
     }
-    private static void setBndFile(BND4 files, string fileName, byte[] bytes) {
-        foreach (BinderFile file in files.Files) {
-            if (file.Name.EndsWith(fileName)) {
-                file.Bytes = bytes;
-            }
-        }
+    private static void setBndFile(IBinder binder, string fileName, byte[] bytes) {
+        BinderFile file = binder.Files.First(file => file.Name.EndsWith(fileName)) ?? throw new BinderFileNotFoundException(fileName);;
+        file.Bytes = bytes;
     }
     private void logReplacementDictionary(Dictionary<int, ItemLotEntry> dict) {
         foreach (KeyValuePair<int, ItemLotEntry> pair in dict) {
             logItem($"{_weaponNameDictionary[pair.Key]} -> {_weaponNameDictionary[pair.Value.Id]}");
         }
     }
-    private void logReplacementDictionaryMagic(Dictionary<int, ItemLotEntry> dict) {
-        foreach (KeyValuePair<int, ItemLotEntry> pair in dict) {
-            logItem($"{_goodsFmg[pair.Key]} -> {_goodsFmg[pair.Value.Id]}");
+    private void logReplacementDictionaryMagic(Dictionary<int, int> dict) {
+        foreach (KeyValuePair<int, int> pair in dict) {
+            logItem($"{_goodsFmg[pair.Key]} -> {_goodsFmg[pair.Value]}");
         }
     }
     private void logCharaInitEntry(CharaInitParam chr, int i) {
@@ -319,11 +317,8 @@ public partial class BingoRandomizer {
             reqLevels += spell.requirementLuck - chr.baseLuc;
         }
 
-        if (reqLevels > 0) {
-            return $" (-{reqLevels})";
-        }
+        return reqLevels > 0 ? $" (-{reqLevels})" : "";
 
-        return "";
     }
     private void logShopId(int rowId) {
         switch (rowId) {

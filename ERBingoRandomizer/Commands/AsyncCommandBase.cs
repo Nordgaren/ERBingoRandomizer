@@ -7,5 +7,5 @@ public abstract class AsyncCommandBase : CommandBase {
         await ExecuteAsync(parameter);
     }
 
-    public abstract Task ExecuteAsync(object? parameter);
+    protected abstract Task ExecuteAsync(object? parameter);
 }

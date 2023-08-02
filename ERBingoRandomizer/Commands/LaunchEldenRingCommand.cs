@@ -38,15 +38,15 @@ public class LaunchEldenRingCommand : CommandBase {
 
         me2.Start();
     }
-    private bool eldenRingIsOpen() {
+    private static bool eldenRingIsOpen() {
         Process[] processes = Process.GetProcesses();
         foreach (Process process in processes) {
-            if (process.ProcessName is "eldenring") {
-                if (process.HasExited) {
-                    _mwViewModel.DisplayMessage("Bingus!");
-                }
-                return true;
-            }
+            if (process.ProcessName is not "eldenring")
+                continue;
+            // if (process.HasExited) {
+            //     _mwViewModel.DisplayMessage("Elden Ring is closing!");
+            // }
+            return true;
         }
         return false;
     }

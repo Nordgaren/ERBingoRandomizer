@@ -20,7 +20,7 @@ public class PackageFilesCommand : AsyncCommandBase {
         return _mwViewModel.FilesReady && !_mwViewModel.Packaging && !_mwViewModel.InProgress;
     }
 
-    public override async Task ExecuteAsync(object? parameter) {
+    protected override async Task ExecuteAsync(object? parameter) {
         try {
             _mwViewModel.Packaging = true;
             _mwViewModel.ListBoxDisplay.Clear();;
@@ -42,19 +42,19 @@ public class PackageFilesCommand : AsyncCommandBase {
         using (ZipOutputStream stream = new(File.Create($"{PackagesPath}\\{_mwViewModel.Seed}.zip"))) {
             byte[] buffer = new byte[4096];
             foreach (string file in filenames) {
-                ZipEntry entry = new(file.Replace(ME2Path, ""));
+                ZipEntry entry = new(file.Replace(ME2Path, "")) {
+                    DateTime = DateTime.Now,
+                };
 
-                entry.DateTime = DateTime.Now;
                 stream.PutNextEntry(entry);
 
-                using (FileStream fs = File.OpenRead(file)) {
-                    int sourceBytes;
-                    do {
-                        _mwViewModel.CancellationToken.ThrowIfCancellationRequested();
-                        sourceBytes = fs.Read(buffer, 0, buffer.Length);
-                        stream.Write(buffer, 0, sourceBytes);
-                    } while (sourceBytes > 0);
-                }
+                using FileStream fs = File.OpenRead(file);
+                int sourceBytes;
+                do {
+                    _mwViewModel.CancellationToken.ThrowIfCancellationRequested();
+                    sourceBytes = fs.Read(buffer, 0, buffer.Length);
+                    stream.Write(buffer, 0, sourceBytes);
+                } while (sourceBytes > 0);
 
             }
         }

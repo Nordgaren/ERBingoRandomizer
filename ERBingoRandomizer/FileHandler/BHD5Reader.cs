@@ -102,14 +102,12 @@ public class BHD5Reader {
         // }
     }
     private static BHD5 readBHD5(string path) {
-        using (FileStream fs = new(path, FileMode.Open)) {
-            return BHD5.Read(fs, BHD5.Game.EldenRing);
-        }
+        using FileStream fs = new(path, FileMode.Open);
+        return BHD5.Read(fs, BHD5.Game.EldenRing);
     }
     private static BHD5 readBHD5(byte[] bytes) {
-        using (MemoryStream fs = new(bytes)) {
-            return BHD5.Read(fs, BHD5.Game.EldenRing);
-        }
+        using MemoryStream fs = new(bytes);
+        return BHD5.Read(fs, BHD5.Game.EldenRing);
     }
     public byte[]? GetFile(string filePath) {
         ulong hash = Util.ComputeHash(filePath, BHD5.Game.EldenRing);

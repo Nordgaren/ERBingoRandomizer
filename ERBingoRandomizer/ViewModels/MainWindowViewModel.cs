@@ -27,7 +27,7 @@ public class MainWindowViewModel : ViewModelBase, IDisposable {
             LastSeed = File.Exists(LastSeedPath) ? JsonSerializer.Deserialize<SeedInfo>(File.ReadAllText(LastSeedPath)) : null;
         }
         ListBoxDisplay = new ObservableCollection<string>();
-        DisplayView = CollectionViewSource.GetDefaultView(ListBoxDisplay);
+        MessageDisplayView = CollectionViewSource.GetDefaultView(ListBoxDisplay);
         getNewCancellationToken();
         _watcher = new FileSystemWatcher(ME2Path);
         _watcher.NotifyFilter = NotifyFilters.Attributes
@@ -91,19 +91,19 @@ public class MainWindowViewModel : ViewModelBase, IDisposable {
     public ICommand LaunchEldenRing { get; }
     public ICommand PackageFiles { get; }
     public ICommand Cancel { get; }
-    private ObservableCollection<string> _listBoxDisplay;
+    private readonly ObservableCollection<string> _listBoxDisplay;
     public ObservableCollection<string> ListBoxDisplay {
         get => _listBoxDisplay;
-        set {
+        private init {
             if (SetField(ref _listBoxDisplay, value)) {
-                OnPropertyChanged(nameof(DisplayView));
+                OnPropertyChanged(nameof(MessageDisplayView));
             }
         }
     }
     public void DisplayMessage(string message) {
         ListBoxDisplay.Add(message);
     }
-    public ICollectionView DisplayView { get; }
+    public ICollectionView MessageDisplayView { get; }
 
     public CancellationTokenSource CancellationTokenSource { get; private set; }
     public CancellationToken CancellationToken { get; private set; }
@@ -119,6 +119,7 @@ public class MainWindowViewModel : ViewModelBase, IDisposable {
         }
     }
     public void Dispose() {
+        GC.SuppressFinalize(this);
         _watcher.Dispose();
     }
     private void OnChanged(object sender, FileSystemEventArgs e) {
@@ -153,17 +154,19 @@ public class MainWindowViewModel : ViewModelBase, IDisposable {
         FilesReady = AllFilesReady();
     }
 
-    private void OnError(object sender, ErrorEventArgs e) {
+    private static void OnError(object sender, ErrorEventArgs e) {
         PrintException(e.GetException());
     }
 
     private static void PrintException(Exception? ex) {
-        if (ex != null) {
+        while (true) {
+            if (ex == null)
+                return;
             Debug.WriteLine($"Message: {ex.Message}");
             Debug.WriteLine("Stacktrace:");
             Debug.WriteLine(ex.StackTrace);
             Debug.WriteLine("");
-            PrintException(ex.InnerException);
+            ex = ex.InnerException;
         }
     }
     private void getNewCancellationToken() {

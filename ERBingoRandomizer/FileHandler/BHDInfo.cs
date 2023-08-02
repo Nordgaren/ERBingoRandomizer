@@ -18,11 +18,10 @@ public class BHDInfo {
         BHD5.Bucket bucket = _bhd.Buckets[(int)(hash % (ulong)_bhd.Buckets.Count)];
 
         foreach (BHD5.FileHeader header in bucket) {
-            if (header.FileNameHash == hash) {
-                using (FileStream fs = new(_bdtPath, FileMode.Open)) {
-                    return header.ReadFile(fs);
-                }
-            }
+            if (header.FileNameHash != hash)
+                continue;
+            using FileStream fs = new(_bdtPath, FileMode.Open);
+            return header.ReadFile(fs);
         }
 
         return null;

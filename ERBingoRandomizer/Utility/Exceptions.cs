@@ -13,3 +13,9 @@ public class InvalidFileException : Exception {
 
     public InvalidFileException(string filePath, Exception inner) : base($"Could not find file {filePath}", inner) { }
 }
+
+public class BinderFileNotFoundException : Exception {
+    public BinderFileNotFoundException(string filePath) : base($"Could not find binder file file {filePath}") { }
+
+    public BinderFileNotFoundException(string filePath, Exception inner) : base($"Could not find binder file file {filePath}", inner) { }
+}

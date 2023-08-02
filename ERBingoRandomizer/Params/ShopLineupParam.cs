@@ -60,4 +60,9 @@ public class ShopLineupParam : IEquatable<int>, IEquatable<ShopLineupParam> {
     public override int GetHashCode() {
         return equipId.GetHashCode();
     }
+
+    public override bool Equals(object? obj)
+    {
+        return Equals(obj as ShopLineupParam);
+    }
 }

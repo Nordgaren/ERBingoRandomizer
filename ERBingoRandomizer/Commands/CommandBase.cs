@@ -18,10 +18,10 @@ public abstract class CommandBase : ICommand, INotifyPropertyChanged {
     public event PropertyChangedEventHandler? PropertyChanged;
 
     protected void OnCanExecuteChanged() {
-        Application.Current.Dispatcher.Invoke(() => { CanExecuteChanged?.Invoke(this, new EventArgs()); });
+        Application.Current.Dispatcher.Invoke(() => { CanExecuteChanged?.Invoke(this, EventArgs.Empty); });
     }
 
-    protected void OnPropertyChanged([CallerMemberName]string? name = null) {
+    private void OnPropertyChanged([CallerMemberName]string? name = null) {
         PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(name));
     }
 

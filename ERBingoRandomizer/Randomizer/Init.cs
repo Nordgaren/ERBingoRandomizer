@@ -56,7 +56,7 @@ public partial class BingoRandomizer {
         _oodlePtr = IntPtr.Zero;
         return Task.CompletedTask;
     }
-    private bool allCacheFilesExist() {
+    private static bool allCacheFilesExist() {
         return File.Exists(ItemMsgBNDPath) && File.Exists(MenuMsgBNDPath);
     }
     private void getDefs() {
@@ -73,22 +73,22 @@ public partial class BingoRandomizer {
         }
     }
     private void getFmgs() {
-        byte[] itemMsgBNDBytes = getOrOpenFile(ItemMsgBNDPath);
-        if (itemMsgBNDBytes == null) {
+        byte[] itemMsgBndBytes = getOrOpenFile(ItemMsgBNDPath);
+        if (itemMsgBndBytes == null) {
             throw new InvalidFileException(ItemMsgBNDPath);
         }
-        BND4 itemBnd = BND4.Read(itemMsgBNDBytes);
+        BND4 itemBnd = BND4.Read(itemMsgBndBytes);
         foreach (BinderFile file in itemBnd.Files) {
             getFmgs(file);
         }
 
         _cancellationToken.ThrowIfCancellationRequested();
 
-        byte[] menuMsgBNDBytes = getOrOpenFile(MenuMsgBNDPath);
-        if (itemMsgBNDBytes == null) {
+        byte[] menuMsgBndBytes = getOrOpenFile(MenuMsgBNDPath);
+        if (itemMsgBndBytes == null) {
             throw new InvalidFileException(MenuMsgBNDPath);
         }
-        _menuMsgBND = BND4.Read(menuMsgBNDBytes);
+        _menuMsgBND = BND4.Read(menuMsgBndBytes);
         foreach (BinderFile file in _menuMsgBND.Files) {
             getFmgs(file);
         }
@@ -126,13 +126,13 @@ public partial class BingoRandomizer {
                 _weaponDictionary.Add(row.ID, new EquipParamWeapon(row));
             }
 
-            List<Row>? rows;
-            if (_weaponTypeDictionary.TryGetValue(wep.wepType, out rows)) {
+            if (_weaponTypeDictionary.TryGetValue(wep.wepType, out List<Row>? rows)) {
                 rows.Add(row);
             }
             else {
-                rows = new List<Row>();
-                rows.Add(row);
+                rows = new List<Row> {
+                    row,
+                };
                 _weaponTypeDictionary.Add(wep.wepType, rows);
             }
         }
@@ -157,8 +157,7 @@ public partial class BingoRandomizer {
             }
 
             byte protectorCategory = (byte)row["protectorCategory"]!.Value.Value;
-            List<Row>? rows;
-            if (_armorTypeDictionary.TryGetValue(protectorCategory, out rows)) {
+            if (_armorTypeDictionary.TryGetValue(protectorCategory, out List<Row>? rows)) {
                 rows.Add(row);
             }
             else {
@@ -185,7 +184,7 @@ public partial class BingoRandomizer {
         _magicTypeDictionary = new Dictionary<byte, List<Row>>();
         foreach (Row row in _goodsParam.Rows) {
             string rowString = _goodsFmg[row.ID];
-            if (!_goodsDictionary.TryGetValue(row.ID, out EquipParamGoods good) || string.IsNullOrWhiteSpace(rowString) || rowString.ToLower().Contains("[error]")) {
+            if (!_goodsDictionary.TryGetValue(row.ID, out EquipParamGoods? good) || string.IsNullOrWhiteSpace(rowString) || rowString.ToLower().Contains("[error]")) {
                 continue;
             }
 
@@ -195,18 +194,18 @@ public partial class BingoRandomizer {
 
             Magic magic = new(row);
             _magicDictionary.Add(row.ID, magic);
-            List<Row>? rows;
-            if (_magicTypeDictionary.TryGetValue(magic.ezStateBehaviorType, out rows)) {
+            if (_magicTypeDictionary.TryGetValue(magic.ezStateBehaviorType, out List<Row>? rows)) {
                 rows.Add(row);
             }
             else {
-                rows = new List<Row>();
-                rows.Add(row);
+                rows = new List<Row> {
+                    row,
+                };
                 _magicTypeDictionary.Add(magic.ezStateBehaviorType, rows);
             }
         }
     }
-    private bool isSpellGoods(EquipParamGoods good) {
+    private static bool isSpellGoods(EquipParamGoods good) {
         switch (good.goodsType) {
             case GoodsSorceryType:
             case GoodsIncantationType:

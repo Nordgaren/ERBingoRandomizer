@@ -26,7 +26,7 @@ static class Util {
         "ELDEN RING",
         "Sekiro",
     };
-    public static int DeleteFromEnd(int num, int n) {
+    private static int DeleteFromEnd(int num, int n) {
         for (int i = 1; num != 0; i++) {
             num /= 10;
 
@@ -62,13 +62,13 @@ static class Util {
             return null;
 
         string[] libraryFolders = File.ReadAllLines($@"{steamPath}/SteamApps/libraryfolders.vdf");
-        char[] seperator = { '\t' };
+        char[] separator = { '\t' };
 
         foreach (string line in libraryFolders) {
             if (!line.Contains("\"path\""))
                 continue;
 
-            string[] split = line.Split(seperator, StringSplitOptions.RemoveEmptyEntries);
+            string[] split = line.Split(separator, StringSplitOptions.RemoveEmptyEntries);
             string libPath = split.FirstOrDefault(x => x.ToLower().Contains("steam"))?.Replace("\"", "").Replace("\\\\", "\\") ?? string.Empty;
             string libraryPath = libPath + gamePath;
 
@@ -79,7 +79,7 @@ static class Util {
         return null;
     }
 
-    public static string? GetSteamInstallPath() {
+    private static string? GetSteamInstallPath() {
         string? installPath = null;
 
         foreach ((string Path, string Value) pathValueTuple in _pathValueTuple) {
@@ -103,15 +103,15 @@ static class Util {
     }
     public static string[] GetResourcesInFolder(string item) {
         string[] resources = Directory.GetFiles($"{ResourcesPath}/{item}");
-        return resources.Select(s => ReadToString(s)).ToArray();
+        return resources.Select(ReadToString).ToArray();
     }
     private static string ReadToString(string resourceName) {
         return File.ReadAllText(resourceName);
     }
 
-    public static PARAMDEF XmlDeserialize(string xml_string) {
+    public static PARAMDEF XmlDeserialize(string xmlString) {
         XmlDocument xml = new();
-        xml.LoadXml(xml_string);
+        xml.LoadXml(xmlString);
         return PARAMDEF.XmlSerializer.Deserialize(xml);
     }
     public static ulong ComputeHash(string path, BHD5.Game game) {
@@ -121,8 +121,8 @@ static class Util {
         return game >= BHD5.Game.EldenRing ? hashable.Aggregate(0ul, (i, c) => i * PRIME64 + c) : hashable.Aggregate(0u, (i, c) => i * PRIME + c);
     }
     public static string SplitCharacterText(bool useSpaces, List<string> items) {
-        int lineCount = 3;
-        int sizeLimit = 250;
+        const int lineCount = 3;
+        const int sizeLimit = 250;
         // Pick some generic serif font to approximate Garamond
         Font f = new("Times New Roman", 12);
         // Hardcode this for the time being

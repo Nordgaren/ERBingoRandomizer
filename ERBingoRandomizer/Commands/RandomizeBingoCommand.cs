@@ -21,7 +21,7 @@ public class RandomizeBingoCommand : AsyncCommandBase {
             && _mwViewModel.Path.ToLower().EndsWith(ExeName)
             && File.Exists(_mwViewModel.Path);
     }
-    public override async Task ExecuteAsync(object? parameter) {
+    protected override async Task ExecuteAsync(object? parameter) {
         _mwViewModel.ListBoxDisplay.Clear();;
         _mwViewModel.DisplayMessage("Randomizing Elden Ring Regulation");
         _mwViewModel.InProgress = true;
