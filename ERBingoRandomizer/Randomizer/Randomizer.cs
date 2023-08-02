@@ -102,12 +102,10 @@ public partial class BingoRandomizer {
             logCharaInitEntry(param, i + 288100);
             addDescriptionString(param, Const.ChrInfoMapping[i]);
         }
-        Param.Row? prisoner = _charaInitParam[3008];
-        if (prisoner != null)
-            guaranteePrisonerHasSpells(new CharaInitParam(prisoner), spells);
-        Param.Row? confessor = _charaInitParam[3006];
-        if (confessor != null)
-            guaranteeConfessorHasIncantation(new CharaInitParam(confessor), spells);
+        Param.Row prisoner = _charaInitParam[3008] ?? throw new InvalidOperationException("Prisoner entry (3008) not found in CharaInitParam");
+        guaranteePrisonerHasSpells(new CharaInitParam(prisoner), spells);
+        Param.Row confessor = _charaInitParam[3006] ?? throw new InvalidOperationException("Confessor entry (3006) not found in CharaInitParam");
+        guaranteeConfessorHasIncantation(new CharaInitParam(confessor), spells);
     }
     private void randomizeItemLotParams() {
         OrderedDictionary categoryDictEnemy = new();
@@ -230,7 +228,7 @@ public partial class BingoRandomizer {
             int sanitizedId = removeWeaponLevels(lot.equipId);
             if (!_weaponDictionary.TryGetValue(sanitizedId, out _))
                 continue;
-            
+
             if (lot.equipId != sanitizedId) {
                 _weaponNameDictionary[lot.equipId] = $"{_weaponNameDictionary[sanitizedId]} +{lot.equipId - sanitizedId}";
             }
@@ -245,7 +243,7 @@ public partial class BingoRandomizer {
             .ToList();
         shopLineupParamList.Shuffle(_random);
         shopLineupParamRemembranceList.Shuffle(_random);
-        
+
         logItem(">> Shop Replacements - Random item selected from pool of all weapons (not including infused weapons). Remembrances are randomized amongst each-other.");
 
         foreach (Param.Row row in _shopLineupParam.Rows) {
