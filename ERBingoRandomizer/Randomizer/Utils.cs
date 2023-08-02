@@ -7,8 +7,6 @@ using System.Collections.Specialized;
 using System.Diagnostics;
 using System.IO;
 using System.Linq;
-using static ERBingoRandomizer.Utility.Config;
-using static ERBingoRandomizer.Const;
 
 namespace ERBingoRandomizer.Randomizer;
 
@@ -18,8 +16,8 @@ public partial class BingoRandomizer {
         _randomizerLog.Add(item);
     }
     private void writeLog() {
-        Directory.CreateDirectory(SpoilerPath);
-        File.WriteAllLines($"{SpoilerPath}/spoiler-{_seed}.log", _randomizerLog);
+        Directory.CreateDirectory(Config.SpoilerPath);
+        File.WriteAllLines($"{Config.SpoilerPath}/spoiler-{_seed}.log", _randomizerLog);
     }
     private static void copyShopLineupParam(ShopLineupParam lot, ShopLineupParam shopLineupParam) {
         lot.equipId = shopLineupParam.equipId;
@@ -186,20 +184,20 @@ public partial class BingoRandomizer {
         return chunks.Aggregate(0, (current, chunk) => current ^ BitConverter.ToInt32(chunk));
     }
     private void writeFiles() {
-        if (Directory.Exists(BingoPath)) {
-            Directory.Delete(BingoPath, true);
+        if (Directory.Exists(Const.BingoPath)) {
+            Directory.Delete(Const.BingoPath, true);
         }
-        Directory.CreateDirectory(Path.GetDirectoryName($"{BingoPath}/{RegulationName}") ?? throw new InvalidOperationException());
-        setBndFile(_regulationBnd, CharaInitParamName, _charaInitParam.Write());
-        setBndFile(_regulationBnd, ItemLotParam_mapName, _itemLotParam_map.Write());
-        setBndFile(_regulationBnd, ItemLotParam_enemyName, _itemLotParam_enemy.Write());
-        setBndFile(_regulationBnd, ShopLineupParamName, _shopLineupParam.Write());
-        setBndFile(_regulationBnd, EquipParamWeaponName, _equipParamWeapon.Write());
-        setBndFile(_regulationBnd, AtkParamPcName, _atkParam_Pc.Write());
-        SFUtil.EncryptERRegulation($"{BingoPath}/{RegulationName}", _regulationBnd);
-        Directory.CreateDirectory(Path.GetDirectoryName($"{BingoPath}/{MenuMsgBNDPath}") ?? throw new InvalidOperationException());
-        setBndFile(_menuMsgBND, GR_LineHelpName, _lineHelpFmg.Write());
-        File.WriteAllBytes($"{BingoPath}/{MenuMsgBNDPath}", _menuMsgBND.Write());
+        Directory.CreateDirectory(Path.GetDirectoryName($"{Const.BingoPath}/{Const.RegulationName}") ?? throw new InvalidOperationException());
+        setBndFile(_regulationBnd, Const.CharaInitParamName, _charaInitParam.Write());
+        setBndFile(_regulationBnd, Const.ItemLotParam_mapName, _itemLotParam_map.Write());
+        setBndFile(_regulationBnd, Const.ItemLotParam_enemyName, _itemLotParam_enemy.Write());
+        setBndFile(_regulationBnd, Const.ShopLineupParamName, _shopLineupParam.Write());
+        setBndFile(_regulationBnd, Const.EquipParamWeaponName, _equipParamWeapon.Write());
+        setBndFile(_regulationBnd, Const.AtkParamPcName, _atkParam_Pc.Write());
+        SFUtil.EncryptERRegulation($"{Const.BingoPath}/{Const.RegulationName}", _regulationBnd);
+        Directory.CreateDirectory(Path.GetDirectoryName($"{Const.BingoPath}/{Const.MenuMsgBNDPath}") ?? throw new InvalidOperationException());
+        setBndFile(_menuMsgBND, Const.GR_LineHelpName, _lineHelpFmg.Write());
+        File.WriteAllBytes($"{Const.BingoPath}/{Const.MenuMsgBNDPath}", _menuMsgBND.Write());
 
     }
     private static void setBndFile(IBinder binder, string fileName, byte[] bytes) {

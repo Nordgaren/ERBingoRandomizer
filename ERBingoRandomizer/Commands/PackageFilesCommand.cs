@@ -1,12 +1,11 @@
-﻿using ERBingoRandomizer.ViewModels;
+﻿using ERBingoRandomizer.Utility;
+using ERBingoRandomizer.ViewModels;
 using ICSharpCode.SharpZipLib.Zip;
 using System;
 using System.ComponentModel;
 using System.Diagnostics;
 using System.IO;
 using System.Threading.Tasks;
-using static ERBingoRandomizer.Utility.Config;
-using static ERBingoRandomizer.Const;
 
 namespace ERBingoRandomizer.Commands;
 
@@ -26,7 +25,7 @@ public class PackageFilesCommand : AsyncCommandBase {
             _mwViewModel.ListBoxDisplay.Clear();;
             _mwViewModel.DisplayMessage($"Packaging seed {_mwViewModel.Seed}");
             await Task.Run(PackageFiles);
-            Process.Start("explorer.exe", $"{PackagesPath}");
+            Process.Start("explorer.exe", $"{Config.PackagesPath}");
         }
         catch (OperationCanceledException) {
             _mwViewModel.DisplayMessage("Packaging Canceled");
@@ -37,12 +36,12 @@ public class PackageFilesCommand : AsyncCommandBase {
     }
 
     private Task PackageFiles() {
-        string[] filenames = Directory.GetFiles(ME2Path, "*", SearchOption.AllDirectories);
-        Directory.CreateDirectory(PackagesPath);
-        using (ZipOutputStream stream = new(File.Create($"{PackagesPath}\\{_mwViewModel.Seed}.zip"))) {
+        string[] filenames = Directory.GetFiles(Const.ME2Path, "*", SearchOption.AllDirectories);
+        Directory.CreateDirectory(Config.PackagesPath);
+        using (ZipOutputStream stream = new(File.Create($"{Config.PackagesPath}\\{_mwViewModel.Seed}.zip"))) {
             byte[] buffer = new byte[4096];
             foreach (string file in filenames) {
-                ZipEntry entry = new(file.Replace(ME2Path, "")) {
+                ZipEntry entry = new(file.Replace(Const.ME2Path, "")) {
                     DateTime = DateTime.Now,
                 };
 

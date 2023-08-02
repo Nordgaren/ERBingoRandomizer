@@ -1,16 +1,16 @@
-﻿using static FSParam.Param;
+﻿using FSParam;
 
 
 namespace ERBingoRandomizer.Params;
 
 public class Magic {
-    private Cell _ezStateBehaviorType;
-    private Cell _requirementFaith;
+    private Param.Cell _ezStateBehaviorType;
+    private Param.Cell _requirementFaith;
 
-    private Cell _requirementIntellect;
-    private Cell _requirementLuck;
+    private Param.Cell _requirementIntellect;
+    private Param.Cell _requirementLuck;
 
-    public Magic(Row magic) {
+    public Magic(Param.Row magic) {
         _ezStateBehaviorType = magic["ezStateBehaviorType"]!.Value;
 
         _requirementIntellect = magic["requirementIntellect"]!.Value;

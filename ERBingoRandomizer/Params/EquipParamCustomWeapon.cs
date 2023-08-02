@@ -1,13 +1,13 @@
-﻿using static FSParam.Param;
+﻿using FSParam;
 
 namespace ERBingoRandomizer.Params; 
 
 public class EquipParamCustomWeapon {
-    private Cell _baseWepId;
-    private Cell _gemId;
-    private Cell _reinforceLv;
+    private Param.Cell _baseWepId;
+    private Param.Cell _gemId;
+    private Param.Cell _reinforceLv;
 
-    public EquipParamCustomWeapon(Row wep) {
+    public EquipParamCustomWeapon(Param.Row wep) {
         _baseWepId = wep["baseWepId"]!.Value;
         _gemId = wep["gemId"]!.Value;
         _reinforceLv = wep["reinforceLv"]!.Value;

@@ -1,11 +1,4 @@
-﻿using ERBingoRandomizer.Randomizer;
-using ERBingoRandomizer.Utility;
-using SoulsFormats.AC4;
-using System.Collections.Generic;
-using System.Diagnostics;
-using System.IO;
-using System.Threading;
-using System.Windows;
+﻿using System.Windows;
 
 namespace ERBingoRandomizer {
     /// <summary>

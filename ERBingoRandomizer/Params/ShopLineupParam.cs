@@ -1,26 +1,25 @@
 ﻿using System;
-using System.Collections.Generic;
-using static FSParam.Param;
+using FSParam;
 
 namespace ERBingoRandomizer.Params;
 
 public class ShopLineupParam : IEquatable<int>, IEquatable<ShopLineupParam> {
-    private Cell _equipId;
-    private Cell _costType;
-    private Cell _mtrlId;
-    private Cell _sellQuantity;
-    private Cell _setNum;
-    private Cell _value;
-    private Cell _value_Add;
-    private Cell _value_Magnification;
-    private Cell _eventFlag_forStock;
-    private Cell _eventFlag_forRelease;
-    private Cell _iconId;
-    private Cell _nameMsgId;
-    private Cell _menuIconId;
-    private Cell _menuTitleMsgId;
+    private Param.Cell _equipId;
+    private Param.Cell _costType;
+    private Param.Cell _mtrlId;
+    private Param.Cell _sellQuantity;
+    private Param.Cell _setNum;
+    private Param.Cell _value;
+    private Param.Cell _value_Add;
+    private Param.Cell _value_Magnification;
+    private Param.Cell _eventFlag_forStock;
+    private Param.Cell _eventFlag_forRelease;
+    private Param.Cell _iconId;
+    private Param.Cell _nameMsgId;
+    private Param.Cell _menuIconId;
+    private Param.Cell _menuTitleMsgId;
 
-    public ShopLineupParam(Row lot) {
+    public ShopLineupParam(Param.Row lot) {
         _equipId = lot["equipId"]!.Value;
         _costType = lot["costType"]!.Value;
         _mtrlId = lot["mtrlId"]!.Value;

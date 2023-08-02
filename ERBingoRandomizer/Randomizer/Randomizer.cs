@@ -10,13 +10,8 @@ using System.Diagnostics;
 using System.IO;
 using System.Linq;
 using System.Security.Cryptography;
-using System.Text;
 using System.Text.Json;
-using System.Threading;
 using System.Threading.Tasks;
-using static ERBingoRandomizer.Const;
-using static ERBingoRandomizer.Utility.Config;
-using static FSParam.Param;
 
 
 namespace ERBingoRandomizer.Randomizer;
@@ -57,9 +52,9 @@ public partial class BingoRandomizer {
     private Dictionary<int, string> _weaponNameDictionary;
     private Dictionary<int, EquipParamGoods> _goodsDictionary;
     private Dictionary<int, Magic> _magicDictionary;
-    private Dictionary<ushort, List<Row>> _weaponTypeDictionary;
-    private Dictionary<byte, List<Row>> _armorTypeDictionary;
-    private Dictionary<byte, List<Row>> _magicTypeDictionary;
+    private Dictionary<ushort, List<Param.Row>> _weaponTypeDictionary;
+    private Dictionary<byte, List<Param.Row>> _armorTypeDictionary;
+    private Dictionary<byte, List<Param.Row>> _magicTypeDictionary;
     public Task RandomizeRegulation() {
         //calculateLevels();
         _randomizerLog = new List<string>();
@@ -76,14 +71,14 @@ public partial class BingoRandomizer {
         writeFiles();
         writeLog();
         SeedInfo = new SeedInfo(_seed,
-            BitConverter.ToString(SHA256.HashData(File.ReadAllBytes($"{BingoPath}/{RegulationName}"))).Replace("-", ""));
+            BitConverter.ToString(SHA256.HashData(File.ReadAllBytes($"{Const.BingoPath}/{Const.RegulationName}"))).Replace("-", ""));
         string seedJson = JsonSerializer.Serialize(SeedInfo);
-        File.WriteAllText(LastSeedPath, seedJson);
+        File.WriteAllText(Config.LastSeedPath, seedJson);
         return Task.CompletedTask;
     }
     private void patchAtkParam() {
-        Row? swarmOfFlies1 = _atkParam_Pc[72100];
-        Row? swarmOfFlies2 = _atkParam_Pc[72101];
+        Param.Row? swarmOfFlies1 = _atkParam_Pc[72100];
+        Param.Row? swarmOfFlies2 = _atkParam_Pc[72101];
 
         AtkParam swarmAtkParam1 = new(swarmOfFlies1 ?? throw new InvalidOperationException());
         AtkParam swarmAtkParam2 = new(swarmOfFlies2 ?? throw new InvalidOperationException());
@@ -92,7 +87,7 @@ public partial class BingoRandomizer {
     }
     private void calculateLevels() {
         for (int i = 0; i < 10; i++) {
-            Row? row = _charaInitParam[i + 3000];
+            Param.Row? row = _charaInitParam[i + 3000];
             if (row == null)
                 continue;
             CharaInitParam chr = new(row);
@@ -115,8 +110,8 @@ public partial class BingoRandomizer {
         logItem(">>Class Randomization - All items are randomized, with each class having a .001% chance to gain or lose and item. Spells given class meets min stat requirements");
         logItem("Ammo is give if you get a ranged weapon. Catalyst is give if you have spells.\n");
         IEnumerable<int> remembranceItems = _shopLineupParam.Rows.Where(r => r.ID is >= 101900 and <= 101929).Select(r => new ShopLineupParam(r).equipId);
-        List<Row> staves = _weaponTypeDictionary[StaffType];
-        List<Row> seals = _weaponTypeDictionary[SealType];
+        List<Param.Row> staves = _weaponTypeDictionary[Const.StaffType];
+        List<Param.Row> seals = _weaponTypeDictionary[Const.SealType];
         List<int> weapons = _weaponDictionary.Keys.Select(removeWeaponMetadata).Distinct()
             .Where(id => remembranceItems.All(i => i != id))
             .Where(id => staves.All(s => s.ID != id) && seals.All(s => s.ID != id))
@@ -129,27 +124,27 @@ public partial class BingoRandomizer {
         spells.Shuffle(_random);
 
         for (int i = 0; i < 10; i++) {
-            Row? row = _charaInitParam[i + 3000];
+            Param.Row? row = _charaInitParam[i + 3000];
             if (row == null)
                 continue;
             CharaInitParam param = new(row);
             randomizeCharaInitEntry(param, weapons);
             logCharaInitEntry(param, i + 288100);
-            addDescriptionString(param, ChrInfoMapping[i]);
+            addDescriptionString(param, Const.ChrInfoMapping[i]);
         }
-        Row? prisoner = _charaInitParam[3008];
+        Param.Row? prisoner = _charaInitParam[3008];
         if (prisoner != null)
             guaranteePrisonerHasSpells(new CharaInitParam(prisoner), spells);
-        Row? confessor = _charaInitParam[3006];
+        Param.Row? confessor = _charaInitParam[3006];
         if (confessor != null)
             guaranteeConfessorHasIncantation(new CharaInitParam(confessor), spells);
     }
     private void guaranteePrisonerHasSpells(CharaInitParam chr, IReadOnlyList<int> spells) {
-        if (hasSpellOfType(chr, SorceryType)) {
+        if (hasSpellOfType(chr, Const.SorceryType)) {
             return;
         }
         // Get a new random chr until it has the required stats.
-        while (chr.baseMag < MinInt) {
+        while (chr.baseMag < Config.MinInt) {
             randomizeLevels(chr);
         }
 
@@ -163,11 +158,11 @@ public partial class BingoRandomizer {
         // }
     }
     private void guaranteeConfessorHasIncantation(CharaInitParam chr, IReadOnlyList<int> spells) {
-        if (hasSpellOfType(chr, IncantationType)) {
+        if (hasSpellOfType(chr, Const.IncantationType)) {
             return;
         }
         // Get a new random chr until it has the required stats.
-        while (chr.baseFai < MinFai) {
+        while (chr.baseFai < Config.MinFai) {
             randomizeLevels(chr);
         }
 
@@ -188,31 +183,31 @@ public partial class BingoRandomizer {
         chr.subWepLeft3 = -1;
         chr.subWepRight3 = -1;
 
-        chr.equipHelm = chanceGetRandomArmor(chr.equipHelm, HelmType);
-        chr.equipArmer = chanceGetRandomArmor(chr.equipArmer, BodyType);
-        chr.equipGaunt = chanceGetRandomArmor(chr.equipGaunt, ArmType);
-        chr.equipLeg = chanceGetRandomArmor(chr.equipLeg, LegType);
+        chr.equipHelm = chanceGetRandomArmor(chr.equipHelm, Const.HelmType);
+        chr.equipArmer = chanceGetRandomArmor(chr.equipArmer, Const.BodyType);
+        chr.equipGaunt = chanceGetRandomArmor(chr.equipGaunt, Const.ArmType);
+        chr.equipLeg = chanceGetRandomArmor(chr.equipLeg, Const.LegType);
 
         randomizeLevels(chr);
 
-        chr.equipArrow = NoItem;
+        chr.equipArrow = Const.NoItem;
         chr.arrowNum = ushort.MaxValue;
-        if (hasWeaponOfType(chr, BowType, LightBowType)) {
+        if (hasWeaponOfType(chr, Const.BowType, Const.LightBowType)) {
             giveArrows(chr);
         }
-        chr.equipSubArrow = NoItem;
+        chr.equipSubArrow = Const.NoItem;
         chr.subArrowNum = ushort.MaxValue;
-        if (hasWeaponOfType(chr, GreatbowType)) {
+        if (hasWeaponOfType(chr, Const.GreatbowType)) {
             giveGreatArrows(chr);
         }
-        chr.equipBolt = NoItem;
+        chr.equipBolt = Const.NoItem;
         chr.boltNum = ushort.MaxValue;
-        if (hasWeaponOfType(chr, CrossbowType)) {
+        if (hasWeaponOfType(chr, Const.CrossbowType)) {
             giveBolts(chr);
         }
-        chr.equipSubBolt = NoItem;
+        chr.equipSubBolt = Const.NoItem;
         chr.subBoltNum = ushort.MaxValue;
-        if (hasWeaponOfType(chr, BallistaType)) {
+        if (hasWeaponOfType(chr, Const.BallistaType)) {
             giveBallistaBolts(chr);
         }
 
@@ -229,25 +224,25 @@ public partial class BingoRandomizer {
         OrderedDictionary categoryDictEnemy = new();
         OrderedDictionary categoryDictMap = new();
 
-        foreach (Row row in _itemLotParam_enemy.Rows.Concat(_itemLotParam_map.Rows)) {
-            Column[] itemIds = row.Cells.Take(ItemLots).ToArray();
-            Column[] categories = row.Cells.Skip(CategoriesStart).Take(ItemLots).ToArray();
-            Column[] chances = row.Cells.Skip(ChanceStart).Take(ItemLots).ToArray();
+        foreach (Param.Row row in _itemLotParam_enemy.Rows.Concat(_itemLotParam_map.Rows)) {
+            Param.Column[] itemIds = row.Cells.Take(Const.ItemLots).ToArray();
+            Param.Column[] categories = row.Cells.Skip(Const.CategoriesStart).Take(Const.ItemLots).ToArray();
+            Param.Column[] chances = row.Cells.Skip(Const.ChanceStart).Take(Const.ItemLots).ToArray();
             int totalWeight = chances.Sum(a => (ushort)a.GetValue(row));
-            for (int i = 0; i < ItemLots; i++) {
+            for (int i = 0; i < Const.ItemLots; i++) {
                 int category = (int)categories[i].GetValue(row);
-                if (category != ItemLotWeaponCategory && category != ItemLotCustomWeaponCategory) {
+                if (category != Const.ItemLotWeaponCategory && category != Const.ItemLotCustomWeaponCategory) {
                     continue;
                 }
 
                 int id = (int)itemIds[i].GetValue(row);
                 int sanitizedId = removeWeaponLevels(id);
                 EquipParamWeapon? wep;
-                if (category == ItemLotWeaponCategory) {
+                if (category == Const.ItemLotWeaponCategory) {
                     if (!_weaponDictionary.TryGetValue(sanitizedId, out wep))
                         continue;
 
-                    if (wep.wepType is StaffType or SealType) {
+                    if (wep.wepType is Const.StaffType or Const.SealType) {
                         continue;
                     }
 
@@ -266,7 +261,7 @@ public partial class BingoRandomizer {
                     if (!_customWeaponDictionary.TryGetValue(id, out wep))
                         continue;
 
-                    if (wep.wepType is StaffType or SealType) {
+                    if (wep.wepType is Const.StaffType or Const.SealType) {
                         continue;
                     }
 
@@ -295,17 +290,17 @@ public partial class BingoRandomizer {
         logItem("");
 
 
-        foreach (Row row in _itemLotParam_enemy.Rows.Concat(_itemLotParam_map.Rows)) {
-            Column[] itemIds = row.Cells.Take(ItemLots).ToArray();
-            Column[] categories = row.Cells.Skip(CategoriesStart).Take(ItemLots).ToArray();
-            for (int i = 0; i < ItemLots; i++) {
+        foreach (Param.Row row in _itemLotParam_enemy.Rows.Concat(_itemLotParam_map.Rows)) {
+            Param.Column[] itemIds = row.Cells.Take(Const.ItemLots).ToArray();
+            Param.Column[] categories = row.Cells.Skip(Const.CategoriesStart).Take(Const.ItemLots).ToArray();
+            for (int i = 0; i < Const.ItemLots; i++) {
                 int category = (int)categories[i].GetValue(row);
-                if (category != ItemLotWeaponCategory && category != ItemLotCustomWeaponCategory) {
+                if (category != Const.ItemLotWeaponCategory && category != Const.ItemLotCustomWeaponCategory) {
                     continue;
                 }
 
                 int id = (int)itemIds[i].GetValue(row);
-                if (category == ItemLotWeaponCategory) {
+                if (category == Const.ItemLotWeaponCategory) {
                     if (!_weaponDictionary.TryGetValue(removeWeaponLevels(id), out EquipParamWeapon _))
                         continue;
 
@@ -337,12 +332,12 @@ public partial class BingoRandomizer {
     }
     private void randomizeShopLineupParam() {
         List<ShopLineupParam> shopLineupParamRemembranceList = new();
-        foreach (Row row in _shopLineupParam.Rows) {
-            if ((byte)row["equipType"]!.Value.Value != ShopLineupWeaponCategory || row.ID < 101900 || row.ID > 101980) {
+        foreach (Param.Row row in _shopLineupParam.Rows) {
+            if ((byte)row["equipType"]!.Value.Value != Const.ShopLineupWeaponCategory || row.ID < 101900 || row.ID > 101980) {
                 continue;
             }
 
-            ShopLineupParam lot = new(new Row(row));
+            ShopLineupParam lot = new(new Param.Row(row));
             int sanitizedId = removeWeaponLevels(lot.equipId);
             if (!_weaponDictionary.TryGetValue(sanitizedId, out _))
                 continue;
@@ -353,8 +348,8 @@ public partial class BingoRandomizer {
             shopLineupParamRemembranceList.Add(lot);
         }
 
-        List<Row> staves = _weaponTypeDictionary[StaffType];
-        List<Row> seals = _weaponTypeDictionary[SealType];
+        List<Param.Row> staves = _weaponTypeDictionary[Const.StaffType];
+        List<Param.Row> seals = _weaponTypeDictionary[Const.SealType];
         List<int> shopLineupParamList = _weaponDictionary.Keys.Select(removeWeaponMetadata).Distinct()
             .Where(i => shopLineupParamRemembranceList.All(s => s.equipId != i))
             .Where(id => staves.All(s => s.ID != id) && seals.All(s => s.ID != id))
@@ -364,16 +359,16 @@ public partial class BingoRandomizer {
         
         logItem(">> Shop Replacements - Random item selected from pool of all weapons (not including infused weapons). Remembrances are randomized amongst each-other.");
 
-        foreach (Row row in _shopLineupParam.Rows) {
+        foreach (Param.Row row in _shopLineupParam.Rows) {
             logShopId(row.ID);
-            if ((byte)row["equipType"]!.Value.Value != ShopLineupWeaponCategory || row.ID > 101980) {
+            if ((byte)row["equipType"]!.Value.Value != Const.ShopLineupWeaponCategory || row.ID > 101980) {
                 continue;
             }
 
             ShopLineupParam lot = new(row);
             if (!_weaponDictionary.TryGetValue(removeWeaponLevels(lot.equipId), out EquipParamWeapon? wep))
                 continue;
-            if (wep.wepType is StaffType or SealType) {
+            if (wep.wepType is Const.StaffType or Const.SealType) {
                 continue;
             }
 
@@ -384,12 +379,12 @@ public partial class BingoRandomizer {
         OrderedDictionary magicCategoryDictMap = new();
         List<ShopLineupParam> shopLineupParamRemembranceList = new();
         List<ShopLineupParam> shopLineupParamDragonList = new();
-        foreach (Row row in _shopLineupParam.Rows) {
-            if ((byte)row["equipType"]!.Value.Value != ShopLineupGoodsCategory || row.ID > 101980) {
+        foreach (Param.Row row in _shopLineupParam.Rows) {
+            if ((byte)row["equipType"]!.Value.Value != Const.ShopLineupGoodsCategory || row.ID > 101980) {
                 continue;
             }
 
-            ShopLineupParam lot = new(new Row(row));
+            ShopLineupParam lot = new(new Param.Row(row));
             if (!_magicDictionary.TryGetValue(lot.equipId, out Magic? magic))
                 continue;
             if (row.ID < 101950) {
@@ -404,14 +399,14 @@ public partial class BingoRandomizer {
             }
         }
 
-        foreach (Row row in _itemLotParam_enemy.Rows.Concat(_itemLotParam_map.Rows)) {
-            Column[] itemIds = row.Cells.Take(ItemLots).ToArray();
-            Column[] categories = row.Cells.Skip(CategoriesStart).Take(ItemLots).ToArray();
-            Column[] chances = row.Cells.Skip(ChanceStart).Take(ItemLots).ToArray();
+        foreach (Param.Row row in _itemLotParam_enemy.Rows.Concat(_itemLotParam_map.Rows)) {
+            Param.Column[] itemIds = row.Cells.Take(Const.ItemLots).ToArray();
+            Param.Column[] categories = row.Cells.Skip(Const.CategoriesStart).Take(Const.ItemLots).ToArray();
+            Param.Column[] chances = row.Cells.Skip(Const.ChanceStart).Take(Const.ItemLots).ToArray();
             int totalWeight = chances.Sum(a => (ushort)a.GetValue(row));
-            for (int i = 0; i < ItemLots; i++) {
+            for (int i = 0; i < Const.ItemLots; i++) {
                 int category = (int)categories[i].GetValue(row);
-                if (category != ItemLotGoodsCategory) {
+                if (category != Const.ItemLotGoodsCategory) {
                     continue;
                 }
 
@@ -442,9 +437,9 @@ public partial class BingoRandomizer {
         logItem("\n>> Magic Replacement.");
         logReplacementDictionaryMagic(magicShopReplacement);
 
-        foreach (Row row in _shopLineupParam.Rows) {
+        foreach (Param.Row row in _shopLineupParam.Rows) {
             logShopIdMagic(row.ID);
-            if ((byte)row["equipType"]!.Value.Value != ShopLineupGoodsCategory || row.ID > 101980) {
+            if ((byte)row["equipType"]!.Value.Value != Const.ShopLineupGoodsCategory || row.ID > 101980) {
                 continue;
             }
 
@@ -461,12 +456,12 @@ public partial class BingoRandomizer {
             }
         }
 
-        foreach (Row row in _itemLotParam_enemy.Rows.Concat(_itemLotParam_map.Rows)) {
-            Column[] itemIds = row.Cells.Take(ItemLots).ToArray();
-            Column[] categories = row.Cells.Skip(CategoriesStart).Take(ItemLots).ToArray();
-            for (int i = 0; i < ItemLots; i++) {
+        foreach (Param.Row row in _itemLotParam_enemy.Rows.Concat(_itemLotParam_map.Rows)) {
+            Param.Column[] itemIds = row.Cells.Take(Const.ItemLots).ToArray();
+            Param.Column[] categories = row.Cells.Skip(Const.CategoriesStart).Take(Const.ItemLots).ToArray();
+            for (int i = 0; i < Const.ItemLots; i++) {
                 int category = (int)categories[i].GetValue(row);
-                if (category != ItemLotGoodsCategory) {
+                if (category != Const.ItemLotGoodsCategory) {
                     continue;
                 }
 

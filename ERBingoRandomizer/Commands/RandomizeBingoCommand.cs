@@ -4,7 +4,6 @@ using System;
 using System.ComponentModel;
 using System.IO;
 using System.Threading.Tasks;
-using static ERBingoRandomizer.Const;
 
 namespace ERBingoRandomizer.Commands;
 
@@ -18,7 +17,7 @@ public class RandomizeBingoCommand : AsyncCommandBase {
         return !_mwViewModel.InProgress
             && _mwViewModel.LastSeed?.Seed != _mwViewModel.Seed
             && !string.IsNullOrWhiteSpace(_mwViewModel.Path)
-            && _mwViewModel.Path.ToLower().EndsWith(ExeName)
+            && _mwViewModel.Path.ToLower().EndsWith(Const.ExeName)
             && File.Exists(_mwViewModel.Path);
     }
     protected override async Task ExecuteAsync(object? parameter) {

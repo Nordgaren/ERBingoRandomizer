@@ -1,21 +1,19 @@
-﻿using static FSParam.Param;
+﻿using FSParam;
 
 namespace ERBingoRandomizer.Params;
 
 public class EquipParamWeapon {
-    private Cell _properAgility;
-    private Cell _properFaith;
-    private Cell _properLuck;
-    private Cell _properMagic;
+    private Param.Cell _properAgility;
+    private Param.Cell _properFaith;
+    private Param.Cell _properLuck;
+    private Param.Cell _properMagic;
+    private Param.Cell _properStrength;
+    private Param.Cell _wepType;
+    private Param.Cell _materialSetId;
+    private Param.Cell _reinforceTypeId;
+    private Param.Cell _reinforceShopCategory;
 
-    private Cell _properStrength;
-
-    private Cell _wepType;
-    private Cell _materialSetId;
-    private Cell _reinforceTypeId;
-    private Cell _reinforceShopCategory;
-
-    public EquipParamWeapon(Row wep) {
+    public EquipParamWeapon(Param.Row wep) {
         _wepType = wep["wepType"]!.Value;
         _materialSetId = wep["materialSetId"]!.Value;
         _reinforceTypeId = wep["reinforceTypeId"]!.Value;

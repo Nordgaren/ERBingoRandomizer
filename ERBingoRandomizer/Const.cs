@@ -1,11 +1,11 @@
-﻿using System;
-using static ERBingoRandomizer.Utility.Config;
+﻿using ERBingoRandomizer.Utility;
+using System;
 
 namespace ERBingoRandomizer;
 // Non configurable constants  
 public static class Const {
     // Paths  
-    public const string ME2Path = $"{ResourcesPath}/ME2";
+    public const string ME2Path = $"{Config.ResourcesPath}/ME2";
     public const string BingoPath = $"{ME2Path}/bingo";
     public const string BingoRegulationPath = $"{BingoPath}/{RegulationName}";
     public const string ExeName = "eldenring.exe";

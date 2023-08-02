@@ -1,6 +1,4 @@
-﻿using static ERBingoRandomizer.Const;
-
-namespace ERBingoRandomizer.Utility;
+﻿namespace ERBingoRandomizer.Utility;
 
 // Anything configurable will be in this class.
 public static class Config {
@@ -21,10 +19,10 @@ public static class Config {
     public const float StatRollChance = 0.001f;
     // Paths
     public const string ResourcesPath = "./Resources";
-    public static readonly string CachePath = $"{ExeDir}\\Cache";
+    public static readonly string CachePath = $"{Const.ExeDir}\\Cache";
     public static readonly string SpoilerPath = $"{CachePath}/Spoilers";
     public static readonly string LastSeedPath = $"{CachePath}/LastSeed.json";
-    public static readonly string PackagesPath = $"{ExeDir}\\Cache\\Packaged";
+    public static readonly string PackagesPath = $"{Const.ExeDir}\\Cache\\Packaged";
     // Files
     public const bool CacheBHDs = false;
 }

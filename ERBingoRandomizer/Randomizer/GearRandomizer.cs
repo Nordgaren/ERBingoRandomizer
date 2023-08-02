@@ -2,9 +2,8 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using static ERBingoRandomizer.Const;
-using static ERBingoRandomizer.Utility.Config;
-using static FSParam.Param;
+using ERBingoRandomizer.Utility;
+using FSParam;
 
 namespace ERBingoRandomizer.Randomizer;
 
@@ -18,16 +17,16 @@ public partial class BingoRandomizer {
         }
     }
     private int chanceGetRandomWeapon(int id, IReadOnlyList<int> weapons) {
-        return ReturnNoItem(id) ? NoItem : getRandomWeapon(id, weapons);
+        return ReturnNoItem(id) ? Const.NoItem : getRandomWeapon(id, weapons);
 
     }
     private int chanceGetRandomArmor(int id, byte type) {
-        return ReturnNoItem(id) ? NoItem : getRandomArmor(id, type);
+        return ReturnNoItem(id) ? Const.NoItem : getRandomArmor(id, type);
 
     }
     private int getRandomArmor(int id, byte type) {
         while (true) {
-            IReadOnlyList<Row> legs = _armorTypeDictionary[type];
+            IReadOnlyList<Param.Row> legs = _armorTypeDictionary[type];
             int newLegs = legs[_random.Next(legs.Count)].ID;
             if (newLegs != id) {
                 return newLegs;
@@ -40,12 +39,12 @@ public partial class BingoRandomizer {
         // If the entry is -1, return -1 99.99% of the time. If it's not, return -1 0.01% of the time
         // This makes it a small chance for a no item to become an item, and a small chance for an item to become no item.
         if (id == -1) {
-            if (target > AddRemoveWeaponChance) {
+            if (target > Config.AddRemoveWeaponChance) {
                 return true;
             }
         }
         else {
-            if (target < AddRemoveWeaponChance) {
+            if (target < Config.AddRemoveWeaponChance) {
                 return true;
             }
         }
@@ -110,41 +109,41 @@ public partial class BingoRandomizer {
 
     }
     private void giveArrows(CharaInitParam chr) {
-        chr.equipArrow = getRandomAmmo(ArrowType);
-        chr.arrowNum = (ushort)(_random.Next() % MaxArrows);
+        chr.equipArrow = getRandomAmmo(Const.ArrowType);
+        chr.arrowNum = (ushort)(_random.Next() % Config.MaxArrows);
     }
     private void giveGreatArrows(CharaInitParam chr) {
-        chr.equipSubArrow = getRandomAmmo(GreatArrowType);
-        chr.subArrowNum = (ushort)(_random.Next() % MaxGreatArrows);
+        chr.equipSubArrow = getRandomAmmo(Const.GreatArrowType);
+        chr.subArrowNum = (ushort)(_random.Next() % Config.MaxGreatArrows);
     }
     private void giveBolts(CharaInitParam chr) {
-        chr.equipBolt = getRandomAmmo(BoltType);
-        chr.boltNum = (ushort)(_random.Next() % MaxBolts);
+        chr.equipBolt = getRandomAmmo(Const.BoltType);
+        chr.boltNum = (ushort)(_random.Next() % Config.MaxBolts);
     }
     private void giveBallistaBolts(CharaInitParam chr) {
-        chr.equipSubBolt = getRandomAmmo(BallistaBoltType);
-        chr.subBoltNum = (ushort)(_random.Next() % MaxBallistaBolts);
+        chr.equipSubBolt = getRandomAmmo(Const.BallistaBoltType);
+        chr.subBoltNum = (ushort)(_random.Next() % Config.MaxBallistaBolts);
     }
     private int getRandomAmmo(ushort type) {
-        IList<Row> arrows = _weaponTypeDictionary[type];
+        IList<Param.Row> arrows = _weaponTypeDictionary[type];
         return arrows[_random.Next() % arrows.Count].ID;
     }
     private void randomizeSorceries(CharaInitParam chr, IReadOnlyList<int> spells) {
-        chr.equipSpell01 = getRandomMagic(chr, SorceryType, spells);
+        chr.equipSpell01 = getRandomMagic(chr, Const.SorceryType, spells);
         if (chr.equipSpell02 == -1) {
-            chr.equipSpell02 = chanceRandomMagic(chr.equipSpell02, chr, SorceryType, spells);
+            chr.equipSpell02 = chanceRandomMagic(chr.equipSpell02, chr, Const.SorceryType, spells);
         }
-        giveRandomWeapon(chr, StaffType);
+        giveRandomWeapon(chr, Const.StaffType);
     }
     private void randomizeIncantations(CharaInitParam chr, IReadOnlyList<int> spells) {
-        chr.equipSpell02 = getRandomMagic(chr, IncantationType, spells);
+        chr.equipSpell02 = getRandomMagic(chr, Const.IncantationType, spells);
         if (chr.equipSpell01 == -1) {
-            chr.equipSpell01 = chanceRandomMagic(chr.equipSpell01, chr, IncantationType, spells);
+            chr.equipSpell01 = chanceRandomMagic(chr.equipSpell01, chr, Const.IncantationType, spells);
         }
-        giveRandomWeapon(chr, SealType);
+        giveRandomWeapon(chr, Const.SealType);
     }
     private int getRandomMagic(CharaInitParam chr, byte type, IReadOnlyList<int> spells) {
-        IReadOnlyList<Row> table = _magicTypeDictionary[type];
+        IReadOnlyList<Param.Row> table = _magicTypeDictionary[type];
         while (true) {
             int i = _random.Next() % table.Count;
             Magic entry = _magicDictionary[table[i].ID];
@@ -215,7 +214,7 @@ public partial class BingoRandomizer {
         chr.subWepRight3 = getRandomWeapon(chr, type);
     }
     private int getRandomWeapon(CharaInitParam chr, ushort type) {
-        IReadOnlyList<Row> table = _weaponTypeDictionary[type];
+        IReadOnlyList<Param.Row> table = _weaponTypeDictionary[type];
         while (true) {
             int i = _random.Next() % table.Count;
             EquipParamWeapon? entry;

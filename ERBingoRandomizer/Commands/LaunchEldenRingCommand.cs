@@ -1,7 +1,6 @@
 ﻿using ERBingoRandomizer.ViewModels;
 using System.ComponentModel;
 using System.Diagnostics;
-using static ERBingoRandomizer.Const;
 
 namespace ERBingoRandomizer.Commands;
 
@@ -30,7 +29,7 @@ public class LaunchEldenRingCommand : CommandBase {
         Process me2 = new() {
             StartInfo = new ProcessStartInfo {
                 FileName = "launchmod_bingo.bat",
-                WorkingDirectory = ME2Path,
+                WorkingDirectory = Const.ME2Path,
                 UseShellExecute = true,
                 CreateNoWindow = true,
             },

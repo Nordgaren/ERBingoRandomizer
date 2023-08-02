@@ -1,40 +1,40 @@
-﻿using static FSParam.Param;
+﻿using FSParam;
 
 namespace ERBingoRandomizer.Params;
 
 public class CharaInitParam {
-    private Cell _arrowNum;
-    private Cell _soulLv;
-    private Cell _baseDex;
-    private Cell _baseEnd;
-    private Cell _baseFai;
-    private Cell _baseLuc;
-    private Cell _baseMag;
-    private Cell _baseStr;
-    private Cell _baseVit;
-    private Cell _baseWil;
-    private Cell _boltNum;
-    private Cell _equipArmer;
-    private Cell _equipArrow;
-    private Cell _equipBolt;
-    private Cell _equipGaunt;
-    private Cell _equipHelm;
-    private Cell _equipLeg;
-    private Cell _equipSpell01;
-    private Cell _equipSpell02;
-    private Cell _equipSubArrow;
-    private Cell _equipSubBolt;
-    private Cell _subArrowNum;
-    private Cell _subBoltNum;
-    private Cell _subWepLeft;
-    private Cell _subWepLeft3;
-    private Cell _subWepRight;
-    private Cell _subWepRight3;
+    private Param.Cell _arrowNum;
+    private Param.Cell _soulLv;
+    private Param.Cell _baseDex;
+    private Param.Cell _baseEnd;
+    private Param.Cell _baseFai;
+    private Param.Cell _baseLuc;
+    private Param.Cell _baseMag;
+    private Param.Cell _baseStr;
+    private Param.Cell _baseVit;
+    private Param.Cell _baseWil;
+    private Param.Cell _boltNum;
+    private Param.Cell _equipArmer;
+    private Param.Cell _equipArrow;
+    private Param.Cell _equipBolt;
+    private Param.Cell _equipGaunt;
+    private Param.Cell _equipHelm;
+    private Param.Cell _equipLeg;
+    private Param.Cell _equipSpell01;
+    private Param.Cell _equipSpell02;
+    private Param.Cell _equipSubArrow;
+    private Param.Cell _equipSubBolt;
+    private Param.Cell _subArrowNum;
+    private Param.Cell _subBoltNum;
+    private Param.Cell _subWepLeft;
+    private Param.Cell _subWepLeft3;
+    private Param.Cell _subWepRight;
+    private Param.Cell _subWepRight3;
 
-    private Cell _wepLeft;
-    private Cell _wepRight;
+    private Param.Cell _wepLeft;
+    private Param.Cell _wepRight;
 
-    public CharaInitParam(Row chr) {
+    public CharaInitParam(Param.Row chr) {
         _wepLeft = chr["equip_Wep_Left"]!.Value;
         _wepRight = chr["equip_Wep_Right"]!.Value;
         _subWepLeft = chr["equip_Subwep_Left"]!.Value;
@@ -97,28 +97,28 @@ public class CharaInitParam {
     public byte baseFai { get => (byte)_baseFai.Value; set => _baseFai.Value = value; }
     public byte baseLuc { get => (byte)_baseLuc.Value; set => _baseLuc.Value = value; }
 
-    public Cell GetVit() {
+    public Param.Cell GetVitCell() {
         return _baseVit;
     }
-    public Cell GetWil() {
+    public Param.Cell GetWilCell() {
         return _baseWil;
     }
-    public Cell GetEnd() {
+    public Param.Cell GetEndCell() {
         return _baseEnd;
     }
-    public Cell GetStr() {
+    public Param.Cell GetStrCell() {
         return _baseStr;
     }
-    public Cell GetDex() {
+    public Param.Cell GetDexCell() {
         return _baseDex;
     }
-    public Cell GetMag() {
+    public Param.Cell GetMagCell() {
         return _baseMag;
     }
-    public Cell GetFai() {
+    public Param.Cell GetFaiCell() {
         return _baseFai;
     }
-    public Cell GetLuc() {
+    public Param.Cell GetLucCell() {
         return _baseLuc;
     }
 }

@@ -1,12 +1,12 @@
-﻿using static FSParam.Param;
+﻿using FSParam;
 
 namespace ERBingoRandomizer.Params; 
 
 public class EquipParamGoods {
-    private Cell _goodsType;
+    private Param.Cell _goodsType;
 
 
-    public EquipParamGoods(Row good) {
+    public EquipParamGoods(Param.Row good) {
         _goodsType = good["goodsType"]!.Value;
 
     }

@@ -1,13 +1,13 @@
-﻿using static FSParam.Param;
+﻿using FSParam;
 
 namespace ERBingoRandomizer.Params; 
 
 public class AtkParam {
-    private Cell _spEffectAtkPowerCorrectRate_byPoint;
-    private Cell _spEffectAtkPowerCorrectRate_byRate;
-    private Cell _spEffectAtkPowerCorrectRate_byDmg;
+    private Param.Cell _spEffectAtkPowerCorrectRate_byPoint;
+    private Param.Cell _spEffectAtkPowerCorrectRate_byRate;
+    private Param.Cell _spEffectAtkPowerCorrectRate_byDmg;
 
-    public AtkParam(Row atk) {
+    public AtkParam(Param.Row atk) {
         _spEffectAtkPowerCorrectRate_byPoint = atk["spEffectAtkPowerCorrectRate_byPoint"]!.Value;
         _spEffectAtkPowerCorrectRate_byRate = atk["spEffectAtkPowerCorrectRate_byRate"]!.Value;
         _spEffectAtkPowerCorrectRate_byDmg = atk["spEffectAtkPowerCorrectRate_byDmg"]!.Value;

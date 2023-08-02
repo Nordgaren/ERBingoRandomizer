@@ -5,10 +5,8 @@ using System.Collections.Generic;
 using System.Drawing;
 using System.IO;
 using System.Linq;
-using System.Reflection;
 using System.Windows.Forms;
 using System.Xml;
-using static ERBingoRandomizer.Utility.Config;
 
 namespace ERBingoRandomizer.Utility;
 
@@ -102,7 +100,7 @@ static class Util {
         return null;
     }
     public static string[] GetResourcesInFolder(string item) {
-        string[] resources = Directory.GetFiles($"{ResourcesPath}/{item}");
+        string[] resources = Directory.GetFiles($"{Config.ResourcesPath}/{item}");
         return resources.Select(ReadToString).ToArray();
     }
     private static string ReadToString(string resourceName) {

@@ -1,6 +1,6 @@
-﻿using ERBingoRandomizer.ViewModels;
+﻿using ERBingoRandomizer.Utility;
+using ERBingoRandomizer.ViewModels;
 using System.ComponentModel;
-using System.Threading.Tasks;
 
 namespace ERBingoRandomizer.Commands;
 

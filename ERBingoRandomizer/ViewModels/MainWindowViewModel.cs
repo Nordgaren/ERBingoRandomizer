@@ -10,8 +10,6 @@ using System.Text.Json;
 using System.Threading;
 using System.Windows.Data;
 using System.Windows.Input;
-using static ERBingoRandomizer.Const;
-using static ERBingoRandomizer.Utility.Config;
 
 namespace ERBingoRandomizer.ViewModels;
 
@@ -24,12 +22,12 @@ public class MainWindowViewModel : ViewModelBase, IDisposable {
         Cancel = new CancelCommand(this);
         FilesReady = AllFilesReady();
         if (FilesReady) {
-            LastSeed = File.Exists(LastSeedPath) ? JsonSerializer.Deserialize<SeedInfo>(File.ReadAllText(LastSeedPath)) : null;
+            LastSeed = File.Exists(Config.LastSeedPath) ? JsonSerializer.Deserialize<SeedInfo>(File.ReadAllText(Config.LastSeedPath)) : null;
         }
         ListBoxDisplay = new ObservableCollection<string>();
         MessageDisplayView = CollectionViewSource.GetDefaultView(ListBoxDisplay);
         getNewCancellationToken();
-        _watcher = new FileSystemWatcher(ME2Path);
+        _watcher = new FileSystemWatcher(Const.ME2Path);
         _watcher.NotifyFilter = NotifyFilters.Attributes
             | NotifyFilters.CreationTime
             | NotifyFilters.DirectoryName
@@ -131,16 +129,16 @@ public class MainWindowViewModel : ViewModelBase, IDisposable {
 
     private void OnCreated(object sender, FileSystemEventArgs e) {
         FilesReady = AllFilesReady();
-        if (FilesReady && LastSeed == null && File.Exists(LastSeedPath)) {
-            LastSeed = JsonSerializer.Deserialize<SeedInfo>(File.ReadAllText(LastSeedPath));
+        if (FilesReady && LastSeed == null && File.Exists(Config.LastSeedPath)) {
+            LastSeed = JsonSerializer.Deserialize<SeedInfo>(File.ReadAllText(Config.LastSeedPath));
         }
     }
     private static bool AllFilesReady() {
-        return File.Exists(BingoRegulationPath) && File.Exists($"{BingoPath}{MenuMsgBNDPath}");
+        return File.Exists(Const.BingoRegulationPath) && File.Exists($"{Const.BingoPath}{Const.MenuMsgBNDPath}");
     }
 
     private void OnDeleted(object sender, FileSystemEventArgs e) {
-        if (!Directory.Exists(BingoPath)) {
+        if (!Directory.Exists(Const.BingoPath)) {
             LastSeed = null;
             return;
         }
