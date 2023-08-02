@@ -59,17 +59,6 @@ public partial class BingoRandomizer {
     private Dictionary<ushort, List<Row>> _weaponTypeDictionary;
     private Dictionary<byte, List<Row>> _armorTypeDictionary;
     private Dictionary<byte, List<Row>> _magicTypeDictionary;
-    // Cancellation Token
-    private readonly CancellationToken _cancellationToken;
-    private BingoRandomizer(string path, string seed, CancellationToken cancellationToken) {
-        _path = Path.GetDirectoryName(path) ?? throw new InvalidOperationException("Path.GetDirectoryName(path) was null. Incorrect path provided.");
-        _regulationPath = $"{_path}/{RegulationName}";
-        _seed = string.IsNullOrWhiteSpace(seed) ? Random.Shared.NextInt64().ToString() : seed.Trim();
-        byte[] hashData = SHA256.HashData(Encoding.UTF8.GetBytes(_seed));
-        _seedInt = getSeedFromHashData(hashData);
-        _random = new Random(_seedInt);
-        _cancellationToken = cancellationToken;
-    }
     public Task RandomizeRegulation() {
         //calculateLevels();
         _randomizerLog = new List<string>();
@@ -249,11 +238,18 @@ public partial class BingoRandomizer {
                 }
 
                 EquipParamWeapon? wep;
+                
+                
                 int id = (int)itemIds[i].GetValue(row);
                 int sanitizedId = removeWeaponLevels(id);
                 if (category == ItemLotWeaponCategory) {
                     if (!_weaponDictionary.TryGetValue(sanitizedId, out wep))
                         continue;
+                    
+                    if (wep.wepType is StaffType or SealType) {
+                        continue;
+                    }
+                    
                     if (id != sanitizedId) {
                         _weaponNameDictionary[id] = $"{_weaponNameDictionary[sanitizedId]} + {id - sanitizedId}";
                     }
@@ -268,6 +264,11 @@ public partial class BingoRandomizer {
                 else if (category == ItemLotCustomWeaponCategory) {
                     if (!_customWeaponDictionary.TryGetValue(id, out wep))
                         continue;
+                    
+                    if (wep.wepType is StaffType or SealType) {
+                        continue;
+                    }
+                    
                     ushort chance = (ushort)chances[i].GetValue(row);
                     if (chance == totalWeight) {
                         addToOrderedDict(categoryDictMap, wep.wepType, new ItemLotEntry(id, category));
@@ -389,7 +390,11 @@ public partial class BingoRandomizer {
             }
 
             ShopLineupParam lot = new(row);
-            if (_weaponDictionary.TryGetValue(removeWeaponLevels(lot.equipId), out _)) {
+            if (_weaponDictionary.TryGetValue(removeWeaponLevels(lot.equipId), out EquipParamWeapon? wep)) {
+                if (wep.wepType is StaffType or SealType) {
+                    continue;
+                }
+                
                 replaceShopLineupParam(lot, shopLineupParamList, shopLineupParamRemembranceList);
             }
         }

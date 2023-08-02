@@ -7,21 +7,35 @@ using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
+using System.Security.Cryptography;
+using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
 using static ERBingoRandomizer.Const;
 using static ERBingoRandomizer.Utility.Config;
 using static FSParam.Param;
+#pragma warning disable CS8618
 
 namespace ERBingoRandomizer.Randomizer;
 
 public partial class BingoRandomizer {
-    //static async method that behave like a constructor       
+    //static async method that behaves like a constructor    
     public static async Task<BingoRandomizer> BuildRandomizerAsync(string path, string seed, CancellationToken cancellationToken) {
         BingoRandomizer rando = new(path, seed, cancellationToken);
         cancellationToken.ThrowIfCancellationRequested();
         await Task.Run(() => rando.init());
         return rando;
+    }
+    // Cancellation Token
+    private readonly CancellationToken _cancellationToken;
+    private BingoRandomizer(string path, string seed, CancellationToken cancellationToken) {
+        _path = Path.GetDirectoryName(path) ?? throw new InvalidOperationException("Path.GetDirectoryName(path) was null. Incorrect path provided.");
+        _regulationPath = $"{_path}/{RegulationName}";
+        _seed = string.IsNullOrWhiteSpace(seed) ? Random.Shared.NextInt64().ToString() : seed.Trim();
+        byte[] hashData = SHA256.HashData(Encoding.UTF8.GetBytes(_seed));
+        _seedInt = getSeedFromHashData(hashData);
+        _random = new Random(_seedInt);
+        _cancellationToken = cancellationToken;
     }
     private Task init() {
         if (!allCacheFilesExist()) {
