@@ -76,15 +76,6 @@ public partial class BingoRandomizer {
         File.WriteAllText(Config.LastSeedPath, seedJson);
         return Task.CompletedTask;
     }
-    private void patchAtkParam() {
-        Param.Row? swarmOfFlies1 = _atkParam_Pc[72100];
-        Param.Row? swarmOfFlies2 = _atkParam_Pc[72101];
-
-        AtkParam swarmAtkParam1 = new(swarmOfFlies1 ?? throw new InvalidOperationException());
-        AtkParam swarmAtkParam2 = new(swarmOfFlies2 ?? throw new InvalidOperationException());
-        patchSpEffectAtkPowerCorrectRate(swarmAtkParam1);
-        patchSpEffectAtkPowerCorrectRate(swarmAtkParam2);
-    }
     private void randomizeCharaInitParam() {
         logItem(">>Class Randomization - All items are randomized, with each class having a .001% chance to gain or lose and item. Spells given class meets min stat requirements");
         logItem("Ammo is give if you get a ranged weapon. Catalyst is give if you have spells.\n");
@@ -117,87 +108,6 @@ public partial class BingoRandomizer {
         Param.Row? confessor = _charaInitParam[3006];
         if (confessor != null)
             guaranteeConfessorHasIncantation(new CharaInitParam(confessor), spells);
-    }
-    private void guaranteePrisonerHasSpells(CharaInitParam chr, IReadOnlyList<int> spells) {
-        if (hasSpellOfType(chr, Const.SorceryType)) {
-            return;
-        }
-        // Get a new random chr until it has the required stats.
-        while (chr.baseMag < Config.MinInt) {
-            randomizeLevels(chr);
-        }
-
-        chr.equipSpell01 = -1;
-        chr.equipSpell02 = -1;
-        randomizeSorceries(chr, spells);
-
-        // Get Incantations if the new class has the requirements. 
-        // if (chr.baseFai >= MinFai) {
-        //     randomizeIncantations(chr, spells);
-        // }
-    }
-    private void guaranteeConfessorHasIncantation(CharaInitParam chr, IReadOnlyList<int> spells) {
-        if (hasSpellOfType(chr, Const.IncantationType)) {
-            return;
-        }
-        // Get a new random chr until it has the required stats.
-        while (chr.baseFai < Config.MinFai) {
-            randomizeLevels(chr);
-        }
-
-        chr.equipSpell01 = -1;
-        chr.equipSpell02 = -1;
-        randomizeIncantations(chr, spells);
-
-        // Get Sorceries if the new class has the requirements. 
-        // if (chr.baseMag >= MinInt) {
-        //     randomizeSorceries(chr, spells);
-        // }
-    }
-    private void randomizeCharaInitEntry(CharaInitParam chr, IReadOnlyList<int> weapons) {
-        chr.wepleft = getRandomWeapon(chr.wepleft, weapons);
-        chr.wepRight = getRandomWeapon(chr.wepRight, weapons);
-        chr.subWepLeft = -1;
-        chr.subWepRight = -1;
-        chr.subWepLeft3 = -1;
-        chr.subWepRight3 = -1;
-
-        chr.equipHelm = chanceGetRandomArmor(chr.equipHelm, Const.HelmType);
-        chr.equipArmer = chanceGetRandomArmor(chr.equipArmer, Const.BodyType);
-        chr.equipGaunt = chanceGetRandomArmor(chr.equipGaunt, Const.ArmType);
-        chr.equipLeg = chanceGetRandomArmor(chr.equipLeg, Const.LegType);
-
-        randomizeLevels(chr);
-
-        chr.equipArrow = Const.NoItem;
-        chr.arrowNum = ushort.MaxValue;
-        if (hasWeaponOfType(chr, Const.BowType, Const.LightBowType)) {
-            giveArrows(chr);
-        }
-        chr.equipSubArrow = Const.NoItem;
-        chr.subArrowNum = ushort.MaxValue;
-        if (hasWeaponOfType(chr, Const.GreatbowType)) {
-            giveGreatArrows(chr);
-        }
-        chr.equipBolt = Const.NoItem;
-        chr.boltNum = ushort.MaxValue;
-        if (hasWeaponOfType(chr, Const.CrossbowType)) {
-            giveBolts(chr);
-        }
-        chr.equipSubBolt = Const.NoItem;
-        chr.subBoltNum = ushort.MaxValue;
-        if (hasWeaponOfType(chr, Const.BallistaType)) {
-            giveBallistaBolts(chr);
-        }
-
-        chr.equipSpell01 = -1;
-        chr.equipSpell02 = -1;
-        // if (chr.baseMag >= MinInt) {
-        //     randomizeSorceries(chr, spells);
-        // }
-        // if (chr.baseFai >= MinFai) {
-        //     randomizeIncantations(chr, spells);
-        // }
     }
     private void randomizeItemLotParams() {
         OrderedDictionary categoryDictEnemy = new();
@@ -453,5 +363,14 @@ public partial class BingoRandomizer {
                 itemIds[i].SetValue(row, entry);
             }
         }
+    }
+    private void patchAtkParam() {
+        Param.Row? swarmOfFlies1 = _atkParam_Pc[72100];
+        Param.Row? swarmOfFlies2 = _atkParam_Pc[72101];
+
+        AtkParam swarmAtkParam1 = new(swarmOfFlies1 ?? throw new InvalidOperationException());
+        AtkParam swarmAtkParam2 = new(swarmOfFlies2 ?? throw new InvalidOperationException());
+        patchSpEffectAtkPowerCorrectRate(swarmAtkParam1);
+        patchSpEffectAtkPowerCorrectRate(swarmAtkParam2);
     }
 }

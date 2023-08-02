@@ -20,6 +20,87 @@ public partial class BingoRandomizer {
         Directory.CreateDirectory(Config.SpoilerPath);
         File.WriteAllLines($"{Config.SpoilerPath}/spoiler-{_seed}.log", _randomizerLog);
     }
+        private void guaranteePrisonerHasSpells(CharaInitParam chr, IReadOnlyList<int> spells) {
+        if (hasSpellOfType(chr, Const.SorceryType)) {
+            return;
+        }
+        // Get a new random chr until it has the required stats.
+        while (chr.baseMag < Config.MinInt) {
+            randomizeLevels(chr);
+        }
+
+        chr.equipSpell01 = -1;
+        chr.equipSpell02 = -1;
+        randomizeSorceries(chr, spells);
+
+        // Get Incantations if the new class has the requirements. 
+        // if (chr.baseFai >= MinFai) {
+        //     randomizeIncantations(chr, spells);
+        // }
+    }
+    private void guaranteeConfessorHasIncantation(CharaInitParam chr, IReadOnlyList<int> spells) {
+        if (hasSpellOfType(chr, Const.IncantationType)) {
+            return;
+        }
+        // Get a new random chr until it has the required stats.
+        while (chr.baseFai < Config.MinFai) {
+            randomizeLevels(chr);
+        }
+
+        chr.equipSpell01 = -1;
+        chr.equipSpell02 = -1;
+        randomizeIncantations(chr, spells);
+
+        // Get Sorceries if the new class has the requirements. 
+        // if (chr.baseMag >= MinInt) {
+        //     randomizeSorceries(chr, spells);
+        // }
+    }
+    private void randomizeCharaInitEntry(CharaInitParam chr, IReadOnlyList<int> weapons) {
+        chr.wepleft = getRandomWeapon(chr.wepleft, weapons);
+        chr.wepRight = getRandomWeapon(chr.wepRight, weapons);
+        chr.subWepLeft = -1;
+        chr.subWepRight = -1;
+        chr.subWepLeft3 = -1;
+        chr.subWepRight3 = -1;
+
+        chr.equipHelm = chanceGetRandomArmor(chr.equipHelm, Const.HelmType);
+        chr.equipArmer = chanceGetRandomArmor(chr.equipArmer, Const.BodyType);
+        chr.equipGaunt = chanceGetRandomArmor(chr.equipGaunt, Const.ArmType);
+        chr.equipLeg = chanceGetRandomArmor(chr.equipLeg, Const.LegType);
+
+        randomizeLevels(chr);
+
+        chr.equipArrow = Const.NoItem;
+        chr.arrowNum = ushort.MaxValue;
+        if (hasWeaponOfType(chr, Const.BowType, Const.LightBowType)) {
+            giveArrows(chr);
+        }
+        chr.equipSubArrow = Const.NoItem;
+        chr.subArrowNum = ushort.MaxValue;
+        if (hasWeaponOfType(chr, Const.GreatbowType)) {
+            giveGreatArrows(chr);
+        }
+        chr.equipBolt = Const.NoItem;
+        chr.boltNum = ushort.MaxValue;
+        if (hasWeaponOfType(chr, Const.CrossbowType)) {
+            giveBolts(chr);
+        }
+        chr.equipSubBolt = Const.NoItem;
+        chr.subBoltNum = ushort.MaxValue;
+        if (hasWeaponOfType(chr, Const.BallistaType)) {
+            giveBallistaBolts(chr);
+        }
+
+        chr.equipSpell01 = -1;
+        chr.equipSpell02 = -1;
+        // if (chr.baseMag >= MinInt) {
+        //     randomizeSorceries(chr, spells);
+        // }
+        // if (chr.baseFai >= MinFai) {
+        //     randomizeIncantations(chr, spells);
+        // }
+    }
     private Dictionary<int, ItemLotEntry> getReplacementHashmap(IOrderedDictionary orderedDictionary) {
         Dictionary<int, ItemLotEntry> dict = new();
         for (int i = 0; i < orderedDictionary.Count; i++) {
