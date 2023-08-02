@@ -85,27 +85,6 @@ public partial class BingoRandomizer {
         patchSpEffectAtkPowerCorrectRate(swarmAtkParam1);
         patchSpEffectAtkPowerCorrectRate(swarmAtkParam2);
     }
-    private void calculateLevels() {
-        for (int i = 0; i < 10; i++) {
-            Param.Row? row = _charaInitParam[i + 3000];
-            if (row == null)
-                continue;
-            CharaInitParam chr = new(row);
-
-            Debug.WriteLine($"{_menuTextFmg[i + 288100]} {chr.soulLv} {addLevels(chr)}");
-        }
-    }
-    private static int addLevels(CharaInitParam chr) {
-        return chr.baseVit
-            + chr.baseWil
-            + chr.baseEnd
-            + chr.baseStr
-            + chr.baseDex
-            + chr.baseMag
-            + chr.baseFai
-            + chr.baseLuc;
-        ;
-    }
     private void randomizeCharaInitParam() {
         logItem(">>Class Randomization - All items are randomized, with each class having a .001% chance to gain or lose and item. Spells given class meets min stat requirements");
         logItem("Ammo is give if you get a ranged weapon. Catalyst is give if you have spells.\n");

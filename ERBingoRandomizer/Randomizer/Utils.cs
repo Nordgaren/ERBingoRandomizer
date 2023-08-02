@@ -1,5 +1,6 @@
 ﻿using ERBingoRandomizer.Params;
 using ERBingoRandomizer.Utility;
+using FSParam;
 using SoulsFormats;
 using System;
 using System.Collections.Generic;
@@ -18,25 +19,6 @@ public partial class BingoRandomizer {
     private void writeLog() {
         Directory.CreateDirectory(Config.SpoilerPath);
         File.WriteAllLines($"{Config.SpoilerPath}/spoiler-{_seed}.log", _randomizerLog);
-    }
-    private static void copyShopLineupParam(ShopLineupParam lot, ShopLineupParam shopLineupParam) {
-        lot.equipId = shopLineupParam.equipId;
-        lot.costType = shopLineupParam.costType;
-        lot.sellQuantity = shopLineupParam.sellQuantity;
-        lot.setNum = shopLineupParam.setNum;
-        lot.value = shopLineupParam.value;
-        lot.value_Add = shopLineupParam.value_Add;
-        lot.value_Magnification = shopLineupParam.value_Magnification;
-        lot.iconId = shopLineupParam.iconId;
-        lot.nameMsgId = shopLineupParam.nameMsgId;
-        lot.menuIconId = shopLineupParam.menuIconId;
-        lot.menuTitleMsgId = shopLineupParam.menuTitleMsgId;
-    }
-    private static int removeWeaponMetadata(int id) {
-        return id / 10000 * 10000;
-    }
-    private static int removeWeaponLevels(int id) {
-        return id / 100 * 100;
     }
     private Dictionary<int, ItemLotEntry> getReplacementHashmap(IOrderedDictionary orderedDictionary) {
         Dictionary<int, ItemLotEntry> dict = new();
@@ -64,20 +46,6 @@ public partial class BingoRandomizer {
         
         return dict;
     }
-    private static T getNewId<T>(int oldId, IList<T> vec) where T : IEquatable<int> {
-        if (vec.All(i => i.Equals(oldId))) {
-            Debug.WriteLine($"No New Ids for {oldId}");
-            return vec.Pop();
-        }
-
-        T newId = vec.Pop();
-        while (newId.Equals(oldId)) {
-            vec.Insert(0, newId);
-            newId = vec.Pop();
-        }
-
-        return newId;
-    }
     private void dedupeAndRandomizeVectors(IOrderedDictionary orderedDictionary) {
         for (int i = 0; i < orderedDictionary.Count; i++) {
             List<ItemLotEntry> value = (List<ItemLotEntry>)orderedDictionary[i]!;
@@ -93,31 +61,6 @@ public partial class BingoRandomizer {
             distinct.Shuffle(_random);
             orderedDictionary[i] = distinct;
         }
-    }
-    // ReSharper disable once SuggestBaseTypeForParameter
-    private static void addToOrderedDict<T>(IOrderedDictionary orderedDict, object key, T type) {
-        List<T>? ids = (List<T>?)orderedDict[key];
-        if (ids != null) {
-            ids.Add(type);
-        }
-        else {
-            ids = new List<T> {
-                type,
-            };
-            orderedDict.Add(key, ids);
-        }
-    }
-    private static bool chrCanUseWeapon(EquipParamWeapon wep, CharaInitParam chr) {
-        return wep.properStrength <= chr.baseStr
-            && wep.properAgility <= chr.baseDex
-            && wep.properMagic <= chr.baseMag
-            && wep.properFaith <= chr.baseFai
-            && wep.properLuck <= chr.baseLuc;
-    }
-    private static bool chrCanUseSpell(Magic spell, CharaInitParam chr) {
-        return spell.requirementIntellect <= chr.baseMag
-            && spell.requirementFaith <= chr.baseFai
-            && spell.requirementLuck <= chr.baseLuc;
     }
     private void replaceShopLineupParam(ShopLineupParam lot, IList<int> shopLineupParamDictionary, IList<ShopLineupParam> shopLineupParamRemembranceList) {
         if (lot.mtrlId == -1) {
@@ -179,10 +122,6 @@ public partial class BingoRandomizer {
 
         _lineHelpFmg[id] = string.Join(", ", str);
     }
-    private static int getSeedFromHashData(IEnumerable<byte> hashData) {
-        IEnumerable<byte[]> chunks = hashData.Chunk(4);
-        return chunks.Aggregate(0, (current, chunk) => current ^ BitConverter.ToInt32(chunk));
-    }
     private void writeFiles() {
         if (Directory.Exists(Const.BingoPath)) {
             Directory.Delete(Const.BingoPath, true);
@@ -199,10 +138,6 @@ public partial class BingoRandomizer {
         setBndFile(_menuMsgBND, Const.GR_LineHelpName, _lineHelpFmg.Write());
         File.WriteAllBytes($"{Const.BingoPath}/{Const.MenuMsgBNDPath}", _menuMsgBND.Write());
 
-    }
-    private static void setBndFile(IBinder binder, string fileName, byte[] bytes) {
-        BinderFile file = binder.Files.First(file => file.Name.EndsWith(fileName)) ?? throw new BinderFileNotFoundException(fileName);;
-        file.Bytes = bytes;
     }
     private void logReplacementDictionary(Dictionary<int, ItemLotEntry> dict) {
         foreach (KeyValuePair<int, ItemLotEntry> pair in dict) {
@@ -479,9 +414,95 @@ public partial class BingoRandomizer {
                 break;
         }
     }
+    private void calculateLevels() {
+        for (int i = 0; i < 10; i++) {
+            Param.Row? row = _charaInitParam[i + 3000];
+            if (row == null)
+                continue;
+            CharaInitParam chr = new(row);
+
+            Debug.WriteLine($"{_menuTextFmg[i + 288100]} {chr.soulLv} {addLevels(chr)}");
+        }
+    }
+    private static T getNewId<T>(int oldId, IList<T> vec) where T : IEquatable<int> {
+        if (vec.All(i => i.Equals(oldId))) {
+            Debug.WriteLine($"No New Ids for {oldId}");
+            return vec.Pop();
+        }
+
+        T newId = vec.Pop();
+        while (newId.Equals(oldId)) {
+            vec.Insert(0, newId);
+            newId = vec.Pop();
+        }
+
+        return newId;
+    }
+    // ReSharper disable once SuggestBaseTypeForParameter
+    private static void addToOrderedDict<T>(IOrderedDictionary orderedDict, object key, T type) {
+        List<T>? ids = (List<T>?)orderedDict[key];
+        if (ids != null) {
+            ids.Add(type);
+        }
+        else {
+            ids = new List<T> {
+                type,
+            };
+            orderedDict.Add(key, ids);
+        }
+    }
+    private static bool chrCanUseWeapon(EquipParamWeapon wep, CharaInitParam chr) {
+        return wep.properStrength <= chr.baseStr
+            && wep.properAgility <= chr.baseDex
+            && wep.properMagic <= chr.baseMag
+            && wep.properFaith <= chr.baseFai
+            && wep.properLuck <= chr.baseLuc;
+    }
+    private static bool chrCanUseSpell(Magic spell, CharaInitParam chr) {
+        return spell.requirementIntellect <= chr.baseMag
+            && spell.requirementFaith <= chr.baseFai
+            && spell.requirementLuck <= chr.baseLuc;
+    }
+    private static int getSeedFromHashData(IEnumerable<byte> hashData) {
+        IEnumerable<byte[]> chunks = hashData.Chunk(4);
+        return chunks.Aggregate(0, (current, chunk) => current ^ BitConverter.ToInt32(chunk));
+    }
+    private static void setBndFile(IBinder binder, string fileName, byte[] bytes) {
+        BinderFile file = binder.Files.First(file => file.Name.EndsWith(fileName)) ?? throw new BinderFileNotFoundException(fileName);;
+        file.Bytes = bytes;
+    }
     private static void patchSpEffectAtkPowerCorrectRate(AtkParam atkParam) {
         atkParam.spEffectAtkPowerCorrectRate_byPoint = 100;
         atkParam.spEffectAtkPowerCorrectRate_byRate = 100;
         atkParam.spEffectAtkPowerCorrectRate_byDmg = 100;
+    }
+    private static void copyShopLineupParam(ShopLineupParam lot, ShopLineupParam shopLineupParam) {
+        lot.equipId = shopLineupParam.equipId;
+        lot.costType = shopLineupParam.costType;
+        lot.sellQuantity = shopLineupParam.sellQuantity;
+        lot.setNum = shopLineupParam.setNum;
+        lot.value = shopLineupParam.value;
+        lot.value_Add = shopLineupParam.value_Add;
+        lot.value_Magnification = shopLineupParam.value_Magnification;
+        lot.iconId = shopLineupParam.iconId;
+        lot.nameMsgId = shopLineupParam.nameMsgId;
+        lot.menuIconId = shopLineupParam.menuIconId;
+        lot.menuTitleMsgId = shopLineupParam.menuTitleMsgId;
+    }
+    private static int removeWeaponMetadata(int id) {
+        return id / 10000 * 10000;
+    }
+    private static int removeWeaponLevels(int id) {
+        return id / 100 * 100;
+    }
+    private static int addLevels(CharaInitParam chr) {
+        return chr.baseVit
+            + chr.baseWil
+            + chr.baseEnd
+            + chr.baseStr
+            + chr.baseDex
+            + chr.baseMag
+            + chr.baseFai
+            + chr.baseLuc;
     }
 }
