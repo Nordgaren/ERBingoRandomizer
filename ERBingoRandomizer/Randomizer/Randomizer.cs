@@ -321,9 +321,10 @@ public partial class BingoRandomizer {
         // }
         shopLineupParamRemembranceList.Shuffle(_random);
         shopLineupParamDragonList.Shuffle(_random);
-        logItem("\n>> Magic Replacement.");
+        logItem("\n>> All Magic Replacement.");
         logReplacementDictionaryMagic(magicShopReplacement);
 
+        logItem("\n>> Shop Magic Replacement.");
         foreach (Param.Row row in _shopLineupParam.Rows) {
             logShopIdMagic(row.ID);
             if ((byte)row["equipType"]!.Value.Value != Const.ShopLineupGoodsCategory || row.ID > 101980) {
@@ -363,11 +364,11 @@ public partial class BingoRandomizer {
         }
     }
     private void patchAtkParam() {
-        Param.Row? swarmOfFlies1 = _atkParam_Pc[72100];
-        Param.Row? swarmOfFlies2 = _atkParam_Pc[72101];
+        Param.Row swarmOfFlies1 = _atkParam_Pc[72100]?? throw new InvalidOperationException("Entry 72100 not found in AtkParam_Pc");
+        Param.Row swarmOfFlies2 = _atkParam_Pc[72101]?? throw new InvalidOperationException("Entry 72101 not found in AtkParam_Pc");
 
-        AtkParam swarmAtkParam1 = new(swarmOfFlies1 ?? throw new InvalidOperationException());
-        AtkParam swarmAtkParam2 = new(swarmOfFlies2 ?? throw new InvalidOperationException());
+        AtkParam swarmAtkParam1 = new(swarmOfFlies1);
+        AtkParam swarmAtkParam2 = new(swarmOfFlies2);
         patchSpEffectAtkPowerCorrectRate(swarmAtkParam1);
         patchSpEffectAtkPowerCorrectRate(swarmAtkParam2);
     }
