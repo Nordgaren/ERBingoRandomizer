@@ -71,7 +71,7 @@ public partial class BingoRandomizer {
         writeFiles();
         writeLog();
         SeedInfo = new SeedInfo(_seed,
-            BitConverter.ToString(SHA256.HashData(File.ReadAllBytes($"{Const.BingoPath}/{Const.RegulationName}"))).Replace("-", ""));
+            Util.GetShaRegulation256Hash());
         string seedJson = JsonSerializer.Serialize(SeedInfo);
         File.WriteAllText(Config.LastSeedPath, seedJson);
         return Task.CompletedTask;

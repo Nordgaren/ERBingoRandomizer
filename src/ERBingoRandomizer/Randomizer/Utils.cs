@@ -97,6 +97,23 @@ public partial class BingoRandomizer {
     }
     private Dictionary<int, ItemLotEntry> getReplacementHashmap(IOrderedDictionary orderedDictionary) {
         Dictionary<int, ItemLotEntry> dict = new();
+
+        List<ItemLotEntry> bows = (List<ItemLotEntry>?)orderedDictionary[(object)Const.BowType] ?? new List<ItemLotEntry>();
+        List<ItemLotEntry> lightbows = (List<ItemLotEntry>?)orderedDictionary[(object)Const.LightBowType] ?? new List<ItemLotEntry>();
+        List<ItemLotEntry> greatbows = (List<ItemLotEntry>?)orderedDictionary[(object)Const.GreatbowType] ?? new List<ItemLotEntry>();
+        List<ItemLotEntry> crossbows = (List<ItemLotEntry>?)orderedDictionary[(object)Const.CrossbowType] ?? new List<ItemLotEntry>();
+        List<ItemLotEntry> ballista = (List<ItemLotEntry>?)orderedDictionary[(object)Const.BallistaType] ?? new List<ItemLotEntry>();
+
+        bows.AddRange(lightbows);
+        bows.AddRange(greatbows);
+        bows.AddRange(crossbows);
+        bows.AddRange(ballista);
+        orderedDictionary[(object)Const.BowType] = bows;
+        orderedDictionary.Remove(Const.LightBowType);
+        orderedDictionary.Remove(Const.GreatbowType);
+        orderedDictionary.Remove(Const.CrossbowType);
+        orderedDictionary.Remove(Const.BallistaType);
+
         for (int i = 0; i < orderedDictionary.Count; i++) {
             List<ItemLotEntry> value = (List<ItemLotEntry>)orderedDictionary[i]!;
             List<ItemLotEntry> itemLotEntries = new(value);

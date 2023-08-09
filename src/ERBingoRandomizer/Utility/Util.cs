@@ -5,6 +5,7 @@ using System.Collections.Generic;
 using System.Drawing;
 using System.IO;
 using System.Linq;
+using System.Security.Cryptography;
 using System.Windows.Forms;
 using System.Xml;
 
@@ -157,5 +158,17 @@ static class Util {
             committed = items.Take(lineCount).ToList();
         }
         return string.Join("\n", committed.Select(t => t.Trim(' ')));
+    }
+    private static string GetFileSha256Hash(string path) {
+        if (File.Exists(path)) {
+            byte[] file = File.ReadAllBytes(path);
+            byte[] hash = SHA256.HashData(file);
+            return BitConverter.ToString(hash).Replace("-", "");
+        }
+
+        return string.Empty;
+    }
+    public static string GetShaRegulation256Hash() {
+        return GetFileSha256Hash($"{Const.BingoPath}/{Const.RegulationName}");
     }
 }
