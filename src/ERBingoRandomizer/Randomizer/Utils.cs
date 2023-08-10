@@ -509,8 +509,9 @@ public partial class BingoRandomizer {
     private void calculateLevels() {
         for (int i = 0; i < 10; i++) {
             Param.Row? row = _charaInitParam[i + 3000];
-            if (row == null)
+            if (row == null) {
                 continue;
+            }
             CharaInitParam chr = new(row);
 
             Debug.WriteLine($"{_menuTextFmg[i + 288100]} {chr.soulLv} {addLevels(chr)}");

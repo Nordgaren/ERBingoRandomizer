@@ -29,8 +29,9 @@ static class Util {
         for (int i = 1; num != 0; i++) {
             num /= 10;
 
-            if (i == n)
+            if (i == n) {
                 return num;
+            }
         }
 
         return 0;
@@ -44,35 +45,40 @@ static class Util {
         for (int i = 1; end != 0; i++) {
             end *= 10;
 
-            if (i == n)
+            if (i == n) {
                 return end;
+            }
         }
 
         return end;
     }
 
     public static string? TryGetGameInstallLocation(string gamePath) {
-        if (!gamePath.StartsWith("\\") && !gamePath.StartsWith("/"))
+        if (!gamePath.StartsWith("\\") && !gamePath.StartsWith("/")) {
             return null;
+        }
 
         string? steamPath = GetSteamInstallPath();
 
-        if (string.IsNullOrWhiteSpace(steamPath))
+        if (string.IsNullOrWhiteSpace(steamPath)) {
             return null;
+        }
 
         string[] libraryFolders = File.ReadAllLines($@"{steamPath}/SteamApps/libraryfolders.vdf");
         char[] separator = { '\t' };
 
         foreach (string line in libraryFolders) {
-            if (!line.Contains("\"path\""))
+            if (!line.Contains("\"path\"")) {
                 continue;
+            }
 
             string[] split = line.Split(separator, StringSplitOptions.RemoveEmptyEntries);
             string libPath = split.FirstOrDefault(x => x.ToLower().Contains("steam"))?.Replace("\"", "").Replace("\\\\", "\\") ?? string.Empty;
             string libraryPath = libPath + gamePath;
 
-            if (File.Exists(libraryPath))
+            if (File.Exists(libraryPath)) {
                 return libraryPath.Replace("\\\\", "\\");
+            }
         }
 
         return null;
@@ -85,8 +91,9 @@ static class Util {
             string registryKey = pathValueTuple.Path;
             installPath = (string?)Registry.GetValue(registryKey, pathValueTuple.Value, null);
 
-            if (installPath != null)
+            if (installPath != null) {
                 break;
+            }
         }
 
         return installPath;
@@ -94,8 +101,9 @@ static class Util {
     public static string? GetOodlePath() {
         foreach (string game in _oodleGames) {
             string? path = TryGetGameInstallLocation($"\\steamapps\\common\\{game}\\Game\\oo2core_6_win64.dll");
-            if (path != null)
+            if (path != null) {
                 return path;
+            }
         }
 
         return null;
@@ -115,8 +123,9 @@ static class Util {
     }
     public static ulong ComputeHash(string path, BHD5.Game game) {
         string hashable = path.Trim().Replace('\\', '/').ToLowerInvariant();
-        if (!hashable.StartsWith("/"))
+        if (!hashable.StartsWith("/")) {
             hashable = '/' + hashable;
+        }
         return game >= BHD5.Game.EldenRing ? hashable.Aggregate(0ul, (i, c) => i * PRIME64 + c) : hashable.Aggregate(0u, (i, c) => i * PRIME + c);
     }
     public static string SplitCharacterText(bool useSpaces, List<string> items) {

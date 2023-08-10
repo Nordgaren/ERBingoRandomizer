@@ -17,8 +17,9 @@ public static class Kernel32 {
 
     public static IntPtr LoadLibrary(string path) {
         IntPtr handle = LoadLibraryW(path);
-        if (handle != IntPtr.Zero)
+        if (handle != IntPtr.Zero) {
             return handle;
+        }
         uint error = GetLastError();
         throw new DllNotFoundException($"{Path.GetFileName(path)} not found at path {path}\n" +
             $"Last Error = {error}");

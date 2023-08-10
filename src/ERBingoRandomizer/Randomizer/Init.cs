@@ -92,9 +92,10 @@ public partial class BingoRandomizer {
         }
     }
     private byte[] getOrOpenFile(string path) {
-        if (File.Exists($"{Config.CachePath}/{path}"))
+        if (File.Exists($"{Config.CachePath}/{path}")) {
             return File.ReadAllBytes($"{Config.CachePath}/{path}");
-        
+        }
+
         byte[] file = _bhd5Reader.GetFile(path) ?? throw new InvalidOperationException($"Could not find file {Config.CachePath}/{path}");
         Directory.CreateDirectory(Path.GetDirectoryName($"{Config.CachePath}/{path}") ?? throw new InvalidOperationException($"Could not get directory name for file {Config.CachePath}/{path}"));
         File.WriteAllBytes($"{Config.CachePath}/{path}", file);

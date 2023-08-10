@@ -9,8 +9,9 @@ namespace ERBingoRandomizer.Utility;
 public static class ExtensionMethods {
     public static bool ApplyParamDefsCarefully(this Param param, List<PARAMDEF> defs) {
         foreach (PARAMDEF def in defs) {
-            if (param.ParamType != def.ParamType)
+            if (param.ParamType != def.ParamType) {
                 continue;
+            }
             param.ApplyParamdef(def);
             return true;
         }

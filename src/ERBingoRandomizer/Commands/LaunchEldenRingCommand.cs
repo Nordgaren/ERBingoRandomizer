@@ -40,8 +40,9 @@ public class LaunchEldenRingCommand : CommandBase {
     private static bool eldenRingIsOpen() {
         Process[] processes = Process.GetProcesses();
         foreach (Process process in processes) {
-            if (process.ProcessName is not "eldenring")
+            if (process.ProcessName is not "eldenring") {
                 continue;
+            }
             // if (process.HasExited) {
             //     _mwViewModel.DisplayMessage("Elden Ring is closing!");
             // }

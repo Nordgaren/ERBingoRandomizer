@@ -158,8 +158,9 @@ public class MainWindowViewModel : ViewModelBase, IDisposable {
 
     private static void PrintException(Exception? ex) {
         while (true) {
-            if (ex == null)
+            if (ex == null) {
                 return;
+            }
             Debug.WriteLine($"Message: {ex.Message}");
             Debug.WriteLine("Stacktrace:");
             Debug.WriteLine(ex.StackTrace);
