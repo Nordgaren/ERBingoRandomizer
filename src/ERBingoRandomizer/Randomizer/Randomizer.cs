@@ -110,10 +110,10 @@ public partial class BingoRandomizer {
         OrderedDictionary categoryDictEnemy = new();
         OrderedDictionary categoryDictMap = new();
 
-        IEnumerable<Param.Row> itemLotParam_enemy = _itemLotParam_enemy.Rows.Where(id => !Unk.unkItemLotParamEnemyWeapons.Contains(id.ID));
-        IEnumerable<Param.Row> itemLotParam_map = _itemLotParam_map.Rows.Where(id => !Unk.unkItemLotParamMapWeapons.Contains(id.ID));
+        IEnumerable<Param.Row> itemLotParamMap = _itemLotParam_map.Rows.Where(id => !Unk.unkItemLotParamMapWeapons.Contains(id.ID));
+        IEnumerable<Param.Row> itemLotParamEnemy = _itemLotParam_enemy.Rows.Where(id => !Unk.unkItemLotParamEnemyWeapons.Contains(id.ID));
         
-        foreach (Param.Row row in itemLotParam_enemy.Concat(itemLotParam_map)) {
+        foreach (Param.Row row in itemLotParamEnemy.Concat(itemLotParamMap)) {
             Param.Column[] itemIds = row.Cells.Take(Const.ItemLots).ToArray();
             Param.Column[] categories = row.Cells.Skip(Const.CategoriesStart).Take(Const.ItemLots).ToArray();
             Param.Column[] chances = row.Cells.Skip(Const.ChanceStart).Take(Const.ItemLots).ToArray();
