@@ -1,7 +1,7 @@
 # ERBingoRandomizer
 A Randomizer mod made for [Bingo Brawlers](https://bingobrawlers.com/) Elden Ring Bingo Season 2!
 * This randomizer randomizes dropped and weapons on the map by category, including the ranged weapons, which are all counted as one category (bows, light bows, greatbows, crossbows and ballistas are all in the same pool).  
-* It randomizes the starting classes by gives them all random stats. Each class will be level 9 and have a pool of 88 stats. Each character class can get any weapon, except rememberence weapons and staves/seals. The Prisoner will start with a staff and 1 or two spells, and the Confessor will start with a seal and one or two spells. Starting armor is also randomized.  
+* It randomizes the starting classes by gives them all random stats. Each class will be level 9 and have a pool of 88 stats. Each character class can get any weapon, except rememberence weapons and staves/seals. The Prisoner will start with a staff and one or two spells, and the Confessor will start with a seal and one or two spells. Starting armor is also randomized.  
 * Shops will have weapons fully randomized with any weapon in the game, aside from rememberance weapons. Rememberance shops are randomized with all other rememberance weapons, Spell shops are randomized with other spells shops, and the dragon incantation shops are randomized between themselves, as well.
 * This mod also patches the AtkParamPC params to fix a bug with SpEffectAtkPowerCorrectRate that caused swarm of flies damage to be incorrectly calculated in some circumstances.   
 
