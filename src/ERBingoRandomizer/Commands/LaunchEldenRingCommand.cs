@@ -10,11 +10,9 @@ public class LaunchEldenRingCommand : CommandBase {
         _mwViewModel = mwViewModel;
         _mwViewModel.PropertyChanged += ViewModel_PropertyChanged;
     }
-
     public override bool CanExecute(object? parameter) {
         return _mwViewModel.FilesReady && !_mwViewModel.InProgress;
     }
-
     public override void Execute(object? parameter) {
         if (eldenRingIsOpen()) {
             _mwViewModel.DisplayMessage("Elden Ring is still open. Please close Elden Ring or wait for it to full exit.");
@@ -25,7 +23,6 @@ public class LaunchEldenRingCommand : CommandBase {
         launchEldenRing();
     }
     private static void launchEldenRing() {
-
         Process me2 = new() {
             StartInfo = new ProcessStartInfo {
                 FileName = "launchmod_bingo.bat",
@@ -34,7 +31,6 @@ public class LaunchEldenRingCommand : CommandBase {
                 CreateNoWindow = true,
             },
         };
-
         me2.Start();
     }
     private static bool eldenRingIsOpen() {
@@ -43,14 +39,10 @@ public class LaunchEldenRingCommand : CommandBase {
             if (process.ProcessName is not "eldenring") {
                 continue;
             }
-            // if (process.HasExited) {
-            //     _mwViewModel.DisplayMessage("Elden Ring is closing!");
-            // }
             return true;
         }
         return false;
     }
-
     private void ViewModel_PropertyChanged(object? sender, PropertyChangedEventArgs e) {
         if (e.PropertyName is nameof(MainWindowViewModel.FilesReady)
             or nameof(MainWindowViewModel.InProgress)) {

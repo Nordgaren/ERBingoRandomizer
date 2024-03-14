@@ -171,7 +171,7 @@ static class Util {
     private static string GetFileSha256Hash(string path) {
         if (File.Exists(path)) {
             byte[] file = File.ReadAllBytes(path);
-            byte[] hash = SHA256.HashData(file);
+            byte[] hash = SHA256.HashData(file[0x10..]);
             return BitConverter.ToString(hash).Replace("-", "");
         }
 

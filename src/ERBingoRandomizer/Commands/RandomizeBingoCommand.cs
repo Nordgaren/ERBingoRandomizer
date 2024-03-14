@@ -1,8 +1,10 @@
 ﻿using ERBingoRandomizer.Randomizer;
+using ERBingoRandomizer.Utility;
 using ERBingoRandomizer.ViewModels;
 using System;
 using System.ComponentModel;
 using System.IO;
+using System.Text.Json;
 using System.Threading.Tasks;
 
 namespace ERBingoRandomizer.Commands;
@@ -29,9 +31,11 @@ public class RandomizeBingoCommand : AsyncCommandBase {
         try {
             BingoRandomizer randomizer = await BingoRandomizer.BuildRandomizerAsync(_mwViewModel.Path!, _mwViewModel.Seed, _mwViewModel.CancellationToken);
             await Task.Run(() => randomizer.RandomizeRegulation());
-            _mwViewModel.LastSeed = randomizer.SeedInfo;
+            _mwViewModel.LastSeed = randomizer.GetSeedInfo();
+            string seedJson = JsonSerializer.Serialize(_mwViewModel.LastSeed);
+            await File.WriteAllTextAsync(Config.LastSeedPath, seedJson);
             _mwViewModel.FilesReady = true;
-            _mwViewModel.DisplayMessage($"Randomization Finished. Seed: {randomizer.SeedInfo.Seed}");
+            _mwViewModel.DisplayMessage($"Randomization Finished. Seed: {randomizer.GetSeedInfo().Seed}");
         }
         catch (OperationCanceledException) {
             _mwViewModel.DisplayMessage("Randomization Canceled");

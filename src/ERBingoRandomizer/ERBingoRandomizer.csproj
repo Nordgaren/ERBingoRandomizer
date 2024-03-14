@@ -83,4 +83,11 @@
     </ItemGroup>
 
 
+    <ItemGroup>
+      <Compile Remove="Randomizer\GearRandomizer.cs" />
+      <Compile Remove="Randomizer\Init.cs" />
+    </ItemGroup>
+
+
+
 </Project>

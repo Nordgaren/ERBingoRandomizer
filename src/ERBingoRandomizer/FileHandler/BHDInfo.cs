@@ -15,7 +15,8 @@ public class BHDInfo {
 
     }
     public byte[]? GetFile(ulong hash) {
-        BHD5.Bucket bucket = _bhd.Buckets[(int)(hash % (ulong)_bhd.Buckets.Count)];
+        ulong index = hash % (ulong)_bhd.Buckets.Count;
+        BHD5.Bucket bucket = _bhd.Buckets[(int)index];
 
         foreach (BHD5.FileHeader header in bucket) {
             if (header.FileNameHash != hash) {

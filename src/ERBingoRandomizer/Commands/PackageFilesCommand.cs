@@ -18,7 +18,6 @@ public class PackageFilesCommand : AsyncCommandBase {
     public override bool CanExecute(object? parameter) {
         return _mwViewModel.FilesReady && !_mwViewModel.Packaging && !_mwViewModel.InProgress;
     }
-
     protected override async Task ExecuteAsync(object? parameter) {
         try {
             _mwViewModel.Packaging = true;
@@ -34,7 +33,6 @@ public class PackageFilesCommand : AsyncCommandBase {
             _mwViewModel.Packaging = false;
         }
     }
-
     private Task PackageFiles() {
         string[] filenames = Directory.GetFiles(Const.ME2Path, "*", SearchOption.AllDirectories);
         Directory.CreateDirectory(Config.PackagesPath);
@@ -54,10 +52,8 @@ public class PackageFilesCommand : AsyncCommandBase {
                     sourceBytes = fs.Read(buffer, 0, buffer.Length);
                     stream.Write(buffer, 0, sourceBytes);
                 } while (sourceBytes > 0);
-
             }
         }
-
         return Task.CompletedTask;
     }
 

@@ -1,12 +1,16 @@
-﻿using ERBingoRandomizer.Params;
+﻿using ERBingoRandomizer.Utility;
 using FSParam;
-using ERBingoRandomizer.Utility;
+using System;
+using ERBingoRandomizer.Params;
 
+namespace ERBingoRandomizer.Randomizer.Strategies.CharaInitParam;
 
-namespace ERBingoRandomizer.Randomizer;
-
-public partial class BingoRandomizer {
-    private void randomizeLevels(CharaInitParam chr) {
+public class Season2LevelRandomizer : IBingoLevelStrategy {
+    private Random _random;
+    public Season2LevelRandomizer(Random random) {
+        _random = random;
+    }
+    public void RandomizeLevels(Params.CharaInitParam chr) {
 
         chr.soulLv = Config.SoulLevel;
 
@@ -65,3 +69,4 @@ public partial class BingoRandomizer {
         return -1;
     }
 }
+

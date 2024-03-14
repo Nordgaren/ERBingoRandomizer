@@ -37,4 +37,44 @@ public class EquipParamWeapon {
     public byte properMagic { get => (byte)_properMagic.Value; set => _properMagic.Value = value; }
     public byte properFaith { get => (byte)_properFaith.Value; set => _properFaith.Value = value; }
     public byte properLuck { get => (byte)_properLuck.Value; set => _properLuck.Value = value; }
+    
+    public enum WeaponType : ushort
+    {
+        Dagger = 1, //Dagger
+        StraightSword = 3, //SwordNormal
+        Greatsword = 5, //SwordLarge
+        ColossalSword = 7, //SwordGigantic
+        CurvedSword = 9, //SabreNormal
+        CurvedGreatsword = 11, //SabreLarge
+        Katana = 13, //katana
+        Twinblade = 14, //SwordDoulbeEdge
+        ThrustingSword = 15, //SwordPierce
+        HeavyThrustingSword = 16, //RapierHeavy
+        Axe = 17, //AxeNormal
+        Greataxe = 19, //AxeLarge
+        Hammer = 21, //HammerNormal
+        GreatHammer = 23, //HammerLarge
+        Flail = 24, //Flail
+        Spear = 25, //SpearNormal
+        SpearLarge = 26, //SpearLarge UNUSED
+        GreatSpear = 28, //SpearHeavy
+        Halberd = 29, //SpearAxe
+        Reaper = 31, //Sickle
+        Fist = 35, //Knuckle
+        Claws = 37, //Claw
+        Whip = 39, //Whip
+        ColossalWeapon = 41, //Axhammerlarge
+        LightBow = 50, //BowSmall
+        Bow = 51, //BowNormal
+        Greatbow = 53, //BowLarge
+        Crossbow = 55, //Clossbow
+        Ballista = 56, //Ballista
+        GlintstoneStaff = 57, //Staff
+        Sorcery = 58, //Sorcery UNUSED
+        FingerSeal = 61, //Talisman
+        SmallShield = 65, //ShieldSmall
+        MediumShield = 67, //ShieldNormal
+        Greatshield = 69, //SheildLarge
+        Torch = 87 //Torch
+    }
 }
