@@ -31,14 +31,14 @@ public class BHD5Reader {
         }
 
         bool cacheExists = File.Exists(Data0CachePath);
-        byte[][] msbBytes = new byte[4][];
+        byte[][] bhdBytes = new byte[4][];
         List<Task> tasks = new();
         switch (cacheExists) {
             case false:
-                tasks.Add(Task.Run(() => { msbBytes[0] = CryptoUtil.DecryptRsa($"{path}/{Data0}.bhd", Const.ArchiveKeys.DATA0, cancellationToken).ToArray(); }));
+                tasks.Add(Task.Run(() => { bhdBytes[0] = CryptoUtil.DecryptRsa($"{path}/{Data0}.bhd", Const.ArchiveKeys.DATA0, cancellationToken).ToArray(); }));
                 break;
             default:
-                msbBytes[0] = File.ReadAllBytes(Data0CachePath);
+                bhdBytes[0] = File.ReadAllBytes(Data0CachePath);
                 break;
         }
 
@@ -53,12 +53,12 @@ public class BHD5Reader {
             cancellationToken.ThrowIfCancellationRequested();
         }
 
-        BHD5 data0 = readBHD5(msbBytes[0]);
+        BHD5 data0 = readBHD5(bhdBytes[0]);
         _data0 = new BHDInfo(data0, $"{path}/{Data0}");
         cancellationToken.ThrowIfCancellationRequested();
 
         if (cache && !cacheExists) {
-            File.WriteAllBytes($"{Data0CachePath}.bhd", msbBytes[0]);
+            File.WriteAllBytes($"{Data0CachePath}.bhd", bhdBytes[0]);
         }
     }
     // This is for cached decrypted BHD5s.
