@@ -150,12 +150,12 @@ static class Util {
             foreach (string token in item.Split(' ').Select((s, i) => (i == 0 ? "" : " ") + s)) {
                 string lastLine = cand[cand.Count - 1];
                 string addedLine = (lastLine + token).Trim(' ');
-                if (TextRenderer.MeasureText(addedLine, f).Width < sizeLimit) {
-                    cand[cand.Count - 1] = addedLine;
-                }
-                else {
-                    cand.Add(token.Trim(' '));
-                }
+                // if (TextRenderer.MeasureText(addedLine, f).Width < sizeLimit) {
+                //     cand[cand.Count - 1] = addedLine;
+                // }
+                // else {
+                //     cand.Add(token.Trim(' '));
+                // }
             }
             if (cand.Count > lineCount) {
                 break;
