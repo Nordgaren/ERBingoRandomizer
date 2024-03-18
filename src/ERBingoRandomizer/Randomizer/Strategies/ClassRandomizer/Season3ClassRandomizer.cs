@@ -366,17 +366,11 @@ public class Season3ClassRandomizer : IBingoClassStrategy {
     }
 
     private static bool chrCanUseWeapon(EquipParamWeapon wep, Params.CharaInitParam chr) {
-        return checkStrReqs(wep, chr)
+        return wep.properStrengthAssumingTwoHanding <= chr.baseStr
                && wep.properAgility <= chr.baseDex
                && wep.properMagic <= chr.baseMag
                && wep.properFaith <= chr.baseFai
                && wep.properLuck <= chr.baseLuc;
-    }
-
-    private static bool checkStrReqs(EquipParamWeapon wep, Params.CharaInitParam chr) {
-        return wep.properStrength <= chr.baseStr ||
-               (wep is { bothHandEquipable: 1, isDualBlade: 0 } &&
-                Math.Ceiling(wep.properStrength / 1.5) <= chr.baseStr);
     }
 
     private static bool chrCanUseSpell(Magic spell, Params.CharaInitParam chr) {
@@ -521,8 +515,8 @@ public class Season3ClassRandomizer : IBingoClassStrategy {
     private string getRequiredLevelsWeapon(Params.CharaInitParam chr, int id) {
         EquipParamWeapon wep = _resources.WeaponDictionary[id];
         int reqLevels = 0;
-        if (wep.properStrength > chr.baseStr) {
-            reqLevels += wep.properStrength - chr.baseStr;
+        if (wep.properStrengthAssumingTwoHanding > chr.baseStr) {
+            reqLevels += wep.properStrengthAssumingTwoHanding - chr.baseStr;
         }
 
         if (wep.properAgility > chr.baseDex) {

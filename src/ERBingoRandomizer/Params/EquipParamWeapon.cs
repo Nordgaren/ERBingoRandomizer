@@ -1,4 +1,5 @@
-﻿using FSParam;
+﻿using System;
+using FSParam;
 
 namespace ERBingoRandomizer.Params;
 
@@ -48,6 +49,8 @@ public class EquipParamWeapon {
     public byte properMagic { get => (byte)_properMagic.Value; set => _properMagic.Value = value; }
     public byte properFaith { get => (byte)_properFaith.Value; set => _properFaith.Value = value; }
     public byte properLuck { get => (byte)_properLuck.Value; set => _properLuck.Value = value; }
+    public byte properStrengthAssumingTwoHanding => canTwoHand ? (byte)Math.Ceiling(properStrength / 1.5) : properStrength;
+    private bool canTwoHand => this is { bothHandEquipable: 1, isDualBlade: 0 };
     
     public enum WeaponType : ushort
     {
