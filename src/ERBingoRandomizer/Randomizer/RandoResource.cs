@@ -46,6 +46,8 @@ public class RandoResource {
     internal Param ItemLotParamEnemy;
     internal Param ShopLineupParam;
     internal Param AtkParamPc;
+    // EMEVDs
+    internal EMEVD CommonEmevd;
     // Dictionaries
     internal Dictionary<int, EquipParamWeapon> WeaponDictionary;
     internal Dictionary<int, EquipParamWeapon> CustomWeaponDictionary;
@@ -83,6 +85,8 @@ public class RandoResource {
         getParams();
         _cancellationToken.ThrowIfCancellationRequested();
         getFmgs();
+        _cancellationToken.ThrowIfCancellationRequested();
+        getEmevds();
         _cancellationToken.ThrowIfCancellationRequested();
         buildDictionaries();
         _cancellationToken.ThrowIfCancellationRequested();
@@ -126,6 +130,12 @@ public class RandoResource {
         foreach (BinderFile file in MenuMsgBnd.Files) {
             getFmgs(file);
         }
+    }
+    private void getEmevds()
+    {
+        // This is only used in S3, but always fetch and write them for now.
+        byte[] emevdBytes = getOrOpenFile(Const.CommonEventPath);
+        CommonEmevd = EMEVD.Read(emevdBytes);
     }
     private byte[] getOrOpenFile(string path) {
         if (File.Exists($"{Config.CachePath}/{path}")) {

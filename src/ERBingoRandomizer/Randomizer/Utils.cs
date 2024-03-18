@@ -109,7 +109,8 @@ public partial class BingoRandomizer {
         Directory.CreateDirectory(Path.GetDirectoryName($"{Const.BingoPath}/{Const.MenuMsgBNDPath}") ?? throw new InvalidOperationException());
         setBndFile(_resources.MenuMsgBnd, Const.GR_LineHelpName, _resources.LineHelpFmg.Write());
         File.WriteAllBytes($"{Const.BingoPath}/{Const.MenuMsgBNDPath}", _resources.MenuMsgBnd.Write());
-
+        Directory.CreateDirectory(Path.GetDirectoryName($"{Const.BingoPath}/{Const.CommonEventPath}") ?? throw new InvalidOperationException());
+        File.WriteAllBytes($"{Const.BingoPath}/{Const.CommonEventPath}", _resources.CommonEmevd.Write());
     }
     private void logReplacementDictionary(Dictionary<int, ItemLotEntry> dict) {
         foreach (KeyValuePair<int, ItemLotEntry> pair in dict) {

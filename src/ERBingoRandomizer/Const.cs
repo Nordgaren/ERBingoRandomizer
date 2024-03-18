@@ -12,6 +12,7 @@ public static class Const {
     public const string RegulationName = "regulation.bin";
     public const string ItemMsgBNDPath = "/msg/engus/item.msgbnd.dcx";
     public const string MenuMsgBNDPath = "/msg/engus/menu.msgbnd.dcx";
+    public const string CommonEventPath = "/event/common.emevd.dcx";
     // Params  
     public const string EquipMtrlSetParamName = "EquipMtrlSetParam.param";
     public const string EquipParamWeaponName = "EquipParamWeapon.param";

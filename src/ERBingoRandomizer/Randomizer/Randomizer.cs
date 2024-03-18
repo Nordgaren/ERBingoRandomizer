@@ -25,6 +25,9 @@ public partial class BingoRandomizer {
     // Strategies
     private readonly IBingoClassStrategy _classRandomizer;
 
+    // TODO: Switch this out based on season, or use granular feature object for individual features.
+    private static bool Season3 = true;
+
     //static async method that behaves like a constructor    
     public static async Task<BingoRandomizer> BuildRandomizerAsync(string path, string seed,
         CancellationToken cancellationToken) {
@@ -37,7 +40,14 @@ public partial class BingoRandomizer {
     private readonly CancellationToken _cancellationToken;
     private BingoRandomizer(string path, string seed, CancellationToken cancellationToken) {
         _resources = new RandoResource(path, seed, cancellationToken);
-        _classRandomizer = new Season2ClassRandomizer(new Season2LevelRandomizer(_resources.Random), _resources);
+        if (Season3)
+        {
+            _classRandomizer = new Season3ClassRandomizer(new Season2LevelRandomizer(_resources.Random), _resources);
+        }
+        else
+        {
+            _classRandomizer = new Season2ClassRandomizer(new Season2LevelRandomizer(_resources.Random), _resources);
+        }
         _cancellationToken = cancellationToken;
     }
 
@@ -58,6 +68,10 @@ public partial class BingoRandomizer {
         patchAtkParam();
         _cancellationToken.ThrowIfCancellationRequested();
         changeUpgradeMaterialType();
+        _cancellationToken.ThrowIfCancellationRequested();
+        if (Season3) {
+            unlockSeason3Graces();
+        }
         _cancellationToken.ThrowIfCancellationRequested();
         writeFiles();
         Logger.WriteLog(_resources.Seed);
@@ -413,6 +427,120 @@ public partial class BingoRandomizer {
                 itemIds[i].SetValue(row, entry);
             }
         }
+    }
+    private void unlockSeason3Graces() {
+        // There are a few parts to this:
+        // - Set many flags when Torrent is unlocked. Do this every time we load in, especially if the mod gets updated or wasn't installed right.
+        // - To avoid map notification spam, don't set the event flag which notifies the in-game map to do the notification.
+        // - Adjust logic for Altus detection event so the custom bonfires don't count for it.
+
+        int altusId = 76303; // Altus Highway Junction
+        int gelmirId = 76353; // Road of Iniquity
+        List<int> bonfireFlags = new() {
+            71190, // Roundtable
+            // -- v1
+            76154, // Ailing Village Outskirts
+            76413, // Inner Aeonia
+            altusId, // Altus Highway Junction
+            gelmirId, // Road of Iniquity
+            71222, // Siofra River Bank
+            // -- v2
+            76521, // Snow Valley Ruins Overlook
+            76551, // Inner Consecrated Snowfield
+            71504, // Haligtree Roots
+            76203, // Scenic Isle
+            76225, // Ruined Labyrinth
+            71216, // Lake of Rot Shoreside
+        };
+        List<int> mapFlags = new() {
+            62010,  // Map: Limgrave, West
+            62011,  // Map: Weeping Peninsula
+            62012,  // Map: Limgrave, East
+            62020,  // Map: Liurnia, East
+            62021,  // Map: Liurnia, North
+            62022,  // Map: Liurnia, West
+            62030,  // Map: Altus Plateau
+            62031,  // Map: Leyndell, Royal Capital
+            62032,  // Map: Mt. Gelmir
+            62040,  // Map: Caelid
+            62041,  // Map: Dragonbarrow
+            62050,  // Map: Mountaintops of the Giants, West
+            62051,  // Map: Mountaintops of the Giants, East
+            62060,  // Map: Ainsel River
+            62061,  // Map: Lake of Rot
+            62063,  // Map: Siofra River
+            62062,  // Map: Mohgwyn Palace
+            62064,  // Map: Deeproot Depths
+            62052,  // Map: Consecrated Snowfield
+        };
+        List<int> otherFlags = new() {
+            82001, // Underground map layer enabled
+            10009655, // First approached about Roundtable
+            105, // Visited Roundtable
+        };
+        EMEVD common = _resources.CommonEmevd;
+        if (common == null) {
+            throw new InvalidOperationException($"Missing emevd {Const.CommonEventPath}");
+        }
+        List<EMEVD.Instruction> newInstrs = new()
+        {
+            // IfEventFlag(MAIN, ON, TargetEventFlagType.EventFlag, 60100)
+            new EMEVD.Instruction(3, 0, new List<object> { (sbyte)0, (byte)1, (byte)0, 60100 }),
+            // OpenWorldMapPoint(111000, 100)
+            // (May be redundant to unlocking all maps)
+            new EMEVD.Instruction(2003, 78, new List<object> { 111000, 100f }),
+        };
+        foreach (int flag in bonfireFlags.Concat(mapFlags).Concat(otherFlags))
+        {
+            // SetEventFlag(TargetEventFlagType.EventFlag, flag, ON)
+            newInstrs.Add(new EMEVD.Instruction(2003, 66, new List<object> { (byte)0, flag, (byte)1 }));
+        }
+        int newEventId = 279551111;  // Arbitrary number
+        EMEVD.Event newEvent = new EMEVD.Event(newEventId, EMEVD.Event.RestBehaviorType.Default);
+        newEvent.Instructions = newInstrs;
+        common.Events.Add(newEvent);
+
+        // Process to edit other events
+        EMEVD.Event? constrEvent = common.Events.Find(e => e.ID == 0);
+        EMEVD.Event? grantMapEvent = common.Events.Find(e => e.ID == 1600);
+        EMEVD.Event? reachedAltusEvent = common.Events.Find(e => e.ID == 3044);
+        if (constrEvent == null || grantMapEvent == null || reachedAltusEvent == null) {
+            throw new InvalidOperationException($"{Const.CommonEventPath} missing one of required events [0, 1600, 3044]");
+        }
+        // Initialize new event
+        constrEvent.Instructions.Add(new EMEVD.Instruction(2000, 0, new List<object> { 0, newEventId, 0 }));
+        // Map unlock spam fix
+        for (int i = 0; i < grantMapEvent.Instructions.Count; i++)
+        {
+            EMEVD.Instruction ins = grantMapEvent.Instructions[i];
+            if (ins.Bank == 2003 && ins.ID == 66)
+            {
+                // Label18()
+                grantMapEvent.Instructions[i] = new EMEVD.Instruction(1014, 18);
+                grantMapEvent.Parameters.RemoveAll(p => p.InstructionIndex == i);
+            }
+        }
+        // Altus check. Dynamically rewriting this is possible but annoying, so recreate it from scratch.
+        List<EMEVD.Instruction> rewriteInstrs = new() {
+            // EndIfPlayerIsInWorldType(EventEndType.End, WorldType.OtherWorld)
+            new EMEVD.Instruction(1003, 14, new List<object> { (byte)0, (byte)1 }),
+            // SetEventFlag(TargetEventFlagType.EventFlag, 3063, OFF)
+            new EMEVD.Instruction(2003, 66, new List<object> { (byte)0, (uint)3063, (byte)0 }),
+            // Cut condition: IfBatchEventFlags(MAIN, LogicalOperationType.NotAllOFF, TargetEventFlagType.EventFlag, 76300, 76399)
+            // IfBatchEventFlags(OR_01, LogicalOperationType.NotAllOFF, TargetEventFlagType.EventFlag, 76300, altusId - 1)
+            new EMEVD.Instruction(3, 1, new List<object> { (sbyte)-1, (byte)2, (byte)0, 76300, altusId - 1 }),
+            // IfBatchEventFlags(OR_01, LogicalOperationType.NotAllOFF, TargetEventFlagType.EventFlag, altusId + 1, gelmirId - 1)
+            new EMEVD.Instruction(3, 1, new List<object> { (sbyte)-1, (byte)2, (byte)0, altusId + 1, gelmirId - 1 }),
+            // IfBatchEventFlags(OR_01, LogicalOperationType.NotAllOFF, TargetEventFlagType.EventFlag, gelmirId + 1, 76399)
+            new EMEVD.Instruction(3, 1, new List<object> { (sbyte)-1, (byte)2, (byte)0, gelmirId + 1, 76399 }),
+            // IfConditionGroup(MAIN, ON, OR_01)
+            new EMEVD.Instruction(0, 0, new List<object> { (sbyte)0, (byte)1, (sbyte)-1 }),
+            // SetEventFlag(TargetEventFlagType.EventFlag, 3063, ON)
+            new EMEVD.Instruction(2003, 66, new List<object> { (byte)0, (uint)3063, (byte)1 }),
+            // EndUnconditionally(EventEndType.End)
+        };
+        reachedAltusEvent.Instructions = rewriteInstrs;
+        reachedAltusEvent.Parameters.Clear();
     }
     private void patchAtkParam() {
         Param.Row swarmOfFlies1 = _resources.AtkParamPc[72100] ??
