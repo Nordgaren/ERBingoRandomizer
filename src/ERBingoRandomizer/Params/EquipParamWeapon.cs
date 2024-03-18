@@ -3,23 +3,31 @@
 namespace ERBingoRandomizer.Params;
 
 public class EquipParamWeapon {
+    private Param.Cell _bothHandEquipable;
+    private Param.Cell _originEquipWep10;
+    private Param.Cell _originEquipWep25;
     private Param.Cell _properAgility;
     private Param.Cell _properFaith;
     private Param.Cell _properLuck;
     private Param.Cell _properMagic;
     private Param.Cell _properStrength;
     private Param.Cell _wepType;
+    private Param.Cell _isDualBlade;
     private Param.Cell _materialSetId;
     private Param.Cell _reinforceTypeId;
     private Param.Cell _reinforceShopCategory;
 
     public EquipParamWeapon(Param.Row wep) {
+        _bothHandEquipable = wep["bothHandEquipable"]!.Value;
+        _isDualBlade = wep["isDualBlade"]!.Value;
         _wepType = wep["wepType"]!.Value;
         _materialSetId = wep["materialSetId"]!.Value;
         _reinforceTypeId = wep["reinforceTypeId"]!.Value;
         _reinforceShopCategory = wep["reinforceShopCategory"]!.Value;
         //reinforceShopCategory
 
+        _originEquipWep10 = wep["originEquipWep10"]!.Value;
+        _originEquipWep25 = wep["originEquipWep25"]!.Value;
         _properStrength = wep["properStrength"]!.Value;
         _properAgility = wep["properAgility"]!.Value;
         _properMagic = wep["properMagic"]!.Value;
@@ -27,11 +35,14 @@ public class EquipParamWeapon {
         _properLuck = wep["properLuck"]!.Value;
     }
 
-    public ushort wepType { get => (ushort)_wepType.Value; set => _wepType.Value = value; }
+    public byte bothHandEquipable { get => (byte)_bothHandEquipable.Value; set => _bothHandEquipable.Value = value; }
+    public byte isDualBlade { get => (byte)_isDualBlade.Value; set => _isDualBlade.Value = value; }
+    public WeaponType wepType { get => (WeaponType)_wepType.Value; set => _wepType.Value = value; }
     public int materialSetId { get => (int)_materialSetId.Value; set => _materialSetId.Value = value; }
     public short reinforceTypeId { get => (short)_reinforceTypeId.Value; set => _reinforceTypeId.Value = value; }
     public byte reinforceShopCategory { get => (byte)_reinforceShopCategory.Value; set => _reinforceShopCategory.Value = value; }
-
+    public int originEquipWep10 { get => (int)_originEquipWep10.Value; set => _originEquipWep10.Value = value; }
+    public int originEquipWep25 { get => (int)_originEquipWep25.Value; set => _originEquipWep25.Value = value; }
     public byte properStrength { get => (byte)_properStrength.Value; set => _properStrength.Value = value; }
     public byte properAgility { get => (byte)_properAgility.Value; set => _properAgility.Value = value; }
     public byte properMagic { get => (byte)_properMagic.Value; set => _properMagic.Value = value; }
@@ -75,6 +86,10 @@ public class EquipParamWeapon {
         SmallShield = 65, //ShieldSmall
         MediumShield = 67, //ShieldNormal
         Greatshield = 69, //SheildLarge
+        Arrow = 81,
+        GreatArrow = 83,
+        Bolt = 85,
+        BallistaBolt = 86,
         Torch = 87 //Torch
     }
 }

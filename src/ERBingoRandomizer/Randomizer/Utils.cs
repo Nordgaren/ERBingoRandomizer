@@ -103,6 +103,7 @@ public partial class BingoRandomizer {
         setBndFile(_resources.RegulationBnd, Const.ItemLotParam_enemyName, _resources.ItemLotParamEnemy.Write());
         setBndFile(_resources.RegulationBnd, Const.ShopLineupParamName, _resources.ShopLineupParam.Write());
         setBndFile(_resources.RegulationBnd, Const.EquipParamWeaponName, _resources.EquipParamWeapon.Write());
+        setBndFile(_resources.RegulationBnd, Const.EquipMtrlSetParamName, _resources.EquipMtrlSetParam.Write());
         setBndFile(_resources.RegulationBnd, Const.AtkParamPcName, _resources.AtkParamPc.Write());
         SFUtil.EncryptERRegulation($"{Const.BingoPath}/{Const.RegulationName}", _resources.RegulationBnd);
         Directory.CreateDirectory(Path.GetDirectoryName($"{Const.BingoPath}/{Const.MenuMsgBNDPath}") ?? throw new InvalidOperationException());

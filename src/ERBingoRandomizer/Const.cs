@@ -13,6 +13,7 @@ public static class Const {
     public const string ItemMsgBNDPath = "/msg/engus/item.msgbnd.dcx";
     public const string MenuMsgBNDPath = "/msg/engus/menu.msgbnd.dcx";
     // Params  
+    public const string EquipMtrlSetParamName = "EquipMtrlSetParam.param";
     public const string EquipParamWeaponName = "EquipParamWeapon.param";
     public const string EquipParamCustomWeaponName = "EquipParamCustomWeapon.param";
     public const string EquipParamGoodsName = "EquipParamGoods.param";
@@ -42,18 +43,12 @@ public static class Const {
     public const ushort GreatbowType = 53;
     public const ushort CrossbowType = 55;
     public const ushort BallistaType = 56;
-    public const ushort ArrowType = 81;
-    public const ushort GreatArrowType = 83;
-    public const ushort BoltType = 85;
-    public const ushort BallistaBoltType = 86;
     public const byte SorceryType = 0;
     public const byte IncantationType = 1;
     public const byte GoodsSorceryType = 5;
     public const byte GoodsIncantationType = 16;
     public const byte GoodsSelfSorceryType = 17;
     public const byte GoodsSelfIncantationType = 18;
-    public const ushort StaffType = 57;
-    public const ushort SealType = 61;
     public static readonly string ExeDir = Environment.CurrentDirectory;
     // Level Randomizer  
     public const byte NumStats = 8;

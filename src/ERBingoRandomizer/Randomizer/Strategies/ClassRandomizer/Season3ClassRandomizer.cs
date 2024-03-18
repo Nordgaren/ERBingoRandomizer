@@ -9,24 +9,27 @@ using static ERBingoRandomizer.Params.EquipParamWeapon;
 
 namespace ERBingoRandomizer.Randomizer.Strategies.CharaInitParam;
 
-public class Season2ClassRandomizer : IBingoClassStrategy {
+public class Season3ClassRandomizer : IBingoClassStrategy {
     private readonly IBingoLevelStrategy _levelRandomizer;
     private RandoResource _resources;
-    
-    public Season2ClassRandomizer(IBingoLevelStrategy levelRandomizer, RandoResource resources) {
+
+    public Season3ClassRandomizer(IBingoLevelStrategy levelRandomizer, RandoResource resources) {
         _levelRandomizer = levelRandomizer;
         _resources = resources;
     }
-    
+
     public void RandomizeCharaInitParam() {
-        Logger.LogItem(">> Class Randomization - All items are randomized, with each class having a .001% chance to gain or lose and item. Spells given class meets min stat requirements");
+        Logger.LogItem(
+            ">> Class Randomization - All items are randomized, with each class having a .001% chance to gain or lose and item. Spells given class meets min stat requirements");
         Logger.LogItem("> Ammo is give if you get a ranged weapon. Catalyst is give if you have spells.\n");
-        IEnumerable<int> remembranceItems = _resources.ShopLineupParam.Rows.Where(r => r.ID is >= 101900 and <= 101929).Select(r => new ShopLineupParam(r).equipId);
+        IEnumerable<int> remembranceItems = _resources.ShopLineupParam.Rows.Where(r => r.ID is >= 101900 and <= 101929)
+            .Select(r => new ShopLineupParam(r).equipId);
         List<Param.Row> staves = _resources.WeaponTypeDictionary[WeaponType.GlintstoneStaff];
         List<Param.Row> seals = _resources.WeaponTypeDictionary[WeaponType.FingerSeal];
         List<int> weapons = _resources.WeaponDictionary.Keys.Select(BingoRandomizer.RemoveWeaponMetadata).Distinct()
             .Where(id => remembranceItems.All(i => i != id))
             .Where(id => staves.All(s => s.ID != id) && seals.All(s => s.ID != id))
+            .Where(id => _resources.WeaponDictionary[id].originEquipWep25 != -1)
             .ToList();
         weapons.Shuffle(_resources.Random);
 
@@ -40,18 +43,28 @@ public class Season2ClassRandomizer : IBingoClassStrategy {
             if (row == null) {
                 continue;
             }
+
             Params.CharaInitParam param = new(row);
             randomizeCharaInitEntry(param, weapons);
             guaranteeSpellcasters(row.ID, param, spells);
             logCharaInitEntry(param, i + 288100);
             addDescriptionString(param, Const.ChrInfoMapping[i]);
         }
-        
     }
+
+    static readonly WeaponType[] _shields = {
+        WeaponType.SmallShield, WeaponType.MediumShield, WeaponType.Greatshield
+    };
     
     private void randomizeCharaInitEntry(Params.CharaInitParam chr, IReadOnlyList<int> weapons) {
         chr.wepleft = getRandomWeapon(chr.wepleft, weapons);
         chr.wepRight = getRandomWeapon(chr.wepRight, weapons);
+
+        if (checkWeaponType(chr.wepleft, _shields) && checkWeaponType(chr.wepRight, _shields)) {
+            chr.wepRight = getRandomWeapon(chr.wepRight,
+                weapons.Where(id => !_shields.Contains(_resources.WeaponDictionary[id].wepType)).ToList());
+        }
+
         chr.subWepLeft = -1;
         chr.subWepRight = -1;
         chr.subWepLeft3 = -1;
@@ -69,16 +82,19 @@ public class Season2ClassRandomizer : IBingoClassStrategy {
         if (hasWeaponOfType(chr, WeaponType.Bow, WeaponType.LightBow)) {
             giveArrows(chr);
         }
+
         chr.equipSubArrow = Const.NoItem;
         chr.subArrowNum = ushort.MaxValue;
         if (hasWeaponOfType(chr, WeaponType.Greatbow)) {
             giveGreatArrows(chr);
         }
+
         chr.equipBolt = Const.NoItem;
         chr.boltNum = ushort.MaxValue;
         if (hasWeaponOfType(chr, WeaponType.Crossbow)) {
             giveBolts(chr);
         }
+
         chr.equipSubBolt = Const.NoItem;
         chr.subBoltNum = ushort.MaxValue;
         if (hasWeaponOfType(chr, WeaponType.Ballista)) {
@@ -99,10 +115,12 @@ public class Season2ClassRandomizer : IBingoClassStrategy {
                 break;
         }
     }
+
     private void guaranteePrisonerHasSpells(Params.CharaInitParam chr, IReadOnlyList<int> spells) {
         if (hasSpellOfType(chr, Const.SorceryType)) {
             return;
         }
+
         // Get a new random chr until it has the required stats.
         while (chr.baseMag < Config.MinInt) {
             _levelRandomizer.RandomizeLevels(chr);
@@ -112,10 +130,12 @@ public class Season2ClassRandomizer : IBingoClassStrategy {
         chr.equipSpell02 = -1;
         randomizeSorceries(chr, spells);
     }
+
     private void guaranteeConfessorHasIncantation(Params.CharaInitParam chr, IReadOnlyList<int> spells) {
         if (hasSpellOfType(chr, Const.IncantationType)) {
             return;
         }
+
         // Get a new random chr until it has the required stats.
         while (chr.baseFai < Config.MinFai) {
             _levelRandomizer.RandomizeLevels(chr);
@@ -125,6 +145,7 @@ public class Season2ClassRandomizer : IBingoClassStrategy {
         chr.equipSpell02 = -1;
         randomizeIncantations(chr, spells);
     }
+
     private int getRandomWeapon(int id, IReadOnlyList<int> weapons) {
         while (true) {
             int newWeapon = weapons[_resources.Random.Next(weapons.Count)];
@@ -133,14 +154,15 @@ public class Season2ClassRandomizer : IBingoClassStrategy {
             }
         }
     }
+
     private int chanceGetRandomWeapon(int id, IReadOnlyList<int> weapons) {
         return ReturnNoItem(id) ? Const.NoItem : getRandomWeapon(id, weapons);
-
     }
+
     private int chanceGetRandomArmor(int id, byte type) {
         return ReturnNoItem(id) ? Const.NoItem : getRandomArmor(id, type);
-
     }
+
     private int getRandomArmor(int id, byte type) {
         while (true) {
             IReadOnlyList<Param.Row> legs = _resources.ArmorTypeDictionary[type];
@@ -150,6 +172,7 @@ public class Season2ClassRandomizer : IBingoClassStrategy {
             }
         }
     }
+
     private bool ReturnNoItem(int id) {
         float target = _resources.Random.NextSingle();
 
@@ -168,72 +191,91 @@ public class Season2ClassRandomizer : IBingoClassStrategy {
 
         return false;
     }
+
     private bool hasWeaponOfType(Params.CharaInitParam chr, params WeaponType[] types) {
         if (types == null || types.Length < 1) {
-            throw new ArgumentException("types cannot be null, and must contain 1 or more values. Please pass in a valid weapon type." , nameof(types));
+            throw new ArgumentException(
+                "types cannot be null, and must contain 1 or more values. Please pass in a valid weapon type.",
+                nameof(types));
         }
 
-        return checkWeaponType(chr.wepRight, types) || checkWeaponType(chr.wepleft, types) 
-            || checkWeaponType(chr.subWepLeft, types) || checkWeaponType(chr.subWepRight, types)
-            || checkWeaponType(chr.subWepLeft3, types) || checkWeaponType(chr.subWepRight3, types);
-
+        return checkWeaponType(chr.wepRight, types) || checkWeaponType(chr.wepleft, types)
+                                                    || checkWeaponType(chr.subWepLeft, types) ||
+                                                    checkWeaponType(chr.subWepRight, types)
+                                                    || checkWeaponType(chr.subWepLeft3, types) ||
+                                                    checkWeaponType(chr.subWepRight3, types);
     }
+
     private bool checkWeaponType(int id, params WeaponType[] types) {
         if (id == Const.NoItem) {
             return false;
         }
-        return _resources.WeaponDictionary.TryGetValue(id, out EquipParamWeapon? wep) && types.Contains(wep.wepType);
 
+        return _resources.WeaponDictionary.TryGetValue(id, out EquipParamWeapon? wep) && types.Contains(wep.wepType);
     }
+
     private bool hasSpellOfType(Params.CharaInitParam chr, params byte[] types) {
         if (types == null || types.Length < 1) {
-            throw new ArgumentException("types cannot be null, and must contain 1 or more values. Please pass in a valid weapon type." , nameof(types));
+            throw new ArgumentException(
+                "types cannot be null, and must contain 1 or more values. Please pass in a valid weapon type.",
+                nameof(types));
         }
-        
-        return checkSpellType(chr.equipSpell01, types) || checkSpellType(chr.equipSpell02, types);
 
+        return checkSpellType(chr.equipSpell01, types) || checkSpellType(chr.equipSpell02, types);
     }
+
     private bool checkSpellType(int id, params byte[] types) {
         if (id == Const.NoItem) {
             return false;
         }
-        return _resources.MagicDictionary.TryGetValue(id, out Magic? magic) && types.Contains(magic.ezStateBehaviorType);
 
+        return _resources.MagicDictionary.TryGetValue(id, out Magic? magic) &&
+               types.Contains(magic.ezStateBehaviorType);
     }
+
     private void giveArrows(Params.CharaInitParam chr) {
         chr.equipArrow = getRandomAmmo(WeaponType.Arrow);
         chr.arrowNum = (ushort)(_resources.Random.Next() % Config.MaxArrows);
     }
+
     private void giveGreatArrows(Params.CharaInitParam chr) {
         chr.equipSubArrow = getRandomAmmo(WeaponType.GreatArrow);
         chr.subArrowNum = (ushort)(_resources.Random.Next() % Config.MaxGreatArrows);
     }
+
     private void giveBolts(Params.CharaInitParam chr) {
         chr.equipBolt = getRandomAmmo(WeaponType.Bolt);
         chr.boltNum = (ushort)(_resources.Random.Next() % Config.MaxBolts);
     }
+
     private void giveBallistaBolts(Params.CharaInitParam chr) {
         chr.equipSubBolt = getRandomAmmo(WeaponType.BallistaBolt);
         chr.subBoltNum = (ushort)(_resources.Random.Next() % Config.MaxBallistaBolts);
     }
+
     private int getRandomAmmo(WeaponType type) {
         IList<Param.Row> arrows = _resources.WeaponTypeDictionary[type];
         return arrows[_resources.Random.Next() % arrows.Count].ID;
     }
+
     private void randomizeSorceries(Params.CharaInitParam chr, IReadOnlyList<int> spells) {
         chr.equipSpell01 = getRandomMagic(chr, Const.SorceryType, spells);
         if (chr.equipSpell02 == Const.NoItem) {
             chr.equipSpell02 = chanceRandomMagic(chr.equipSpell02, chr, Const.SorceryType, spells);
         }
+
         giveRandomWeapon(chr, WeaponType.GlintstoneStaff);
     }
+
     private void randomizeIncantations(Params.CharaInitParam chr, IReadOnlyList<int> spells) {
         chr.equipSpell02 = getRandomMagic(chr, Const.IncantationType, spells);
         if (chr.equipSpell01 == Const.NoItem) {
             chr.equipSpell01 = chanceRandomMagic(chr.equipSpell01, chr, Const.IncantationType, spells);
         }
+
         giveRandomWeapon(chr, WeaponType.FingerSeal);
     }
+
     private int getRandomMagic(Params.CharaInitParam chr, byte type, IReadOnlyList<int> spells) {
         IReadOnlyList<Param.Row> table = _resources.MagicTypeDictionary[type];
         while (true) {
@@ -244,10 +286,11 @@ public class Season2ClassRandomizer : IBingoClassStrategy {
             }
         }
     }
+
     private int chanceRandomMagic(int id, Params.CharaInitParam chr, byte type, IReadOnlyList<int> spells) {
         return ReturnNoItem(id) ? Const.NoItem : getRandomMagic(chr, type, spells);
-
     }
+
     private void giveRandomWeapon(Params.CharaInitParam chr, WeaponType type) {
         EquipParamWeapon? wep;
         if (_resources.WeaponDictionary.TryGetValue(chr.wepleft, out wep)) {
@@ -259,7 +302,7 @@ public class Season2ClassRandomizer : IBingoClassStrategy {
             chr.wepleft = getRandomWeapon(chr, type);
             return;
         }
-        
+
         if (_resources.WeaponDictionary.TryGetValue(chr.wepRight, out wep)) {
             if (wep.wepType == type && chrCanUseWeapon(wep, chr)) {
                 return;
@@ -269,7 +312,7 @@ public class Season2ClassRandomizer : IBingoClassStrategy {
             chr.wepRight = getRandomWeapon(chr, type);
             return;
         }
-        
+
         if (_resources.WeaponDictionary.TryGetValue(chr.subWepLeft, out wep)) {
             if (wep.wepType == type && chrCanUseWeapon(wep, chr)) {
                 return;
@@ -279,7 +322,7 @@ public class Season2ClassRandomizer : IBingoClassStrategy {
             chr.subWepLeft = getRandomWeapon(chr, type);
             return;
         }
-        
+
         if (_resources.WeaponDictionary.TryGetValue(chr.subWepRight, out wep)) {
             if (wep.wepType == type && chrCanUseWeapon(wep, chr)) {
                 return;
@@ -289,7 +332,7 @@ public class Season2ClassRandomizer : IBingoClassStrategy {
             chr.subWepRight = getRandomWeapon(chr, type);
             return;
         }
-        
+
         if (_resources.WeaponDictionary.TryGetValue(chr.subWepLeft3, out wep)) {
             if (wep.wepType == type && chrCanUseWeapon(wep, chr)) {
                 return;
@@ -299,9 +342,10 @@ public class Season2ClassRandomizer : IBingoClassStrategy {
             chr.subWepLeft3 = getRandomWeapon(chr, type);
             return;
         }
-        
+
         chr.subWepRight3 = getRandomWeapon(chr, type);
     }
+
     private int getRandomWeapon(Params.CharaInitParam chr, WeaponType type) {
         IReadOnlyList<Param.Row> table = _resources.WeaponTypeDictionary[type];
         while (true) {
@@ -310,6 +354,7 @@ public class Season2ClassRandomizer : IBingoClassStrategy {
                 if (chrCanUseWeapon(entry, chr)) {
                     return table[i].ID;
                 }
+
                 continue;
             }
 
@@ -319,17 +364,25 @@ public class Season2ClassRandomizer : IBingoClassStrategy {
             }
         }
     }
+
     private static bool chrCanUseWeapon(EquipParamWeapon wep, Params.CharaInitParam chr) {
-        return wep.properStrength <= chr.baseStr
-            && wep.properAgility <= chr.baseDex
-            && wep.properMagic <= chr.baseMag
-            && wep.properFaith <= chr.baseFai
-            && wep.properLuck <= chr.baseLuc;
+        return checkStrReqs(wep, chr)
+               && wep.properAgility <= chr.baseDex
+               && wep.properMagic <= chr.baseMag
+               && wep.properFaith <= chr.baseFai
+               && wep.properLuck <= chr.baseLuc;
     }
+
+    private static bool checkStrReqs(EquipParamWeapon wep, Params.CharaInitParam chr) {
+        return wep.properStrength <= chr.baseStr ||
+               (wep is { bothHandEquipable: 1, isDualBlade: 0 } &&
+                Math.Ceiling(wep.properStrength / 1.5) <= chr.baseStr);
+    }
+
     private static bool chrCanUseSpell(Magic spell, Params.CharaInitParam chr) {
         return spell.requirementIntellect <= chr.baseMag
-            && spell.requirementFaith <= chr.baseFai
-            && spell.requirementLuck <= chr.baseLuc;
+               && spell.requirementFaith <= chr.baseFai
+               && spell.requirementLuck <= chr.baseLuc;
     }
 
     private void logCharaInitEntry(Params.CharaInitParam chr, int i) {
@@ -338,20 +391,29 @@ public class Season2ClassRandomizer : IBingoClassStrategy {
         if (chr.wepleft != -1) {
             Logger.LogItem($"Left: {_resources.WeaponFmg[chr.wepleft]}{getRequiredLevelsWeapon(chr, chr.wepleft)}");
         }
+
         if (chr.wepRight != -1) {
             Logger.LogItem($"Right: {_resources.WeaponFmg[chr.wepRight]}{getRequiredLevelsWeapon(chr, chr.wepRight)}");
         }
+
         if (chr.subWepLeft != -1) {
-            Logger.LogItem($"Left 2: {_resources.WeaponFmg[chr.subWepLeft]}{getRequiredLevelsWeapon(chr, chr.subWepLeft)}");
+            Logger.LogItem(
+                $"Left 2: {_resources.WeaponFmg[chr.subWepLeft]}{getRequiredLevelsWeapon(chr, chr.subWepLeft)}");
         }
+
         if (chr.subWepRight != -1) {
-            Logger.LogItem($"Right 2: {_resources.WeaponFmg[chr.subWepRight]}{getRequiredLevelsWeapon(chr, chr.subWepRight)}");
+            Logger.LogItem(
+                $"Right 2: {_resources.WeaponFmg[chr.subWepRight]}{getRequiredLevelsWeapon(chr, chr.subWepRight)}");
         }
+
         if (chr.subWepLeft3 != -1) {
-            Logger.LogItem($"Left 3: {_resources.WeaponFmg[chr.subWepLeft3]}{getRequiredLevelsWeapon(chr, chr.subWepLeft3)}");
+            Logger.LogItem(
+                $"Left 3: {_resources.WeaponFmg[chr.subWepLeft3]}{getRequiredLevelsWeapon(chr, chr.subWepLeft3)}");
         }
+
         if (chr.subWepRight3 != -1) {
-            Logger.LogItem($"Right 3: {_resources.WeaponFmg[chr.subWepRight3]}{getRequiredLevelsWeapon(chr, chr.subWepRight3)}");
+            Logger.LogItem(
+                $"Right 3: {_resources.WeaponFmg[chr.subWepRight3]}{getRequiredLevelsWeapon(chr, chr.subWepRight3)}");
         }
 
         Logger.LogItem("\n> Armor");
@@ -375,12 +437,15 @@ public class Season2ClassRandomizer : IBingoClassStrategy {
             if (chr.equipArrow != -1) {
                 Logger.LogItem($"{_resources.WeaponFmg[chr.equipArrow]}[{chr.arrowNum}]");
             }
+
             if (chr.equipSubArrow != -1) {
                 Logger.LogItem($"{_resources.WeaponFmg[chr.equipSubArrow]}[{chr.subArrowNum}]");
             }
+
             if (chr.equipBolt != -1) {
                 Logger.LogItem($"{_resources.WeaponFmg[chr.equipBolt]}[{chr.boltNum}]");
             }
+
             if (chr.equipSubBolt != -1) {
                 Logger.LogItem($"{_resources.WeaponFmg[chr.equipSubBolt]}[{chr.subBoltNum}]");
             }
@@ -389,15 +454,19 @@ public class Season2ClassRandomizer : IBingoClassStrategy {
         if (chr.equipSpell01 != -1 || chr.equipSpell02 != -1) {
             Logger.LogItem("\n> Spells");
             if (chr.equipSpell01 != -1) {
-                Logger.LogItem($"{_resources.GoodsFmg[chr.equipSpell01]}{getRequiredLevelsSpell(chr, chr.equipSpell01)}");
+                Logger.LogItem(
+                    $"{_resources.GoodsFmg[chr.equipSpell01]}{getRequiredLevelsSpell(chr, chr.equipSpell01)}");
             }
+
             if (chr.equipSpell02 != -1) {
-                Logger.LogItem($"{_resources.GoodsFmg[chr.equipSpell02]}{getRequiredLevelsSpell(chr, chr.equipSpell02)}");
+                Logger.LogItem(
+                    $"{_resources.GoodsFmg[chr.equipSpell02]}{getRequiredLevelsSpell(chr, chr.equipSpell02)}");
             }
         }
 
         Logger.LogItem("");
     }
+
     private void addDescriptionString(Params.CharaInitParam chr, int id) {
         List<string> str = new() {
             $"{_resources.WeaponNameDictionary[chr.wepleft]}{getRequiredLevelsWeapon(chr, chr.wepleft)}",
@@ -406,72 +475,90 @@ public class Season2ClassRandomizer : IBingoClassStrategy {
         if (chr.subWepLeft != -1) {
             str.Add($"{_resources.WeaponNameDictionary[chr.subWepLeft]}{getRequiredLevelsWeapon(chr, chr.subWepLeft)}");
         }
+
         if (chr.subWepRight != -1) {
-            str.Add($"{_resources.WeaponNameDictionary[chr.subWepRight]}{getRequiredLevelsWeapon(chr, chr.subWepRight)}");
+            str.Add(
+                $"{_resources.WeaponNameDictionary[chr.subWepRight]}{getRequiredLevelsWeapon(chr, chr.subWepRight)}");
         }
+
         if (chr.subWepLeft3 != -1) {
-            str.Add($"{_resources.WeaponNameDictionary[chr.subWepLeft3]}{getRequiredLevelsWeapon(chr, chr.subWepLeft3)}");
+            str.Add(
+                $"{_resources.WeaponNameDictionary[chr.subWepLeft3]}{getRequiredLevelsWeapon(chr, chr.subWepLeft3)}");
         }
+
         if (chr.subWepRight3 != -1) {
-            str.Add($"{_resources.WeaponNameDictionary[chr.subWepRight3]}{getRequiredLevelsWeapon(chr, chr.subWepRight3)}");
+            str.Add(
+                $"{_resources.WeaponNameDictionary[chr.subWepRight3]}{getRequiredLevelsWeapon(chr, chr.subWepRight3)}");
         }
+
         if (chr.equipArrow != -1) {
             str.Add($"{_resources.WeaponNameDictionary[chr.equipArrow]}[{chr.arrowNum}]");
         }
+
         if (chr.equipSubArrow != -1) {
             str.Add($"{_resources.WeaponNameDictionary[chr.equipSubArrow]}[{chr.subArrowNum}]");
         }
+
         if (chr.equipBolt != -1) {
             str.Add($"{_resources.WeaponNameDictionary[chr.equipBolt]}[{chr.boltNum}]");
         }
+
         if (chr.equipSubBolt != -1) {
             str.Add($"{_resources.WeaponNameDictionary[chr.equipSubBolt]}[{chr.subBoltNum}]");
         }
+
         if (chr.equipSpell01 != -1) {
             str.Add($"{_resources.GoodsFmg[chr.equipSpell01]}");
         }
+
         if (chr.equipSpell02 != -1) {
             str.Add($"{_resources.GoodsFmg[chr.equipSpell02]}");
         }
 
         _resources.LineHelpFmg[id] = string.Join(", ", str);
     }
+
     private string getRequiredLevelsWeapon(Params.CharaInitParam chr, int id) {
         EquipParamWeapon wep = _resources.WeaponDictionary[id];
         int reqLevels = 0;
         if (wep.properStrength > chr.baseStr) {
             reqLevels += wep.properStrength - chr.baseStr;
         }
+
         if (wep.properAgility > chr.baseDex) {
             reqLevels += wep.properAgility - chr.baseDex;
         }
+
         if (wep.properMagic > chr.baseMag) {
             reqLevels += wep.properMagic - chr.baseMag;
         }
+
         if (wep.properFaith > chr.baseFai) {
             reqLevels += wep.properFaith - chr.baseFai;
         }
+
         if (wep.properLuck > chr.baseLuc) {
             reqLevels += wep.properLuck - chr.baseLuc;
         }
 
         return reqLevels > 0 ? $" (-{reqLevels})" : "";
-
     }
+
     private string getRequiredLevelsSpell(Params.CharaInitParam chr, int id) {
         Magic spell = _resources.MagicDictionary[id];
         int reqLevels = 0;
         if (spell.requirementIntellect > chr.baseMag) {
             reqLevels += spell.requirementIntellect - chr.baseMag;
         }
+
         if (spell.requirementFaith > chr.baseFai) {
             reqLevels += spell.requirementFaith - chr.baseFai;
         }
+
         if (spell.requirementLuck > chr.baseLuc) {
             reqLevels += spell.requirementLuck - chr.baseLuc;
         }
 
         return reqLevels > 0 ? $" (-{reqLevels})" : "";
-
     }
 }

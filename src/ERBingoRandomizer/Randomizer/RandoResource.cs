@@ -11,6 +11,7 @@ using System.Security.Cryptography;
 using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
+using static ERBingoRandomizer.Params.EquipParamWeapon;
 
 namespace ERBingoRandomizer.Randomizer; 
 
@@ -34,6 +35,7 @@ public class RandoResource {
     internal FMG GoodsFmg;
     // Params
     internal List<PARAMDEF> ParamDefs;
+    internal Param EquipMtrlSetParam;
     internal Param EquipParamWeapon;
     internal Param EquipParamCustomWeapon;
     internal Param EquipParamGoods;
@@ -50,7 +52,7 @@ public class RandoResource {
     internal Dictionary<int, string> WeaponNameDictionary;
     internal Dictionary<int, EquipParamGoods> GoodsDictionary;
     internal Dictionary<int, Magic> MagicDictionary;
-    internal Dictionary<ushort, List<Param.Row>> WeaponTypeDictionary;
+    internal Dictionary<WeaponType, List<Param.Row>> WeaponTypeDictionary;
     internal Dictionary<byte, List<Param.Row>> ArmorTypeDictionary;
     internal Dictionary<byte, List<Param.Row>> MagicTypeDictionary;
 
@@ -137,7 +139,7 @@ public class RandoResource {
     }
     private void buildDictionaries() {
         WeaponDictionary = new Dictionary<int, EquipParamWeapon>();
-        WeaponTypeDictionary = new Dictionary<ushort, List<Param.Row>>();
+        WeaponTypeDictionary = new Dictionary<WeaponType, List<Param.Row>>();
         WeaponNameDictionary = new Dictionary<int, string>();
 
         foreach (Param.Row row in EquipParamWeapon.Rows) {
@@ -154,7 +156,7 @@ public class RandoResource {
             }
 
             WeaponNameDictionary[row.ID] = rowString;
-            if (!Enumerable.Range(81, 86).Contains(wep.wepType)) {
+            if (!Enumerable.Range(81, 86).Contains((int)wep.wepType)) {
                 WeaponDictionary.Add(row.ID, new EquipParamWeapon(row));
             }
 
@@ -252,6 +254,13 @@ public class RandoResource {
     private void getParams(BinderFile file) {
         string fileName = System.IO.Path.GetFileName(file.Name);
         switch (fileName) {
+            case Const.EquipMtrlSetParamName: {
+                EquipMtrlSetParam = Param.Read(file.Bytes);
+                if (!EquipMtrlSetParam.ApplyParamDefsCarefully(ParamDefs)) {
+                    throw new InvalidParamDefException(EquipMtrlSetParam.ParamType);
+                }
+                break;
+            }
             case Const.EquipParamWeaponName: {
                 EquipParamWeapon = Param.Read(file.Bytes);
                 if (!EquipParamWeapon.ApplyParamDefsCarefully(ParamDefs)) {
