@@ -264,7 +264,7 @@ public class Season3ClassRandomizer : IBingoClassStrategy {
             chr.equipSpell02 = chanceRandomMagic(chr.equipSpell02, chr, Const.SorceryType, spells);
         }
 
-        giveRandomWeapon(chr, WeaponType.GlintstoneStaff);
+        giveRandomUsableWeapon(chr, WeaponType.GlintstoneStaff);
     }
 
     private void randomizeIncantations(Params.CharaInitParam chr, IReadOnlyList<int> spells) {
@@ -273,7 +273,7 @@ public class Season3ClassRandomizer : IBingoClassStrategy {
             chr.equipSpell01 = chanceRandomMagic(chr.equipSpell01, chr, Const.IncantationType, spells);
         }
 
-        giveRandomWeapon(chr, WeaponType.FingerSeal);
+        giveRandomUsableWeapon(chr, WeaponType.FingerSeal);
     }
 
     private int getRandomMagic(Params.CharaInitParam chr, byte type, IReadOnlyList<int> spells) {
@@ -291,7 +291,7 @@ public class Season3ClassRandomizer : IBingoClassStrategy {
         return ReturnNoItem(id) ? Const.NoItem : getRandomMagic(chr, type, spells);
     }
 
-    private void giveRandomWeapon(Params.CharaInitParam chr, WeaponType type) {
+    private void giveRandomUsableWeapon(Params.CharaInitParam chr, WeaponType type) {
         EquipParamWeapon? wep;
         if (_resources.WeaponDictionary.TryGetValue(chr.wepleft, out wep)) {
             if (wep.wepType == type && chrCanUseWeapon(wep, chr)) {
@@ -299,7 +299,7 @@ public class Season3ClassRandomizer : IBingoClassStrategy {
             }
         }
         else {
-            chr.wepleft = getRandomWeapon(chr, type);
+            chr.wepleft = getRandomUsableWeapon(chr, type);
             return;
         }
 
@@ -309,7 +309,7 @@ public class Season3ClassRandomizer : IBingoClassStrategy {
             }
         }
         else {
-            chr.wepRight = getRandomWeapon(chr, type);
+            chr.wepRight = getRandomUsableWeapon(chr, type);
             return;
         }
 
@@ -319,7 +319,7 @@ public class Season3ClassRandomizer : IBingoClassStrategy {
             }
         }
         else {
-            chr.subWepLeft = getRandomWeapon(chr, type);
+            chr.subWepLeft = getRandomUsableWeapon(chr, type);
             return;
         }
 
@@ -329,7 +329,7 @@ public class Season3ClassRandomizer : IBingoClassStrategy {
             }
         }
         else {
-            chr.subWepRight = getRandomWeapon(chr, type);
+            chr.subWepRight = getRandomUsableWeapon(chr, type);
             return;
         }
 
@@ -339,14 +339,14 @@ public class Season3ClassRandomizer : IBingoClassStrategy {
             }
         }
         else {
-            chr.subWepLeft3 = getRandomWeapon(chr, type);
+            chr.subWepLeft3 = getRandomUsableWeapon(chr, type);
             return;
         }
 
-        chr.subWepRight3 = getRandomWeapon(chr, type);
+        chr.subWepRight3 = getRandomUsableWeapon(chr, type);
     }
 
-    private int getRandomWeapon(Params.CharaInitParam chr, WeaponType type) {
+    private int getRandomUsableWeapon(Params.CharaInitParam chr, WeaponType type) {
         IReadOnlyList<Param.Row> table = _resources.WeaponTypeDictionary[type];
         while (true) {
             int i = _resources.Random.Next() % table.Count;
