@@ -88,7 +88,7 @@ public class BHD5Reader {
         //     Debug.WriteLine($"{filePath} Data2: {_data2.GetSalt()}");
         //     return file;
         // }
-        // file = _data2.GetFile(hash);
+        // file = _data3.GetFile(hash);
         // if (file != null) {
         //     Debug.WriteLine($"{filePath} Data3: {_data3.GetSalt()}");
         //     return file;
