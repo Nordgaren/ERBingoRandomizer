@@ -13,12 +13,6 @@ A Randomizer mod was made by [Nordgaren](https://github.com/Nordgaren/ERBingoRan
 
 Put the seed in that you want to use for randomization, and then hit the Randomize button. When it is done randomizing, the `Bingo!` button will be activated, and clicking it will launch the game with the randomized regulation bin. If a seed is not input one will be randomly created.
 
-# Thank You
-* [Captain Domo](https://www.twitch.tv/captain_domo) for the commission to make this mod, and including me in this amazing event.  
-* [TheFifthMatt](https://github.com/thefifthmatt), an amazing modder and great resource for soulsborne randomization methodology.  
-* [Katalash](https://github.com/katalash), author of DS Map Studio, and other tools, and another great resource for soulsmodding.  
-* [TKGP](https://github.com/JKAnderson), 
-
 # Libraries
 * [Andre](https://github.com/soulsmods/DSMapStudio/blob/master/src/Andre/Andre.Formats/Param.cs) Formerly FSParam and StudioUtils, a library for parsing FromSoft param formats. These libraries are under the MIT license.  
 * [SoulsFormats](https://github.com/soulsmods/DSMapStudio/tree/master/src/Andre/SoulsFormats) from the `souldmods/DSMapStudio` repo. This is a version of [SoulsFormats](https://github.com/JKAnderson/SoulsFormats) updated for .Net 6.
