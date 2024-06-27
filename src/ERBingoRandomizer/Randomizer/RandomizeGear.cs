@@ -15,32 +15,20 @@ public partial class BingoRandomizer
         int limit = weapons.Count;
         int newID = weapons[_random.Next(limit)];
 
-        while (newID == id || !_weaponDictionary.ContainsKey(newID)) // TODO update _weaponDictionary for DLC weapons
-        {
+        while (!_weaponDictionary.ContainsKey(newID))
+        { // TODO update _weaponDictionary for DLC weapons
             newID = weapons[_random.Next(limit)];
         }
         return washWeaponMetadata(newID);
     }
-    private int chanceGetRandomWeapon(int id, IReadOnlyList<int> weapons)
-    {
-        return ReturnNoItem(id) ? Const.NoItem : randomizeStartingWeapon(id, weapons);
-
-    }
-    private int chanceGetRandomArmor(int id, byte type)
+    private int exchangeArmorPiece(int id, byte type)
     {
         return ReturnNoItem(id) ? Const.NoItem : getRandomArmor(id, type);
-
     }
     private int getRandomArmor(int id, byte type)
     {
         IReadOnlyList<Param.Row> armors = _armorTypeDictionary[type];
-        int limit = armors.Count;
-        int newID = armors[_random.Next(limit)].ID;
-        while (newID == id)
-        {
-            newID = armors[_random.Next(limit)].ID;
-        }
-        return newID;
+        return armors[_random.Next(armors.Count)].ID;
     }
     private bool ReturnNoItem(int id)
     {
@@ -51,18 +39,13 @@ public partial class BingoRandomizer
         if (id == Const.NoItem)
         {
             if (target > Config.AddRemoveWeaponChance)
-            {
                 return true;
-            }
         }
         else
         {
             if (target < Config.AddRemoveWeaponChance)
-            {
                 return true;
-            }
         }
-
         return false;
     }
     private bool hasWeaponOfType(CharaInitParam chr, params ushort[] types)
@@ -71,11 +54,9 @@ public partial class BingoRandomizer
         {
             throw new ArgumentException("types cannot be null, and must contain 1 or more values. Please pass in a valid weapon type.", nameof(types));
         }
-
         return checkWeaponType(chr.wepRight, types) || checkWeaponType(chr.wepleft, types)
             || checkWeaponType(chr.subWepLeft, types) || checkWeaponType(chr.subWepRight, types)
             || checkWeaponType(chr.subWepLeft3, types) || checkWeaponType(chr.subWepRight3, types);
-
     }
     private bool checkWeaponType(int id, params ushort[] types)
     {
@@ -84,7 +65,6 @@ public partial class BingoRandomizer
             return false;
         }
         return _weaponDictionary.TryGetValue(id, out EquipParamWeapon? wep) && types.Contains(wep.wepType);
-
     }
     private bool hasSpellOfType(CharaInitParam chr, params byte[] types)
     {

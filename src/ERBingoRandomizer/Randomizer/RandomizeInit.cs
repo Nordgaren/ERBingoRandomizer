@@ -82,6 +82,7 @@ public partial class BingoRandomizer
         logItem(">> Class Randomization - All items are randomized, with each class having a .001% chance to gain or lose and item. Spells given class meets min stat requirements");
         logItem("> Ammo is give if you get a ranged weapon. Catalyst is give if you have spells.\n");
         // TODO get IDs of new DLC Powers of Remembrance "Rembrance Items"
+        // TODO update seals and staves
         IEnumerable<int> remembranceItems = _shopLineupParam.Rows.Where(r => r.ID is >= 101900 and <= 101929).Select(r => new ShopLineupParam(r).equipId);
         List<Param.Row> staves = _weaponTypeDictionary[Const.StaffType];
         List<Param.Row> seals = _weaponTypeDictionary[Const.SealType];
@@ -134,17 +135,16 @@ public partial class BingoRandomizer
                     continue;
                 }
 
-                int id = (int)itemIds[i].GetValue(row);
+                int id = (int)itemIds[i].GetValue(row); // getting weapon at item lot
                 int sanitizedId = washWeaponLevels(id);
                 if (category == Const.ItemLotWeaponCategory)
-                {   // to ensure staves and seals are not randomized
+                {
                     if (!_weaponDictionary.TryGetValue(sanitizedId, out EquipParamWeapon? wep))
-                    {
+                    {   // if it is not a weapon, skip
                         continue;
                     }
-
                     if (wep.wepType is Const.StaffType or Const.SealType)
-                    {
+                    { // if it is a stave or seal skip
                         continue;
                     }
 
@@ -158,7 +158,6 @@ public partial class BingoRandomizer
                         addToOrderedDict(categoryDictMap, wep.wepType, new ItemLotEntry(id, category));
                         break; // Break here because the entire item lot param is just a single entry.
                     }
-
                     addToOrderedDict(categoryDictEnemy, wep.wepType, new ItemLotEntry(id, category));
                 }
                 else
@@ -167,7 +166,6 @@ public partial class BingoRandomizer
                     {
                         continue;
                     }
-
                     if (wep.wepType is Const.StaffType or Const.SealType)
                     {
                         continue;
@@ -179,7 +177,6 @@ public partial class BingoRandomizer
                         addToOrderedDict(categoryDictMap, wep.wepType, new ItemLotEntry(id, category));
                         break;
                     }
-
                     addToOrderedDict(categoryDictEnemy, wep.wepType, new ItemLotEntry(id, category));
                 }
             }
@@ -190,6 +187,7 @@ public partial class BingoRandomizer
 
         Dictionary<int, ItemLotEntry> guaranteedDropReplace = getReplacementHashmap(categoryDictMap);
         Dictionary<int, ItemLotEntry> chanceDropReplace = getReplacementHashmap(categoryDictEnemy);
+        // Application now has weapons set to randomize
         logItem(">> Item Replacements - all instances of item on left will be replaced with item on right");
         logItem("> Guaranteed Weapons");
         logReplacementDictionary(guaranteedDropReplace);

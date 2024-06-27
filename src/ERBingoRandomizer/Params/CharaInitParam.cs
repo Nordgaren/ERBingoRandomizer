@@ -2,7 +2,8 @@
 
 namespace ERBingoRandomizer.Params;
 
-public class CharaInitParam {
+public class CharaInitParam
+{
     private Param.Cell _arrowNum;
     private Param.Cell _soulLv;
     private Param.Cell _baseDex;
@@ -34,7 +35,8 @@ public class CharaInitParam {
     private Param.Cell _wepLeft;
     private Param.Cell _wepRight;
 
-    public CharaInitParam(Param.Row chr) {
+    public CharaInitParam(Param.Row chr)
+    {
         _wepLeft = chr["equip_Wep_Left"]!.Value;
         _wepRight = chr["equip_Wep_Right"]!.Value;
         _subWepLeft = chr["equip_Subwep_Left"]!.Value;
@@ -65,7 +67,6 @@ public class CharaInitParam {
         _baseMag = chr["baseMag"]!.Value;
         _baseFai = chr["baseFai"]!.Value;
         _baseLuc = chr["baseLuc"]!.Value;
-
     }
     public int wepleft { get => (int)_wepLeft.Value; set => _wepLeft.Value = value; }
     public int wepRight { get => (int)_wepRight.Value; set => _wepRight.Value = value; }
@@ -97,28 +98,36 @@ public class CharaInitParam {
     public byte baseFai { get => (byte)_baseFai.Value; set => _baseFai.Value = value; }
     public byte baseLuc { get => (byte)_baseLuc.Value; set => _baseLuc.Value = value; }
 
-    public Param.Cell GetVitCell() {
+    public Param.Cell GetVitCell()
+    {
         return _baseVit;
     }
-    public Param.Cell GetWilCell() {
+    public Param.Cell GetWilCell()
+    {
         return _baseWil;
     }
-    public Param.Cell GetEndCell() {
+    public Param.Cell GetEndCell()
+    {
         return _baseEnd;
     }
-    public Param.Cell GetStrCell() {
+    public Param.Cell GetStrCell()
+    {
         return _baseStr;
     }
-    public Param.Cell GetDexCell() {
+    public Param.Cell GetDexCell()
+    {
         return _baseDex;
     }
-    public Param.Cell GetMagCell() {
+    public Param.Cell GetMagCell()
+    {
         return _baseMag;
     }
-    public Param.Cell GetFaiCell() {
+    public Param.Cell GetFaiCell()
+    {
         return _baseFai;
     }
-    public Param.Cell GetLucCell() {
+    public Param.Cell GetLucCell()
+    {
         return _baseLuc;
     }
 }

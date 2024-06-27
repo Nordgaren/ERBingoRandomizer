@@ -1,7 +1,8 @@
 ﻿namespace ERBingoRandomizer.Utility;
 
 // Anything configurable will be in this class.
-public static class Config {
+public static class Config
+{
     public const float AddRemoveWeaponChance = 0.001f;
     // Max
     public const ushort MaxArrows = 30;

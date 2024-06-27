@@ -41,12 +41,7 @@ public partial class BingoRandomizer
         {
             return;
         }
-        // Get a new random chr until it has the required stats.
-        // TODO couldn't there just be a unique min stat to start at?
-        while (chr.baseMag < Config.MinInt)
-        {
-            randomizeLevels(chr);
-        }
+        rerollPrisonerStats(chr);
 
         chr.equipSpell01 = -1;
         chr.equipSpell02 = -1;
@@ -58,11 +53,7 @@ public partial class BingoRandomizer
         {
             return;
         }
-        // Get a new random chr until it has the required stats.
-        while (chr.baseFai < Config.MinFai)
-        {
-            randomizeLevels(chr);
-        }
+        rerollConfessorStats(chr);
 
         chr.equipSpell01 = -1;
         chr.equipSpell02 = -1;
@@ -77,10 +68,10 @@ public partial class BingoRandomizer
         chr.subWepLeft3 = -1;
         chr.subWepRight3 = -1;
 
-        chr.equipHelm = chanceGetRandomArmor(chr.equipHelm, Const.HelmType);
-        chr.equipArmer = chanceGetRandomArmor(chr.equipArmer, Const.BodyType);
-        chr.equipGaunt = chanceGetRandomArmor(chr.equipGaunt, Const.ArmType);
-        chr.equipLeg = chanceGetRandomArmor(chr.equipLeg, Const.LegType);
+        chr.equipHelm = exchangeArmorPiece(chr.equipHelm, Const.HelmType);
+        chr.equipArmer = exchangeArmorPiece(chr.equipArmer, Const.BodyType);
+        chr.equipGaunt = exchangeArmorPiece(chr.equipGaunt, Const.ArmType);
+        chr.equipLeg = exchangeArmorPiece(chr.equipLeg, Const.LegType);
 
         randomizeLevels(chr);
 
@@ -257,7 +248,7 @@ public partial class BingoRandomizer
         _lineHelpFmg[id] = string.Join(", ", str);
     }
     private void writeFiles()
-    {
+    { //TODO is there an issue with writeFiles() ?
         if (Directory.Exists(Const.BingoPath))
         {
             Directory.Delete(Const.BingoPath, true);

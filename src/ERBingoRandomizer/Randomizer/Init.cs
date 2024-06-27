@@ -120,9 +120,9 @@ public partial class BingoRandomizer
     }
     private void buildDictionaries()
     {
-        _weaponDictionary = new Dictionary<int, EquipParamWeapon>();
-        _weaponTypeDictionary = new Dictionary<ushort, List<Param.Row>>();
-        _weaponNameDictionary = new Dictionary<int, string>();
+        _weaponDictionary = new Dictionary<int, EquipParamWeapon>(); // TODO update for DLC weapons
+        _weaponTypeDictionary = new Dictionary<ushort, List<Param.Row>>(); // TODO update for DLC weapons
+        _weaponNameDictionary = new Dictionary<int, string>(); // TODO update for DLC weapons
 
         foreach (Param.Row row in _equipParamWeapon.Rows)
         {
@@ -143,7 +143,7 @@ public partial class BingoRandomizer
             _weaponNameDictionary[row.ID] = rowString;
             if (!Enumerable.Range(81, 86).Contains(wep.wepType))
             {
-                _weaponDictionary.Add(row.ID, new EquipParamWeapon(row));
+                _weaponDictionary.Add(row.ID, new EquipParamWeapon(row)); // TODO visit
             }
 
             if (_weaponTypeDictionary.TryGetValue(wep.wepType, out List<Param.Row>? rows))
@@ -260,7 +260,7 @@ public partial class BingoRandomizer
         {
             case Const.EquipParamWeaponName:
                 {
-                    _equipParamWeapon = Param.Read(file.Bytes);
+                    _equipParamWeapon = Param.Read(file.Bytes); // TODO visit
                     if (!_equipParamWeapon.ApplyParamDefsCarefully(_paramDefs))
                     {
                         throw new InvalidParamDefException(_equipParamWeapon.ParamType);
