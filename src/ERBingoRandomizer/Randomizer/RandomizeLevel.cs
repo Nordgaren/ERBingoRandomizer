@@ -3,8 +3,7 @@ using FSParam;
 using ERBingoRandomizer.Utility;
 
 namespace ERBingoRandomizer.Randomizer;
-// see void guaranteePrisonerHasSpells
-// see void guaranteeConfessorHasIncantation
+
 public partial class BingoRandomizer
 {
     private void initializeStats(CharaInitParam tarnished)

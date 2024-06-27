@@ -79,8 +79,9 @@ public partial class BingoRandomizer
     }
     private void randomizeCharaInitParam()
     {
-        logItem(">> Class Randomization - All items are randomized, with each class having a .001% chance to gain or lose and item. Spells given class meets min stat requirements");
-        logItem("> Ammo is give if you get a ranged weapon. Catalyst is give if you have spells.\n");
+        logItem("Class Randomization - All items are randomized, with each class having a .001% chance to gain or lose and item.");
+        logItem("Spells given to a class meet min stat requirements, and their will be a catalyst to cast.");
+        logItem("If a class has a ranged weapon, appropriate ammunition will be allocated.\n");
         // TODO get IDs of new DLC Powers of Remembrance "Rembrance Items"
         // TODO update seals and staves
         IEnumerable<int> remembranceItems = _shopLineupParam.Rows.Where(r => r.ID is >= 101900 and <= 101929).Select(r => new ShopLineupParam(r).equipId);

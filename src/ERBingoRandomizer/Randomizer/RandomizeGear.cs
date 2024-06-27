@@ -11,7 +11,6 @@ public partial class BingoRandomizer
 {
     private int randomizeStartingWeapon(int id, IReadOnlyList<int> weapons)
     {
-        logItem("## randomizing a starting weapon...");
         int limit = weapons.Count;
         int newID = weapons[_random.Next(limit)];
 
@@ -218,7 +217,6 @@ public partial class BingoRandomizer
     }
     private int getUsableWeapon(CharaInitParam chr, ushort type)
     {
-        logItem("Calling getUsableWeapon...");
         IReadOnlyList<Param.Row> table = _weaponTypeDictionary[type];
         int limit = table.Count;
 
