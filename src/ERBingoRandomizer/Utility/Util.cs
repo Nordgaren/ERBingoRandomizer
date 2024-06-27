@@ -158,49 +158,29 @@ static class Util
     // { // TODO where is this used?
     //     const int lineCount = 3;
     //     const int sizeLimit = 250;
-    //     // Pick some generic serif font to approximate Garamond
-    //     Font f = new("Times New Roman", 12);
-    //     // Hardcode this for the time being
+    //     Font f = new("Times New Roman", 12); // Pick some generic serif font to approximate Garamond
+
     //     string delimeter = useSpaces ? ", " : "，";
     //     List<string> committed = new();
     //     foreach (string item in items)
     //     {
     //         List<string> cand = committed.ToList();
-    //         if (cand.Count == 0)
-    //         {
-    //             cand.Add("");
-    //         }
-    //         else
-    //         {
-    //             // This adds a space, trim it later if it matters
-    //             cand[cand.Count - 1] += delimeter;
-    //         }
+    //         if (cand.Count == 0) { cand.Add(""); }
+    //         else { cand[cand.Count - 1] += delimeter; } // This adds a space, trim it later if it matters
     //         // Japanese, Chinese, and Thai lack ascii spaces
     //         // Otherwise, add one word at a time, also measuring the space before.
     //         foreach (string token in item.Split(' ').Select((s, i) => (i == 0 ? "" : " ") + s))
     //         {
     //             string lastLine = cand[cand.Count - 1];
     //             string addedLine = (lastLine + token).Trim(' ');
-    //             if (TextRenderer.MeasureText(addedLine, f).Width < sizeLimit)
-    //             {
-    //                 cand[cand.Count - 1] = addedLine;
-    //             }
-    //             else
-    //             {
-    //                 cand.Add(token.Trim(' '));
-    //             }
+    //             if (TextRenderer.MeasureText(addedLine, f).Width < sizeLimit) { cand[cand.Count - 1] = addedLine; }
+    //             else { cand.Add(token.Trim(' ')); }
     //         }
-    //         if (cand.Count > lineCount)
-    //         {
-    //             break;
-    //         }
+    //         if (cand.Count > lineCount) { break; }
     //         committed = cand;
     //     }
-    //     if (committed.Count == 0)
-    //     {
-    //         // Make each item a line, hope it goes well
-    //         committed = items.Take(lineCount).ToList();
-    //     }
+    //     if (committed.Count == 0) { committed = items.Take(lineCount).ToList(); } // Make each item a line, hope it goes well
+
     //     return string.Join("\n", committed.Select(t => t.Trim(' ')));
     // }
     private static string GetFileSha256Hash(string path)

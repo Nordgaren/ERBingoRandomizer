@@ -317,7 +317,7 @@ public partial class BingoRandomizer
 
         logItem("\n> Levels");
         logItem($"Vigor: {chr.baseVit}");
-        logItem($"Attunement: {chr.baseWil}");
+        logItem($"Mind: {chr.baseWil}");
         logItem($"Endurance: {chr.baseEnd}");
         logItem($"Strength: {chr.baseStr}");
         logItem($"Dexterity: {chr.baseDex}");
