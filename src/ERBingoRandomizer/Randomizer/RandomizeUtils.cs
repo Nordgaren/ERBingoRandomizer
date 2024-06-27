@@ -11,17 +11,22 @@ using System.Linq;
 
 namespace ERBingoRandomizer.Randomizer;
 
-public partial class BingoRandomizer {
+public partial class BingoRandomizer
+{
     private List<string> _randomizerLog;
-    private void logItem(string item) {
+    private void logItem(string item)
+    {
         _randomizerLog.Add(item);
     }
-    private void writeLog() {
+    private void writeLog()
+    {
         Directory.CreateDirectory(Config.SpoilerPath);
         File.WriteAllLines($"{Config.SpoilerPath}/spoiler-{_seed}.log", _randomizerLog);
     }
-    private void guaranteeSpellcasters(int rowId, CharaInitParam chr, IReadOnlyList<int> spells) {
-        switch (rowId) {
+    private void guaranteeSpellcasters(int rowId, CharaInitParam chr, IReadOnlyList<int> spells)
+    {
+        switch (rowId)
+        {
             case 3008:
                 guaranteePrisonerHasSpells(chr, spells);
                 break;
@@ -30,12 +35,16 @@ public partial class BingoRandomizer {
                 break;
         }
     }
-    private void guaranteePrisonerHasSpells(CharaInitParam chr, IReadOnlyList<int> spells) {
-        if (hasSpellOfType(chr, Const.SorceryType)) {
+    private void guaranteePrisonerHasSpells(CharaInitParam chr, IReadOnlyList<int> spells)
+    {
+        if (hasSpellOfType(chr, Const.SorceryType))
+        {
             return;
         }
         // Get a new random chr until it has the required stats.
-        while (chr.baseMag < Config.MinInt) {
+        // TODO couldn't there just be a unique min stat to start at?
+        while (chr.baseMag < Config.MinInt)
+        {
             randomizeLevels(chr);
         }
 
@@ -43,12 +52,15 @@ public partial class BingoRandomizer {
         chr.equipSpell02 = -1;
         randomizeSorceries(chr, spells);
     }
-    private void guaranteeConfessorHasIncantation(CharaInitParam chr, IReadOnlyList<int> spells) {
-        if (hasSpellOfType(chr, Const.IncantationType)) {
+    private void guaranteeConfessorHasIncantation(CharaInitParam chr, IReadOnlyList<int> spells)
+    {
+        if (hasSpellOfType(chr, Const.IncantationType))
+        {
             return;
         }
         // Get a new random chr until it has the required stats.
-        while (chr.baseFai < Config.MinFai) {
+        while (chr.baseFai < Config.MinFai)
+        {
             randomizeLevels(chr);
         }
 
@@ -56,7 +68,8 @@ public partial class BingoRandomizer {
         chr.equipSpell02 = -1;
         randomizeIncantations(chr, spells);
     }
-    private void randomizeCharaInitEntry(CharaInitParam chr, IReadOnlyList<int> weapons) {
+    private void randomizeCharaInitEntry(CharaInitParam chr, IReadOnlyList<int> weapons)
+    {
         chr.wepleft = getRandomWeapon(chr.wepleft, weapons);
         chr.wepRight = getRandomWeapon(chr.wepRight, weapons);
         chr.subWepLeft = -1;
@@ -73,29 +86,34 @@ public partial class BingoRandomizer {
 
         chr.equipArrow = Const.NoItem;
         chr.arrowNum = ushort.MaxValue;
-        if (hasWeaponOfType(chr, Const.BowType, Const.LightBowType)) {
+        if (hasWeaponOfType(chr, Const.BowType, Const.LightBowType))
+        {
             giveArrows(chr);
         }
         chr.equipSubArrow = Const.NoItem;
         chr.subArrowNum = ushort.MaxValue;
-        if (hasWeaponOfType(chr, Const.GreatbowType)) {
+        if (hasWeaponOfType(chr, Const.GreatbowType))
+        {
             giveGreatArrows(chr);
         }
         chr.equipBolt = Const.NoItem;
         chr.boltNum = ushort.MaxValue;
-        if (hasWeaponOfType(chr, Const.CrossbowType)) {
+        if (hasWeaponOfType(chr, Const.CrossbowType))
+        {
             giveBolts(chr);
         }
         chr.equipSubBolt = Const.NoItem;
         chr.subBoltNum = ushort.MaxValue;
-        if (hasWeaponOfType(chr, Const.BallistaType)) {
+        if (hasWeaponOfType(chr, Const.BallistaType))
+        {
             giveBallistaBolts(chr);
         }
 
         chr.equipSpell01 = -1;
         chr.equipSpell02 = -1;
     }
-    private Dictionary<int, ItemLotEntry> getReplacementHashmap(IOrderedDictionary orderedDictionary) {
+    private Dictionary<int, ItemLotEntry> getReplacementHashmap(IOrderedDictionary orderedDictionary)
+    {
         Dictionary<int, ItemLotEntry> dict = new();
 
         List<ItemLotEntry> bows = (List<ItemLotEntry>?)orderedDictionary[(object)Const.BowType] ?? new List<ItemLotEntry>();
@@ -114,50 +132,61 @@ public partial class BingoRandomizer {
         orderedDictionary.Remove(Const.CrossbowType);
         orderedDictionary.Remove(Const.BallistaType);
 
-        for (int i = 0; i < orderedDictionary.Count; i++) {
+        for (int i = 0; i < orderedDictionary.Count; i++)
+        {
             List<ItemLotEntry> value = (List<ItemLotEntry>)orderedDictionary[i]!;
             List<ItemLotEntry> itemLotEntries = new(value);
             itemLotEntries.Shuffle(_random);
-            foreach (ItemLotEntry entry in itemLotEntries) {
+            foreach (ItemLotEntry entry in itemLotEntries)
+            {
                 dict.Add(entry.Id, getNewId(entry.Id, value));
             }
         }
 
         return dict;
     }
-    private Dictionary<int, int> getShopReplacementHashmap(IOrderedDictionary orderedDictionary) {
+    private Dictionary<int, int> getShopReplacementHashmap(IOrderedDictionary orderedDictionary)
+    {
         Dictionary<int, int> dict = new();
-        for (int i = 0; i < orderedDictionary.Count; i++) {
+        for (int i = 0; i < orderedDictionary.Count; i++)
+        {
             List<int> value = (List<int>)orderedDictionary[i]!;
             List<int> itemLotEntries = new(value);
             itemLotEntries.Shuffle(_random);
-            foreach (int entry in itemLotEntries) {
+            foreach (int entry in itemLotEntries)
+            {
                 dict.Add(entry, getNewId(entry, value));
             }
         }
 
         return dict;
     }
-    private void dedupeAndRandomizeVectors(IOrderedDictionary orderedDictionary) {
-        for (int i = 0; i < orderedDictionary.Count; i++) {
+    private void dedupeAndRandomizeVectors(IOrderedDictionary orderedDictionary)
+    {
+        for (int i = 0; i < orderedDictionary.Count; i++)
+        {
             List<ItemLotEntry> value = (List<ItemLotEntry>)orderedDictionary[i]!;
             List<ItemLotEntry> distinct = value.Distinct().ToList();
             distinct.Shuffle(_random);
             orderedDictionary[i] = distinct;
         }
     }
-    private void dedupeAndRandomizeShopVectors(IOrderedDictionary orderedDictionary) {
-        for (int i = 0; i < orderedDictionary.Count; i++) {
+    private void dedupeAndRandomizeShopVectors(IOrderedDictionary orderedDictionary)
+    {
+        for (int i = 0; i < orderedDictionary.Count; i++)
+        {
             List<int> value = (List<int>)orderedDictionary[i]!;
             List<int> distinct = value.Distinct().ToList();
             distinct.Shuffle(_random);
             orderedDictionary[i] = distinct;
         }
     }
-    private void replaceShopLineupParam(ShopLineupParam lot, IList<int> shopLineupParamDictionary, IList<ShopLineupParam> shopLineupParamRemembranceList) {
-        if (lot.mtrlId == -1) {
+    private void replaceShopLineupParam(ShopLineupParam lot, IList<int> shopLineupParamDictionary, IList<ShopLineupParam> shopLineupParamRemembranceList)
+    {
+        if (lot.mtrlId == -1)
+        {
             int newId = getNewId(lot.equipId, shopLineupParamDictionary);
-            logItem($"{_weaponNameDictionary[lot.equipId]} -> {_weaponNameDictionary[newId]}");
+            logItem($"{_weaponNameDictionary[lot.equipId]} -> {_weaponNameDictionary[newId]} : {newId}");
             lot.equipId = newId;
             return;
         }
@@ -165,10 +194,12 @@ public partial class BingoRandomizer {
         logItem($"{_weaponNameDictionary[lot.equipId]} -> {_weaponNameDictionary[newRemembrance.equipId]}");
         copyShopLineupParam(lot, newRemembrance);
     }
-    private void replaceShopLineupParamMagic(ShopLineupParam lot, IReadOnlyDictionary<int, int> shopLineupParamDictionary, IList<ShopLineupParam> shopLineupParamRemembranceList) {
-        if (lot.mtrlId == -1) {
+    private void replaceShopLineupParamMagic(ShopLineupParam lot, IReadOnlyDictionary<int, int> shopLineupParamDictionary, IList<ShopLineupParam> shopLineupParamRemembranceList)
+    {
+        if (lot.mtrlId == -1)
+        {
             int newItem = shopLineupParamDictionary[lot.equipId];
-            logItem($"{_goodsFmg[lot.equipId]} -> {_goodsFmg[newItem]}");
+            logItem($"{_goodsFmg[lot.equipId]} -> {_goodsFmg[newItem]} : {newItem}");
             lot.equipId = newItem;
             return;
         }
@@ -176,46 +207,59 @@ public partial class BingoRandomizer {
         logItem($"{_goodsFmg[lot.equipId]} -> {_goodsFmg[newRemembrance.equipId]}");
         copyShopLineupParam(lot, newRemembrance);
     }
-    private void addDescriptionString(CharaInitParam chr, int id) {
+    private void addDescriptionString(CharaInitParam chr, int id)
+    {
         List<string> str = new() {
             $"{_weaponNameDictionary[chr.wepleft]}{getRequiredLevelsWeapon(chr, chr.wepleft)}",
             $"{_weaponNameDictionary[chr.wepRight]}{getRequiredLevelsWeapon(chr, chr.wepRight)}",
         };
-        if (chr.subWepLeft != -1) {
+        if (chr.subWepLeft != -1)
+        {
             str.Add($"{_weaponNameDictionary[chr.subWepLeft]}{getRequiredLevelsWeapon(chr, chr.subWepLeft)}");
         }
-        if (chr.subWepRight != -1) {
+        if (chr.subWepRight != -1)
+        {
             str.Add($"{_weaponNameDictionary[chr.subWepRight]}{getRequiredLevelsWeapon(chr, chr.subWepRight)}");
         }
-        if (chr.subWepLeft3 != -1) {
+        if (chr.subWepLeft3 != -1)
+        {
             str.Add($"{_weaponNameDictionary[chr.subWepLeft3]}{getRequiredLevelsWeapon(chr, chr.subWepLeft3)}");
         }
-        if (chr.subWepRight3 != -1) {
+        if (chr.subWepRight3 != -1)
+        {
             str.Add($"{_weaponNameDictionary[chr.subWepRight3]}{getRequiredLevelsWeapon(chr, chr.subWepRight3)}");
         }
-        if (chr.equipArrow != -1) {
+        if (chr.equipArrow != -1)
+        {
             str.Add($"{_weaponNameDictionary[chr.equipArrow]}[{chr.arrowNum}]");
         }
-        if (chr.equipSubArrow != -1) {
+        if (chr.equipSubArrow != -1)
+        {
             str.Add($"{_weaponNameDictionary[chr.equipSubArrow]}[{chr.subArrowNum}]");
         }
-        if (chr.equipBolt != -1) {
+        if (chr.equipBolt != -1)
+        {
             str.Add($"{_weaponNameDictionary[chr.equipBolt]}[{chr.boltNum}]");
         }
-        if (chr.equipSubBolt != -1) {
+        if (chr.equipSubBolt != -1)
+        {
             str.Add($"{_weaponNameDictionary[chr.equipSubBolt]}[{chr.subBoltNum}]");
         }
-        if (chr.equipSpell01 != -1) {
+        if (chr.equipSpell01 != -1)
+        {
             str.Add($"{_goodsFmg[chr.equipSpell01]}");
         }
-        if (chr.equipSpell02 != -1) {
+        if (chr.equipSpell02 != -1)
+        {
             str.Add($"{_goodsFmg[chr.equipSpell02]}");
         }
 
         _lineHelpFmg[id] = string.Join(", ", str);
     }
-    private void writeFiles() {
-        if (Directory.Exists(Const.BingoPath)) {
+    private void writeFiles()
+    {
+        if (Directory.Exists(Const.BingoPath))
+        {
             Directory.Delete(Const.BingoPath, true);
         }
         Directory.CreateDirectory(Path.GetDirectoryName($"{Const.BingoPath}/{Const.RegulationName}") ?? throw new InvalidOperationException());
@@ -231,43 +275,54 @@ public partial class BingoRandomizer {
         File.WriteAllBytes($"{Const.BingoPath}/{Const.MenuMsgBNDPath}", _menuMsgBND.Write());
 
     }
-    private void logReplacementDictionary(Dictionary<int, ItemLotEntry> dict) {
-        foreach (KeyValuePair<int, ItemLotEntry> pair in dict) {
-            logItem($"{_weaponNameDictionary[pair.Key]} -> {_weaponNameDictionary[pair.Value.Id]}");
+    private void logReplacementDictionary(Dictionary<int, ItemLotEntry> dict)
+    {
+        foreach (KeyValuePair<int, ItemLotEntry> pair in dict)
+        {
+            logItem($"{_weaponNameDictionary[pair.Key]} -> {_weaponNameDictionary[pair.Value.Id]} : {pair.Value.Id}");
         }
     }
-    private void logReplacementDictionaryMagic(Dictionary<int, int> dict) {
-        foreach (KeyValuePair<int, int> pair in dict) {
+    private void logReplacementDictionaryMagic(Dictionary<int, int> dict)
+    {
+        foreach (KeyValuePair<int, int> pair in dict)
+        {
             logItem($"{_goodsFmg[pair.Key]} -> {_goodsFmg[pair.Value]}");
         }
     }
-    private void logCharaInitEntry(CharaInitParam chr, int i) {
+    private void logCharaInitEntry(CharaInitParam chr, int i)
+    {
         logItem($"\n> {_menuTextFmg[i]}");
         logItem("> Weapons");
-        if (chr.wepleft != -1) {
-            logItem($"Left: {_weaponFmg[chr.wepleft]}{getRequiredLevelsWeapon(chr, chr.wepleft)}");
+        if (chr.wepleft != -1)
+        {
+            logItem($"Left: {_weaponFmg[chr.wepleft]}{getRequiredLevelsWeapon(chr, chr.wepleft)} : {chr.wepleft}");
         }
-        if (chr.wepRight != -1) {
-            logItem($"Right: {_weaponFmg[chr.wepRight]}{getRequiredLevelsWeapon(chr, chr.wepRight)}");
+        if (chr.wepRight != -1)
+        {
+            logItem($"Right: {_weaponFmg[chr.wepRight]}{getRequiredLevelsWeapon(chr, chr.wepRight)} : {chr.wepRight}");
         }
-        if (chr.subWepLeft != -1) {
+        if (chr.subWepLeft != -1)
+        {
             logItem($"Left 2: {_weaponFmg[chr.subWepLeft]}{getRequiredLevelsWeapon(chr, chr.subWepLeft)}");
         }
-        if (chr.subWepRight != -1) {
+        if (chr.subWepRight != -1)
+        {
             logItem($"Right 2: {_weaponFmg[chr.subWepRight]}{getRequiredLevelsWeapon(chr, chr.subWepRight)}");
         }
-        if (chr.subWepLeft3 != -1) {
+        if (chr.subWepLeft3 != -1)
+        {
             logItem($"Left 3: {_weaponFmg[chr.subWepLeft3]}{getRequiredLevelsWeapon(chr, chr.subWepLeft3)}");
         }
-        if (chr.subWepRight3 != -1) {
+        if (chr.subWepRight3 != -1)
+        {
             logItem($"Right 3: {_weaponFmg[chr.subWepRight3]}{getRequiredLevelsWeapon(chr, chr.subWepRight3)}");
         }
 
         logItem("\n> Armor");
-        logItem($"Helm: {_protectorFmg[chr.equipHelm]}");
-        logItem($"Body: {_protectorFmg[chr.equipArmer]}");
-        logItem($"Arms: {_protectorFmg[chr.equipGaunt]}");
-        logItem($"Legs: {_protectorFmg[chr.equipLeg]}");
+        logItem($"Helm: {_protectorFmg[chr.equipHelm]} : {chr.equipHelm}");
+        logItem($"Body: {_protectorFmg[chr.equipArmer]} : {chr.equipArmer}");
+        logItem($"Arms: {_protectorFmg[chr.equipGaunt]} : { chr.equipGaunt}");
+        logItem($"Legs: {_protectorFmg[chr.equipLeg]} : {chr.equipLeg}");
 
         logItem("\n> Levels");
         logItem($"Vigor: {chr.baseVit}");
@@ -279,74 +334,94 @@ public partial class BingoRandomizer {
         logItem($"Faith: {chr.baseFai}");
         logItem($"Arcane: {chr.baseLuc}");
 
-        if (chr.equipArrow != -1 || chr.equipSubArrow != -1 || chr.equipBolt != -1 || chr.equipSubBolt != -1) {
+        if (chr.equipArrow != -1 || chr.equipSubArrow != -1 || chr.equipBolt != -1 || chr.equipSubBolt != -1)
+        {
             logItem("\n> Ammo");
-            if (chr.equipArrow != -1) {
+            if (chr.equipArrow != -1)
+            {
                 logItem($"{_weaponFmg[chr.equipArrow]}[{chr.arrowNum}]");
             }
-            if (chr.equipSubArrow != -1) {
+            if (chr.equipSubArrow != -1)
+            {
                 logItem($"{_weaponFmg[chr.equipSubArrow]}[{chr.subArrowNum}]");
             }
-            if (chr.equipBolt != -1) {
+            if (chr.equipBolt != -1)
+            {
                 logItem($"{_weaponFmg[chr.equipBolt]}[{chr.boltNum}]");
             }
-            if (chr.equipSubBolt != -1) {
+            if (chr.equipSubBolt != -1)
+            {
                 logItem($"{_weaponFmg[chr.equipSubBolt]}[{chr.subBoltNum}]");
             }
         }
 
-        if (chr.equipSpell01 != -1 || chr.equipSpell02 != -1) {
+        if (chr.equipSpell01 != -1 || chr.equipSpell02 != -1)
+        {
             logItem("\n> Spells");
-            if (chr.equipSpell01 != -1) {
+            if (chr.equipSpell01 != -1)
+            {
                 logItem($"{_goodsFmg[chr.equipSpell01]}{getRequiredLevelsSpell(chr, chr.equipSpell01)}");
             }
-            if (chr.equipSpell02 != -1) {
+            if (chr.equipSpell02 != -1)
+            {
                 logItem($"{_goodsFmg[chr.equipSpell02]}{getRequiredLevelsSpell(chr, chr.equipSpell02)}");
             }
         }
 
         logItem("");
     }
-    private string getRequiredLevelsWeapon(CharaInitParam chr, int id) {
+    private string getRequiredLevelsWeapon(CharaInitParam chr, int id)
+    {
         EquipParamWeapon wep = _weaponDictionary[id];
         int reqLevels = 0;
-        if (wep.properStrength > chr.baseStr) {
+        if (wep.properStrength > chr.baseStr)
+        {
             reqLevels += wep.properStrength - chr.baseStr;
         }
-        if (wep.properAgility > chr.baseDex) {
+        if (wep.properAgility > chr.baseDex)
+        {
             reqLevels += wep.properAgility - chr.baseDex;
         }
-        if (wep.properMagic > chr.baseMag) {
+        if (wep.properMagic > chr.baseMag)
+        {
             reqLevels += wep.properMagic - chr.baseMag;
         }
-        if (wep.properFaith > chr.baseFai) {
+        if (wep.properFaith > chr.baseFai)
+        {
             reqLevels += wep.properFaith - chr.baseFai;
         }
-        if (wep.properLuck > chr.baseLuc) {
+        if (wep.properLuck > chr.baseLuc)
+        {
             reqLevels += wep.properLuck - chr.baseLuc;
         }
 
         return reqLevels > 0 ? $" (-{reqLevels})" : "";
 
     }
-    private string getRequiredLevelsSpell(CharaInitParam chr, int id) {
+    private string getRequiredLevelsSpell(CharaInitParam chr, int id)
+    {
         Magic spell = _magicDictionary[id];
         int reqLevels = 0;
-        if (spell.requirementIntellect > chr.baseMag) {
+        if (spell.requirementIntellect > chr.baseMag)
+        {
             reqLevels += spell.requirementIntellect - chr.baseMag;
         }
-        if (spell.requirementFaith > chr.baseFai) {
+        if (spell.requirementFaith > chr.baseFai)
+        {
             reqLevels += spell.requirementFaith - chr.baseFai;
         }
-        if (spell.requirementLuck > chr.baseLuc) {
+        if (spell.requirementLuck > chr.baseLuc)
+        {
             reqLevels += spell.requirementLuck - chr.baseLuc;
         }
 
         return reqLevels > 0 ? $" (-{reqLevels})" : "";
 
     }
-    private void logShopId(int rowId) {
-        switch (rowId) {
+    private void logShopId(int rowId)
+    {
+        switch (rowId)
+        {
             case 100000:
                 logItem("\n> Gatekeeper Gostoc");
                 break;
@@ -400,8 +475,10 @@ public partial class BingoRandomizer {
                 break;
         }
     }
-    private void logShopIdMagic(int rowId) {
-        switch (rowId) {
+    private void logShopIdMagic(int rowId)
+    {
+        switch (rowId)
+        {
             case 100050:
                 logItem("\n> Sorceress Sellen");
                 break;
@@ -506,10 +583,13 @@ public partial class BingoRandomizer {
                 break;
         }
     }
-    private void calculateLevels() {
-        for (int i = 0; i < 10; i++) {
+    private void calculateLevels()
+    {
+        for (int i = 0; i < 10; i++)
+        {
             Param.Row? row = _charaInitParam[i + 3000];
-            if (row == null) {
+            if (row == null)
+            {
                 continue;
             }
             CharaInitParam chr = new(row);
@@ -517,14 +597,17 @@ public partial class BingoRandomizer {
             Debug.WriteLine($"{_menuTextFmg[i + 288100]} {chr.soulLv} {addLevels(chr)}");
         }
     }
-    private static T getNewId<T>(int oldId, IList<T> vec) where T : IEquatable<int> {
-        if (vec.All(i => i.Equals(oldId))) {
+    private static T getNewId<T>(int oldId, IList<T> vec) where T : IEquatable<int>
+    {
+        if (vec.All(i => i.Equals(oldId)))
+        {
             Debug.WriteLine($"No New Ids for {oldId}");
             return vec.Pop();
         }
 
         T newId = vec.Pop();
-        while (newId.Equals(oldId)) {
+        while (newId.Equals(oldId))
+        {
             vec.Insert(0, newId);
             newId = vec.Pop();
         }
@@ -532,45 +615,54 @@ public partial class BingoRandomizer {
         return newId;
     }
     // ReSharper disable once SuggestBaseTypeForParameter
-    private static void addToOrderedDict<T>(IOrderedDictionary orderedDict, object key, T type) {
+    private static void addToOrderedDict<T>(IOrderedDictionary orderedDict, object key, T type)
+    {
         List<T>? ids = (List<T>?)orderedDict[key];
-        if (ids != null) {
+        if (ids != null)
+        {
             ids.Add(type);
         }
-        else {
+        else
+        {
             ids = new List<T> {
                 type,
             };
             orderedDict.Add(key, ids);
         }
     }
-    private static bool chrCanUseWeapon(EquipParamWeapon wep, CharaInitParam chr) {
+    private static bool chrCanUseWeapon(EquipParamWeapon wep, CharaInitParam chr)
+    {
         return wep.properStrength <= chr.baseStr
             && wep.properAgility <= chr.baseDex
             && wep.properMagic <= chr.baseMag
             && wep.properFaith <= chr.baseFai
             && wep.properLuck <= chr.baseLuc;
     }
-    private static bool chrCanUseSpell(Magic spell, CharaInitParam chr) {
+    private static bool chrCanUseSpell(Magic spell, CharaInitParam chr)
+    {
         return spell.requirementIntellect <= chr.baseMag
             && spell.requirementFaith <= chr.baseFai
             && spell.requirementLuck <= chr.baseLuc;
     }
-    private static int getSeedFromHashData(IEnumerable<byte> hashData) {
+    private static int getSeedFromHashData(IEnumerable<byte> hashData)
+    {
         IEnumerable<byte[]> chunks = hashData.Chunk(4);
         return chunks.Aggregate(0, (current, chunk) => current ^ BitConverter.ToInt32(chunk));
     }
-    private static void setBndFile(IBinder binder, string fileName, byte[] bytes) {
+    private static void setBndFile(IBinder binder, string fileName, byte[] bytes)
+    {
         BinderFile file = binder.Files.First(file => file.Name.EndsWith(fileName)) ?? throw new BinderFileNotFoundException(fileName);
         ;
         file.Bytes = bytes;
     }
-    private static void patchSpEffectAtkPowerCorrectRate(AtkParam atkParam) {
+    private static void patchSpEffectAtkPowerCorrectRate(AtkParam atkParam)
+    {
         atkParam.spEffectAtkPowerCorrectRate_byPoint = 100;
         atkParam.spEffectAtkPowerCorrectRate_byRate = 100;
         atkParam.spEffectAtkPowerCorrectRate_byDmg = 100;
     }
-    private static void copyShopLineupParam(ShopLineupParam lot, ShopLineupParam shopLineupParam) {
+    private static void copyShopLineupParam(ShopLineupParam lot, ShopLineupParam shopLineupParam)
+    {
         lot.equipId = shopLineupParam.equipId;
         lot.costType = shopLineupParam.costType;
         lot.sellQuantity = shopLineupParam.sellQuantity;
@@ -583,13 +675,16 @@ public partial class BingoRandomizer {
         lot.menuIconId = shopLineupParam.menuIconId;
         lot.menuTitleMsgId = shopLineupParam.menuTitleMsgId;
     }
-    private static int removeWeaponMetadata(int id) {
+    private static int washWeaponMetadata(int id)
+    {
         return id / 10000 * 10000;
     }
-    private static int removeWeaponLevels(int id) {
+    private static int washWeaponLevels(int id)
+    {
         return id / 100 * 100;
     }
-    private static int addLevels(CharaInitParam chr) {
+    private static int addLevels(CharaInitParam chr)
+    {
         return chr.baseVit
             + chr.baseWil
             + chr.baseEnd

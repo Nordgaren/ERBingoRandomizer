@@ -11,7 +11,8 @@ using System.Xml;
 
 namespace ERBingoRandomizer.Utility;
 
-static class Util {
+static class Util
+{
     private const uint PRIME = 37;
     private const ulong PRIME64 = 0x85ul;
     private static readonly (string, string)[] _pathValueTuple = {
@@ -25,27 +26,34 @@ static class Util {
         "ELDEN RING",
         "Sekiro",
     };
-    private static int DeleteFromEnd(int num, int n) {
-        for (int i = 1; num != 0; i++) {
+    private static int DeleteFromEnd(int num, int n)
+    {
+        for (int i = 1; num != 0; i++)
+        {
             num /= 10;
 
-            if (i == n) {
+            if (i == n)
+            {
                 return num;
             }
         }
 
         return 0;
     }
-    public static int DeleteFromEndAndRestore(int num, int n) {
+    public static int DeleteFromEndAndRestore(int num, int n)
+    {
         int end = DeleteFromEnd(num, n);
-        if (end == 0) {
+        if (end == 0)
+        {
             return end;
         }
 
-        for (int i = 1; end != 0; i++) {
+        for (int i = 1; end != 0; i++)
+        {
             end *= 10;
 
-            if (i == n) {
+            if (i == n)
+            {
                 return end;
             }
         }
@@ -53,22 +61,27 @@ static class Util {
         return end;
     }
 
-    public static string? TryGetGameInstallLocation(string gamePath) {
-        if (!gamePath.StartsWith("\\") && !gamePath.StartsWith("/")) {
+    public static string? TryGetGameInstallLocation(string gamePath)
+    {
+        if (!gamePath.StartsWith("\\") && !gamePath.StartsWith("/"))
+        {
             return null;
         }
 
         string? steamPath = GetSteamInstallPath();
 
-        if (string.IsNullOrWhiteSpace(steamPath)) {
+        if (string.IsNullOrWhiteSpace(steamPath))
+        {
             return null;
         }
 
         string[] libraryFolders = File.ReadAllLines($@"{steamPath}/SteamApps/libraryfolders.vdf");
         char[] separator = { '\t' };
 
-        foreach (string line in libraryFolders) {
-            if (!line.Contains("\"path\"")) {
+        foreach (string line in libraryFolders)
+        {
+            if (!line.Contains("\"path\""))
+            {
                 continue;
             }
 
@@ -76,7 +89,8 @@ static class Util {
             string libPath = split.FirstOrDefault(x => x.ToLower().Contains("steam"))?.Replace("\"", "").Replace("\\\\", "\\") ?? string.Empty;
             string libraryPath = libPath + gamePath;
 
-            if (File.Exists(libraryPath)) {
+            if (File.Exists(libraryPath))
+            {
                 return libraryPath.Replace("\\\\", "\\");
             }
         }
@@ -84,92 +98,115 @@ static class Util {
         return null;
     }
 
-    private static string? GetSteamInstallPath() {
+    private static string? GetSteamInstallPath()
+    {
         string? installPath = null;
 
-        foreach ((string Path, string Value) pathValueTuple in _pathValueTuple) {
+        foreach ((string Path, string Value) pathValueTuple in _pathValueTuple)
+        {
             string registryKey = pathValueTuple.Path;
             installPath = (string?)Registry.GetValue(registryKey, pathValueTuple.Value, null);
 
-            if (installPath != null) {
+            if (installPath != null)
+            {
                 break;
             }
         }
 
         return installPath;
     }
-    public static string? GetOodlePath() {
-        foreach (string game in _oodleGames) {
+    public static string? GetOodlePath()
+    {
+        foreach (string game in _oodleGames)
+        {
             string? path = TryGetGameInstallLocation($"\\steamapps\\common\\{game}\\Game\\oo2core_6_win64.dll");
-            if (path != null) {
+            if (path != null)
+            {
                 return path;
             }
         }
 
         return null;
     }
-    public static string[] GetResourcesInFolder(string item) {
+    public static string[] GetResourcesInFolder(string item)
+    {
         string[] resources = Directory.GetFiles($"{Config.ResourcesPath}/{item}");
         return resources.Select(ReadToString).ToArray();
     }
-    private static string ReadToString(string resourceName) {
+    private static string ReadToString(string resourceName)
+    {
         return File.ReadAllText(resourceName);
     }
 
-    public static PARAMDEF XmlDeserialize(string xmlString) {
+    public static PARAMDEF XmlDeserialize(string xmlString)
+    {
         XmlDocument xml = new();
         xml.LoadXml(xmlString);
         return PARAMDEF.XmlSerializer.Deserialize(xml);
     }
-    public static ulong ComputeHash(string path, BHD5.Game game) {
+    public static ulong ComputeHash(string path, BHD5.Game game)
+    {
         string hashable = path.Trim().Replace('\\', '/').ToLowerInvariant();
-        if (!hashable.StartsWith("/")) {
+        if (!hashable.StartsWith("/"))
+        {
             hashable = '/' + hashable;
         }
         return game >= BHD5.Game.EldenRing ? hashable.Aggregate(0ul, (i, c) => i * PRIME64 + c) : hashable.Aggregate(0u, (i, c) => i * PRIME + c);
     }
-    public static string SplitCharacterText(bool useSpaces, List<string> items) {
-        const int lineCount = 3;
-        const int sizeLimit = 250;
-        // Pick some generic serif font to approximate Garamond
-        Font f = new("Times New Roman", 12);
-        // Hardcode this for the time being
-        string delimeter = useSpaces ? ", " : "，";
-        List<string> committed = new();
-        foreach (string item in items) {
-            List<string> cand = committed.ToList();
-            if (cand.Count == 0) {
-                cand.Add("");
-            }
-            else {
-                // This adds a space, trim it later if it matters
-                cand[cand.Count - 1] += delimeter;
-            }
-            // Japanese, Chinese, and Thai lack ascii spaces
-            // Otherwise, add one word at a time, also measuring the space before.
-            foreach (string token in item.Split(' ').Select((s, i) => (i == 0 ? "" : " ") + s)) {
-                string lastLine = cand[cand.Count - 1];
-                string addedLine = (lastLine + token).Trim(' ');
-                if (TextRenderer.MeasureText(addedLine, f).Width < sizeLimit) {
-                    cand[cand.Count - 1] = addedLine;
-                }
-                else {
-                    cand.Add(token.Trim(' '));
-                }
-            }
-            if (cand.Count > lineCount) {
-                break;
-            }
-            committed = cand;
-        }
-        if (committed.Count == 0) {
-            // Make each item a line, hope it goes well
-            committed = items.Take(lineCount).ToList();
-        }
-        return string.Join("\n", committed.Select(t => t.Trim(' ')));
-    }
-    private static string GetFileSha256Hash(string path) {
-        if (File.Exists(path)) {
+
+    // public static string SplitCharacterText(bool useSpaces, List<string> items)
+    // { // TODO where is this used?
+    //     const int lineCount = 3;
+    //     const int sizeLimit = 250;
+    //     // Pick some generic serif font to approximate Garamond
+    //     Font f = new("Times New Roman", 12);
+    //     // Hardcode this for the time being
+    //     string delimeter = useSpaces ? ", " : "，";
+    //     List<string> committed = new();
+    //     foreach (string item in items)
+    //     {
+    //         List<string> cand = committed.ToList();
+    //         if (cand.Count == 0)
+    //         {
+    //             cand.Add("");
+    //         }
+    //         else
+    //         {
+    //             // This adds a space, trim it later if it matters
+    //             cand[cand.Count - 1] += delimeter;
+    //         }
+    //         // Japanese, Chinese, and Thai lack ascii spaces
+    //         // Otherwise, add one word at a time, also measuring the space before.
+    //         foreach (string token in item.Split(' ').Select((s, i) => (i == 0 ? "" : " ") + s))
+    //         {
+    //             string lastLine = cand[cand.Count - 1];
+    //             string addedLine = (lastLine + token).Trim(' ');
+    //             if (TextRenderer.MeasureText(addedLine, f).Width < sizeLimit)
+    //             {
+    //                 cand[cand.Count - 1] = addedLine;
+    //             }
+    //             else
+    //             {
+    //                 cand.Add(token.Trim(' '));
+    //             }
+    //         }
+    //         if (cand.Count > lineCount)
+    //         {
+    //             break;
+    //         }
+    //         committed = cand;
+    //     }
+    //     if (committed.Count == 0)
+    //     {
+    //         // Make each item a line, hope it goes well
+    //         committed = items.Take(lineCount).ToList();
+    //     }
+    //     return string.Join("\n", committed.Select(t => t.Trim(' ')));
+    // }
+    private static string GetFileSha256Hash(string path)
+    {
+        if (File.Exists(path))
+        {
             byte[] file = File.ReadAllBytes(path);
             byte[] hash = SHA256.HashData(file);
             return BitConverter.ToString(hash).Replace("-", "");
@@ -177,7 +214,8 @@ static class Util {
 
         return string.Empty;
     }
-    public static string GetShaRegulation256Hash() {
+    public static string GetShaRegulation256Hash()
+    {
         return GetFileSha256Hash($"{Const.BingoPath}/{Const.RegulationName}");
     }
 }

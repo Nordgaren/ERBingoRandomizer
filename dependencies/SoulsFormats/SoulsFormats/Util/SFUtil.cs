@@ -1,12 +1,12 @@
-﻿using SoulsFormats.Util;
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.IO;
 using System.IO.Compression;
 using System.Linq;
 using System.Security.Cryptography;
-using System.Text;
 using System.Text.RegularExpressions;
+using SoulsFormats.Util;
+using ZstdNet;
 
 namespace SoulsFormats
 {
@@ -246,7 +246,6 @@ namespace SoulsFormats
                 if (candidate % i == 0)
                     return false;
             }
-
             return true;
         }
 
@@ -477,8 +476,8 @@ namespace SoulsFormats
         public static BND4 DecryptDS2Regulation(string path)
         {
             byte[] bytes = File.ReadAllBytes(path);
-            if (BND4.IsRead(bytes, out BND4 bnd4)) 
-                return bnd4; 
+            if (BND4.IsRead(bytes, out BND4 bnd4))
+                return bnd4;
             byte[] iv = new byte[16];
             iv[0] = 0x80;
             Array.Copy(bytes, 0, iv, 1, 11);
@@ -498,8 +497,8 @@ namespace SoulsFormats
         public static BND4 DecryptDS3Regulation(string path)
         {
             byte[] bytes = File.ReadAllBytes(path);
-            if (BND4.IsRead(bytes, out BND4 bnd4)) 
-                return bnd4; 
+            if (BND4.IsRead(bytes, out BND4 bnd4))
+                return bnd4;
             bytes = DecryptByteArray(ds3RegulationKey, bytes);
             return BND4.Read(bytes);
         }
@@ -518,13 +517,40 @@ namespace SoulsFormats
         private static readonly byte[] erRegulationKey = ParseHexString("99 BF FC 36 6A 6B C8 C6 F5 82 7D 09 36 02 D6 76 C4 28 92 A0 1C 20 7F B0 24 D3 AF 4E 49 3F EF 99");
 
         /// <summary>
+        /// Reads a Zstd block from a BinaryReaderEx and returns the uncompressed data.
+        /// </summary>
+        public static byte[] ReadZstd(BinaryReaderEx expression, int compressedSize)
+        {
+            byte[] compressed = expression.ReadBytes(compressedSize);
+
+            using (var decompressedStream = new MemoryStream())
+            {
+                using (var compressedStream = new MemoryStream(compressed))
+                using (var deflateStream = new DecompressionStream(compressedStream)) // TODO add Decompression
+                {
+                    deflateStream.CopyTo(decompressedStream);
+                }
+                return decompressedStream.ToArray();
+            }
+        }
+        /// <summary>
+        /// Compresses data and writes to a byte array with a Zstd wrapper
+        /// </summary>
+        public static byte[] WriteZstd(byte[] data, int compressionLevel)
+        {
+            var options = new CompressionOptions(compressionLevel); // TODO ensure CompressionOptions exists
+            using var compressor = new Compressor(options);
+            return compressor.Wrap(data).ToArray();
+        }
+
+        /// <summary>
         /// Decrypts and unpacks ER's regulation BND4 from the specified path.
         /// </summary>
         public static BND4 DecryptERRegulation(string path)
         {
             byte[] bytes = File.ReadAllBytes(path);
-            if (BND4.IsRead(bytes, out BND4 bnd4)) 
-                return bnd4; 
+            if (BND4.IsRead(bytes, out BND4 bnd4))
+                return bnd4;
             bytes = DecryptByteArray(erRegulationKey, bytes);
             return BND4.Read(bytes);
         }

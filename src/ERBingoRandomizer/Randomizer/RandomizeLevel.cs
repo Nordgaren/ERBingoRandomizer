@@ -4,9 +4,13 @@ using ERBingoRandomizer.Utility;
 
 
 namespace ERBingoRandomizer.Randomizer;
-
-public partial class BingoRandomizer {
-    private void randomizeLevels(CharaInitParam chr) {
+// see void guaranteePrisonerHasSpells
+// see void guaranteeConfessorHasIncantation
+// why are they in Utils.cs ?
+public partial class BingoRandomizer
+{
+    private void randomizeLevels(CharaInitParam chr)
+    {
 
         chr.soulLv = Config.SoulLevel;
 
@@ -23,42 +27,52 @@ public partial class BingoRandomizer {
         chr.baseFai = Config.MinStat;
         chr.baseLuc = Config.MinStat;
 
-        while (pool > 0) {
+        while (pool > 0)
+        {
             pool += modifyStats(chr.GetVitCell());
-            if (pool <= 0) {
+            if (pool <= 0)
+            {
                 break;
             }
             pool += modifyStats(chr.GetWilCell());
-            if (pool <= 0) {
+            if (pool <= 0)
+            {
                 break;
             }
             pool += modifyStats(chr.GetEndCell());
-            if (pool <= 0) {
+            if (pool <= 0)
+            {
                 break;
             }
             pool += modifyStats(chr.GetStrCell());
-            if (pool <= 0) {
+            if (pool <= 0)
+            {
                 break;
             }
             pool += modifyStats(chr.GetDexCell());
-            if (pool <= 0) {
+            if (pool <= 0)
+            {
                 break;
             }
             pool += modifyStats(chr.GetMagCell());
-            if (pool <= 0) {
+            if (pool <= 0)
+            {
                 break;
             }
             pool += modifyStats(chr.GetFaiCell());
-            if (pool <= 0) {
+            if (pool <= 0)
+            {
                 break;
             }
             pool += modifyStats(chr.GetLucCell());
         }
     }
 
-    private int modifyStats(Param.Cell entry) {
+    private int modifyStats(Param.Cell entry)
+    {
         byte value = (byte)entry.Value;
-        if (value >= Config.MaxStat || !(_random.NextSingle() < Config.StatRollChance)) {
+        if (value >= Config.MaxStat || !(_random.NextSingle() < Config.StatRollChance))
+        {
             return 0;
         }
         entry.Value = (byte)(value + 1);
