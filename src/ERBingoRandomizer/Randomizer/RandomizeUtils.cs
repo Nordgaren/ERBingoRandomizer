@@ -70,8 +70,8 @@ public partial class BingoRandomizer
     }
     private void randomizeCharaInitEntry(CharaInitParam chr, IReadOnlyList<int> weapons)
     {
-        chr.wepleft = getRandomWeapon(chr.wepleft, weapons);
-        chr.wepRight = getRandomWeapon(chr.wepRight, weapons);
+        chr.wepleft = randomizeStartingWeapon(chr.wepleft, weapons);
+        chr.wepRight = randomizeStartingWeapon(chr.wepRight, weapons);
         chr.subWepLeft = -1;
         chr.subWepRight = -1;
         chr.subWepLeft3 = -1;
@@ -321,7 +321,7 @@ public partial class BingoRandomizer
         logItem("\n> Armor");
         logItem($"Helm: {_protectorFmg[chr.equipHelm]} : {chr.equipHelm}");
         logItem($"Body: {_protectorFmg[chr.equipArmer]} : {chr.equipArmer}");
-        logItem($"Arms: {_protectorFmg[chr.equipGaunt]} : { chr.equipGaunt}");
+        logItem($"Arms: {_protectorFmg[chr.equipGaunt]} : {chr.equipGaunt}");
         logItem($"Legs: {_protectorFmg[chr.equipLeg]} : {chr.equipLeg}");
 
         logItem("\n> Levels");
