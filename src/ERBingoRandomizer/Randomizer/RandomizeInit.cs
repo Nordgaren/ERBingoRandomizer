@@ -99,9 +99,9 @@ public partial class BingoRandomizer
             .ToList();
         spells.Shuffle(_random);
 
-        for (int i = 0; i < 10; i++) // TODO why 10 ?
+        for (int i = 0; i < Config.NumberOfClasses; i++)
         {
-            Param.Row? row = _charaInitParam[i + 3000];
+            Param.Row? row = _charaInitParam[Config.FirstClassId + i];
             if (row == null)
             {
                 continue;

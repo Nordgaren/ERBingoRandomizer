@@ -6,6 +6,8 @@ public static class Config
     public const float AddRemoveWeaponChance = 0.001f;
     // Max
     public const ushort MaxArrows = 30;
+    public const ushort FirstClassId = 3000;
+    public const ushort NumberOfClasses = 10;
     public const ushort MaxGreatArrows = 10;
     public const ushort MaxBolts = 30;
     public const ushort MaxBallistaBolts = 10;
