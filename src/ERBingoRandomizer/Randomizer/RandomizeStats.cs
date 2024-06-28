@@ -5,7 +5,7 @@ using ERBingoRandomizer.Utility;
 namespace ERBingoRandomizer.Randomizer;
 
 public partial class BingoRandomizer
-{
+{   // ideally would get each class ID, then create a method for each class
     private void initializeStats(CharaInitParam tarnished)
     {
         tarnished.soulLv = Config.SoulLevel;
@@ -27,7 +27,7 @@ public partial class BingoRandomizer
             if (stat == lastUpdated && (iterations & 1) == 0) stat = _random.Next(Const.NumStats); // decreases chance of stats streaking
 
             switch (stat)
-            {
+            {   // would have liked to have used an enum to draw a random category from, but there are a fixed number of 8 stats in the game (0 to 7)
                 case 0:
                     iterations -= validateIncrease(tarnished.GetVitCell());
                     break;
@@ -70,35 +70,26 @@ public partial class BingoRandomizer
 
     private void randomizeBaseStats(CharaInitParam tarnished)
     {
+        int iterations = Config.PoolSize - (Config.MinStat * Const.NumStats);
         initializeStats(tarnished);
-
-        int iterations = Config.PoolSize;
-        iterations -= Config.MinStat * Const.NumStats;
-
         increaseStats(iterations, tarnished);
     }
 
     private void rerollPrisonerStats(CharaInitParam prisoner)
     {
+        int iterations = Config.PoolSize - (Config.MinStat * (Const.NumStats - 1));
+        iterations -= Config.MinInt;
         initializeStats(prisoner);
         prisoner.baseMag = Config.MinInt;
-
-        int iterations = Config.PoolSize;
-        iterations -= Config.MinStat * (Const.NumStats - 1);
-        iterations -= Config.MinInt;
-
         increaseStats(iterations, prisoner);
     }
 
     private void rerollConfessorStats(CharaInitParam confessor)
     {
+        int iterations = Config.PoolSize - (Config.MinStat * (Const.NumStats - 1));
+        iterations -= Config.MinFai;
         initializeStats(confessor);
         confessor.baseFai = Config.MinFai;
-
-        int iterations = Config.PoolSize;
-        iterations -= Config.MinStat * (Const.NumStats - 1);
-        iterations -= Config.MinFai;
-
         increaseStats(iterations, confessor);
     }
 }
