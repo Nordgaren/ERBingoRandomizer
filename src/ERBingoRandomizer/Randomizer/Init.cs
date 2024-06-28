@@ -32,7 +32,7 @@ public partial class BingoRandomizer
     {
         _path = Path.GetDirectoryName(path) ?? throw new InvalidOperationException("Path.GetDirectoryName(path) was null. Incorrect path provided.");
         _regulationPath = $"{_path}/{Const.RegulationName}";
-        _seed = string.IsNullOrWhiteSpace(seed) ? Random.Shared.NextInt64().ToString() : seed.Trim();
+        _seed = string.IsNullOrWhiteSpace(seed) ? createSeed() : seed.Trim();
         byte[] hashData = SHA256.HashData(Encoding.UTF8.GetBytes(_seed));
         _seedInt = getSeedFromHashData(hashData);
         _random = new Random(_seedInt);

@@ -13,6 +13,10 @@ namespace ERBingoRandomizer.Randomizer;
 
 public partial class BingoRandomizer
 {
+    private string createSeed()
+    {
+        return "seed" + Random.Shared.NextInt64().ToString();
+    }
     private void allocateStatsAndSpells(int rowId, CharaInitParam startingClass, IReadOnlyList<int> spells)
     {
         switch (rowId)
