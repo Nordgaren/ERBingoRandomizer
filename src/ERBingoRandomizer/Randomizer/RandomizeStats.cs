@@ -29,35 +29,35 @@ public partial class BingoRandomizer
             switch (stat)
             {
                 case 0:
-                    iterations -= modifyStats(tarnished.GetVitCell());
+                    iterations -= validateIncrease(tarnished.GetVitCell());
                     break;
                 case 1:
-                    iterations -= modifyStats(tarnished.GetWilCell());
+                    iterations -= validateIncrease(tarnished.GetWilCell());
                     break;
                 case 2:
-                    iterations -= modifyStats(tarnished.GetEndCell());
+                    iterations -= validateIncrease(tarnished.GetEndCell());
                     break;
                 case 3:
-                    iterations -= modifyStats(tarnished.GetStrCell());
+                    iterations -= validateIncrease(tarnished.GetStrCell());
                     break;
                 case 4:
-                    iterations -= modifyStats(tarnished.GetDexCell());
+                    iterations -= validateIncrease(tarnished.GetDexCell());
                     break;
                 case 5:
-                    iterations -= modifyStats(tarnished.GetMagCell());
+                    iterations -= validateIncrease(tarnished.GetMagCell());
                     break;
                 case 6:
-                    iterations -= modifyStats(tarnished.GetFaiCell());
+                    iterations -= validateIncrease(tarnished.GetFaiCell());
                     break;
                 case 7:
-                    iterations -= modifyStats(tarnished.GetLucCell());
+                    iterations -= validateIncrease(tarnished.GetLucCell());
                     break;
             }
             lastUpdated = stat;
             stat = _random.Next(Const.NumStats);
         }
     }
-    private int modifyStats(Param.Cell entry)
+    private int validateIncrease(Param.Cell entry)
     {
         byte value = (byte)entry.Value;
         if (value >= Config.MaxStat)
