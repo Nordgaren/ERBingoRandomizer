@@ -58,9 +58,8 @@ public partial class BingoRandomizer
     private Dictionary<byte, List<Param.Row>> _magicTypeDictionary;
     public Task RandomizeRegulation()
     {
-        //calculateLevels();
         _randomizerLog = new List<string>();
-        randomizeCharaInitParam();
+        randomizeStartingClassParams();
         _cancellationToken.ThrowIfCancellationRequested();
         randomizeItemLotParams();
         _cancellationToken.ThrowIfCancellationRequested();
@@ -77,7 +76,7 @@ public partial class BingoRandomizer
         File.WriteAllText(Config.LastSeedPath, seedJson);
         return Task.CompletedTask;
     }
-    private void randomizeCharaInitParam()
+    private void randomizeStartingClassParams()
     {
         logItem("Class Randomization - All items are randomized, with each class having a .001% chance to gain or lose and item.");
         logItem("Spells given to a class meet min stat requirements, and their will be a catalyst to cast.");
@@ -103,14 +102,13 @@ public partial class BingoRandomizer
         {
             Param.Row? row = _charaInitParam[Config.FirstClassId + i];
             if (row == null)
-            {
-                continue;
-            }
-            CharaInitParam param = new(row);
-            randomizeCharaInitEntry(param, weapons);
-            guaranteeSpellcasters(row.ID, param, spells);
-            logCharaInitEntry(param, i + 288100);
-            addDescriptionString(param, Const.ChrInfoMapping[i]);
+            { continue; }
+
+            CharaInitParam startingClass = new(row);
+            randomizeEquipment(startingClass, weapons);
+            allocateStatsAndSpells(row.ID, startingClass, spells);
+            logCharaInitEntry(startingClass, i + 288100);
+            addDescriptionString(startingClass, Const.ChrInfoMapping[i]);
         }
 
     }
@@ -132,22 +130,16 @@ public partial class BingoRandomizer
             {
                 int category = (int)categories[i].GetValue(row);
                 if (category != Const.ItemLotWeaponCategory && category != Const.ItemLotCustomWeaponCategory)
-                {
-                    continue;
-                }
+                { continue; }
 
                 int id = (int)itemIds[i].GetValue(row); // getting weapon at item lot
                 int sanitizedId = washWeaponLevels(id);
                 if (category == Const.ItemLotWeaponCategory)
-                {
+                {   // if it is not a weapon, skip. if it is a stave or seal, skip.
                     if (!_weaponDictionary.TryGetValue(sanitizedId, out EquipParamWeapon? wep))
-                    {   // if it is not a weapon, skip
-                        continue;
-                    }
+                    { continue; }
                     if (wep.wepType is Const.StaffType or Const.SealType)
-                    { // if it is a stave or seal skip
-                        continue;
-                    }
+                    { continue; }
 
                     if (id != sanitizedId)
                     {
@@ -164,13 +156,9 @@ public partial class BingoRandomizer
                 else
                 { // category == Const.ItemLotCustomWeaponCategory
                     if (!_customWeaponDictionary.TryGetValue(id, out EquipParamWeapon? wep))
-                    {
-                        continue;
-                    }
+                    { continue; }
                     if (wep.wepType is Const.StaffType or Const.SealType)
-                    {
-                        continue;
-                    }
+                    { continue; }
 
                     ushort chance = (ushort)chances[i].GetValue(row);
                     if (chance == totalWeight)
@@ -190,9 +178,9 @@ public partial class BingoRandomizer
         Dictionary<int, ItemLotEntry> chanceDropReplace = getReplacementHashmap(categoryDictEnemy);
         // Application now has weapons set to randomize
         logItem(">> Item Replacements - all instances of item on left will be replaced with item on right");
-        logItem("> Guaranteed Weapons");
+        logItem("## Guaranteed Weapons");
         logReplacementDictionary(guaranteedDropReplace);
-        logItem("> Chance Weapons");
+        logItem("\n## Chance Weapons");
         logReplacementDictionary(chanceDropReplace);
         logItem("");
 
@@ -204,17 +192,13 @@ public partial class BingoRandomizer
             {
                 int category = (int)categories[i].GetValue(row);
                 if (category != Const.ItemLotWeaponCategory && category != Const.ItemLotCustomWeaponCategory)
-                {
-                    continue;
-                }
+                { continue; }
 
                 int id = (int)itemIds[i].GetValue(row);
                 if (category == Const.ItemLotWeaponCategory)
                 {
                     if (!_weaponDictionary.TryGetValue(washWeaponLevels(id), out _))
-                    {
-                        continue;
-                    }
+                    { continue; }
 
                     if (guaranteedDropReplace.TryGetValue(id, out ItemLotEntry entry))
                     {
@@ -223,18 +207,15 @@ public partial class BingoRandomizer
                         break;
                     }
                     if (!chanceDropReplace.TryGetValue(id, out entry))
-                    {
-                        continue;
-                    }
+                    { continue; }
+
                     itemIds[i].SetValue(row, entry.Id);
                     categories[i].SetValue(row, entry.Category);
                 }
                 else
                 { // category == Const.ItemLotCustomWeaponCategory
                     if (!_customWeaponDictionary.TryGetValue(id, out _))
-                    {
-                        continue;
-                    }
+                    { continue; }
 
                     if (guaranteedDropReplace.TryGetValue(id, out ItemLotEntry entry))
                     {
@@ -242,9 +223,8 @@ public partial class BingoRandomizer
                         categories[i].SetValue(row, entry.Category);
                     }
                     if (!chanceDropReplace.TryGetValue(id, out entry))
-                    {
-                        continue;
-                    }
+                    { continue; }
+
                     itemIds[i].SetValue(row, entry.Id);
                     categories[i].SetValue(row, entry.Category);
                 }
@@ -257,16 +237,12 @@ public partial class BingoRandomizer
         foreach (Param.Row row in _shopLineupParam.Rows)
         {
             if ((byte)row["equipType"]!.Value.Value != Const.ShopLineupWeaponCategory || (row.ID < 101900 || row.ID > 101980))
-            {
-                continue;
-            }
+            { continue; }
 
             ShopLineupParam lot = new(new Param.Row(row));
             int sanitizedId = washWeaponLevels(lot.equipId);
             if (!_weaponDictionary.TryGetValue(sanitizedId, out _))
-            {
-                continue;
-            }
+            { continue; }
 
             if (lot.equipId != sanitizedId)
             {
@@ -284,25 +260,19 @@ public partial class BingoRandomizer
         shopLineupParamList.Shuffle(_random);
         shopLineupParamRemembranceList.Shuffle(_random);
 
-        logItem(">> Shop Replacements - Random item selected from pool of all weapons (not including infused weapons). Remembrances are randomized amongst each-other.");
+        logItem("<> Shop Replacements - Random item selected from pool of all weapons (not including infused weapons). Remembrances are randomized amongst each-other.");
 
         foreach (Param.Row row in _shopLineupParam.Rows)
         {
             logShopId(row.ID);
             if ((byte)row["equipType"]!.Value.Value != Const.ShopLineupWeaponCategory || row.ID > 101980)
-            {
-                continue;
-            }
+            { continue; }
 
             ShopLineupParam lot = new(row);
             if (!_weaponDictionary.TryGetValue(washWeaponLevels(lot.equipId), out EquipParamWeapon? wep))
-            {
-                continue;
-            }
+            { continue; }
             if (wep.wepType is Const.StaffType or Const.SealType)
-            {
-                continue;
-            }
+            { continue; }
 
             replaceShopLineupParam(lot, shopLineupParamList, shopLineupParamRemembranceList);
         }
@@ -315,15 +285,12 @@ public partial class BingoRandomizer
         foreach (Param.Row row in _shopLineupParam.Rows)
         {
             if ((byte)row["equipType"]!.Value.Value != Const.ShopLineupGoodsCategory || row.ID > 101980)
-            {
-                continue;
-            }
+            { continue; }
 
             ShopLineupParam lot = new(new Param.Row(row));
             if (!_magicDictionary.TryGetValue(lot.equipId, out Magic? magic))
-            {
-                continue;
-            }
+            { continue; }
+
             if (row.ID < 101950)
             {
                 if (lot.mtrlId == -1)
@@ -349,15 +316,12 @@ public partial class BingoRandomizer
             {
                 int category = (int)categories[i].GetValue(row);
                 if (category != Const.ItemLotGoodsCategory)
-                {
-                    continue;
-                }
+                { continue; }
 
                 int id = (int)itemIds[i].GetValue(row);
                 if (!_magicDictionary.TryGetValue(id, out Magic? magic))
-                {
-                    continue;
-                }
+                { continue; }
+
                 ushort chance = (ushort)chances[i].GetValue(row);
                 if (chance == totalWeight)
                 {
@@ -365,7 +329,6 @@ public partial class BingoRandomizer
                     break;
                 }
                 addToOrderedDict(magicCategoryDictMap, magic.ezStateBehaviorType, id);
-
             }
         }
 
@@ -374,23 +337,20 @@ public partial class BingoRandomizer
         Dictionary<int, int> magicShopReplacement = getShopReplacementHashmap(magicCategoryDictMap);
         shopLineupParamRemembranceList.Shuffle(_random);
         shopLineupParamDragonList.Shuffle(_random);
-        logItem("\n>> All Magic Replacement.");
+        logItem("\n## All Magic Replacement.");
         logReplacementDictionaryMagic(magicShopReplacement);
 
-        logItem("\n>> Shop Magic Replacement.");
+        logItem("\n~* Shop Magic Replacement.");
         foreach (Param.Row row in _shopLineupParam.Rows)
         {
             logShopIdMagic(row.ID);
             if ((byte)row["equipType"]!.Value.Value != Const.ShopLineupGoodsCategory || row.ID > 101980)
-            {
-                continue;
-            }
+            { continue; }
 
             ShopLineupParam lot = new(row);
             if (!_magicDictionary.TryGetValue(lot.equipId, out _))
-            {
-                continue;
-            }
+            { continue; }
+
             if (row.ID < 101950)
             {
                 replaceShopLineupParamMagic(lot, magicShopReplacement, shopLineupParamRemembranceList);
@@ -411,20 +371,15 @@ public partial class BingoRandomizer
             {
                 int category = (int)categories[i].GetValue(row);
                 if (category != Const.ItemLotGoodsCategory)
-                {
-                    continue;
-                }
+                { continue; }
 
                 int id = (int)itemIds[i].GetValue(row);
                 if (!_magicDictionary.TryGetValue(id, out Magic _))
-                {
-                    continue;
-                }
+                { continue; }
 
                 if (!magicShopReplacement.TryGetValue(id, out int entry))
-                {
-                    continue;
-                }
+                { continue; }
+
                 itemIds[i].SetValue(row, entry);
             }
         }

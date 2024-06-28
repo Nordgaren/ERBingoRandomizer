@@ -24,10 +24,10 @@ public partial class BingoRandomizer
         int stat = 0; // bumps vigor on 1st iteration
         while (iterations > 0)
         {
-            if (stat == lastUpdated && (iterations & 1) == 0) stat = _random.Next(Const.NumStats); // decreases chance of stats streaking
-
+            if ((iterations & 1) == 0 && lastUpdated == stat) stat = _random.Next(Const.NumStats);
+            //^ decreases chance of a repeat increase by checking to redraw every other iteration. 
             switch (stat)
-            {   // would have liked to have used an enum to draw a random category from, but there are a fixed number of 8 stats in the game (0 to 7)
+            {   // There are a fixed number of 8 class stats in the game (0 to 7)
                 case 0:
                     iterations -= validateIncrease(tarnished.GetVitCell());
                     break;
@@ -68,14 +68,14 @@ public partial class BingoRandomizer
         return 1; // adjust iterations
     }
 
-    private void randomizeBaseStats(CharaInitParam tarnished)
+    private void setClassStats(CharaInitParam tarnished)
     {
         int iterations = Config.PoolSize - (Config.MinStat * Const.NumStats);
         initializeStats(tarnished);
         increaseStats(iterations, tarnished);
     }
 
-    private void rerollPrisonerStats(CharaInitParam prisoner)
+    private void setPrisonerStats(CharaInitParam prisoner)
     {
         int iterations = Config.PoolSize - (Config.MinStat * (Const.NumStats - 1));
         iterations -= Config.MinInt;
@@ -84,7 +84,7 @@ public partial class BingoRandomizer
         increaseStats(iterations, prisoner);
     }
 
-    private void rerollConfessorStats(CharaInitParam confessor)
+    private void setConfessorStats(CharaInitParam confessor)
     {
         int iterations = Config.PoolSize - (Config.MinStat * (Const.NumStats - 1));
         iterations -= Config.MinFai;

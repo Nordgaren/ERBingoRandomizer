@@ -22,28 +22,20 @@ public partial class BingoRandomizer
     }
     private int exchangeArmorPiece(int id, byte type)
     {
-        return ReturnNoItem(id) ? Const.NoItem : getRandomArmor(id, type);
+        return validateNoItem(id, Config.ArmorChance) ? Const.NoItem : getRandomArmor(id, type);
     }
     private int getRandomArmor(int id, byte type)
     {
         IReadOnlyList<Param.Row> armors = _armorTypeDictionary[type];
         return armors[_random.Next(armors.Count)].ID;
     }
-    private bool ReturnNoItem(int id)
-    {
-        float target = _random.NextSingle();
+    private bool validateNoItem(int id, int chance)
+    {   // If the entry is -1 (no item) validate for a small chance to becomes an item.
+        int randomChance = _random.Next(chance);
 
-        // If the entry is -1, return -1 99.99% of the time. If it's not, return -1 0.01% of the time
-        // This makes it a small chance for a no item to become an item, and a small chance for an item to become no item.
         if (id == Const.NoItem)
         {
-            if (target > Config.AddRemoveWeaponChance)
-                return true;
-        }
-        else
-        {
-            if (target < Config.AddRemoveWeaponChance)
-                return true;
+            return Config.Target < randomChance;
         }
         return false;
     }
@@ -116,7 +108,7 @@ public partial class BingoRandomizer
         {
             chr.equipSpell02 = chanceRandomMagic(chr.equipSpell02, chr, Const.SorceryType, spells);
         }
-        giveUsableWeapon(chr, Const.StaffType);
+        validateUsableWeapon(chr, Const.StaffType);
     }
     private void randomizeIncantations(CharaInitParam chr, IReadOnlyList<int> spells)
     {
@@ -125,7 +117,7 @@ public partial class BingoRandomizer
         {
             chr.equipSpell01 = chanceRandomMagic(chr.equipSpell01, chr, Const.IncantationType, spells);
         }
-        giveUsableWeapon(chr, Const.SealType);
+        validateUsableWeapon(chr, Const.SealType);
     }
     private int getRandomMagic(CharaInitParam chr, byte type, IReadOnlyList<int> spells)
     {
@@ -142,10 +134,10 @@ public partial class BingoRandomizer
     }
     private int chanceRandomMagic(int id, CharaInitParam chr, byte type, IReadOnlyList<int> spells)
     {
-        return ReturnNoItem(id) ? Const.NoItem : getRandomMagic(chr, type, spells);
+        return validateNoItem(id, Config.SpellChance) ? Const.NoItem : getRandomMagic(chr, type, spells);
 
     }
-    private void giveUsableWeapon(CharaInitParam chr, ushort type)
+    private void validateUsableWeapon(CharaInitParam chr, ushort type)
     {
         EquipParamWeapon? wep;
         if (_weaponDictionary.TryGetValue(chr.wepleft, out wep))

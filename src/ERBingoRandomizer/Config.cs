@@ -3,7 +3,9 @@
 // Anything configurable will be in this class.
 public static class Config
 {
-    public const float AddRemoveWeaponChance = 0.001f;
+    public const int ArmorChance = 10;
+    public const int SpellChance = 19;
+    public const int Target = 1;
     // Max
     public const ushort MaxArrows = 30;
     public const ushort FirstClassId = 3000;
@@ -12,8 +14,8 @@ public static class Config
     public const ushort MaxBolts = 30;
     public const ushort MaxBallistaBolts = 10;
     // Base Stats For Magics
-    public const byte MinInt = 11;
-    public const byte MinFai = 11;
+    public const byte MinInt = 10;
+    public const byte MinFai = 10;
     // Level Randomizer  
     public const byte MaxStat = 16;
     public const byte MinStat = 5;

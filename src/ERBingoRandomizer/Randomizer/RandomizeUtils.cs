@@ -13,17 +13,41 @@ namespace ERBingoRandomizer.Randomizer;
 
 public partial class BingoRandomizer
 {
-    private void guaranteeSpellcasters(int rowId, CharaInitParam chr, IReadOnlyList<int> spells)
+    private void allocateStatsAndSpells(int rowId, CharaInitParam startingClass, IReadOnlyList<int> spells)
     {
         switch (rowId)
         {
-            case 3008:
-                rerollPrisonerStats(chr);
-                guaranteeSorceries(chr, spells);
+            case 3000:
+                setClassStats(startingClass);
+                break;
+            case 3001:
+                setClassStats(startingClass);
+                break;
+            case 3002:
+                setClassStats(startingClass);
+                break;
+            case 3003:
+                setClassStats(startingClass);
+                break;
+            case 3004:
+                setClassStats(startingClass);
+                break;
+            case 3005:
+                setClassStats(startingClass);
                 break;
             case 3006:
-                rerollConfessorStats(chr);
-                guaranteeIncantations(chr, spells);
+                setConfessorStats(startingClass);
+                guaranteeIncantations(startingClass, spells);
+                break;
+            case 3007:
+                setClassStats(startingClass);
+                break;
+            case 3008:
+                setPrisonerStats(startingClass);
+                guaranteeSorceries(startingClass, spells);
+                break;
+            case 3009:
+                setClassStats(startingClass);
                 break;
         }
     }
@@ -47,7 +71,7 @@ public partial class BingoRandomizer
         chr.equipSpell02 = -1;
         randomizeIncantations(chr, spells);
     }
-    private void randomizeCharaInitEntry(CharaInitParam chr, IReadOnlyList<int> weapons)
+    private void randomizeEquipment(CharaInitParam chr, IReadOnlyList<int> weapons)
     {
         chr.wepleft = randomizeStartingWeapon(chr.wepleft, weapons);
         chr.wepRight = randomizeStartingWeapon(chr.wepRight, weapons);
@@ -60,8 +84,6 @@ public partial class BingoRandomizer
         chr.equipArmer = exchangeArmorPiece(chr.equipArmer, Const.BodyType);
         chr.equipGaunt = exchangeArmorPiece(chr.equipGaunt, Const.ArmType);
         chr.equipLeg = exchangeArmorPiece(chr.equipLeg, Const.LegType);
-
-        randomizeBaseStats(chr);
 
         chr.equipArrow = Const.NoItem;
         chr.arrowNum = ushort.MaxValue;
