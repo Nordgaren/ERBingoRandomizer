@@ -75,10 +75,13 @@ public partial class BingoRandomizer
     {
         chr.wepleft = randomizeStartingWeapon(chr.wepleft, weapons);
         chr.wepRight = randomizeStartingWeapon(chr.wepRight, weapons);
-        chr.subWepLeft = -1;
-        chr.subWepRight = -1;
-        chr.subWepLeft3 = -1;
-        chr.subWepRight3 = -1;
+        chr.subWepLeft = Const.NoItem;
+        chr.subWepRight = Const.NoItem;
+        chr.subWepLeft3 = Const.NoItem;
+        chr.subWepRight3 = Const.NoItem;
+
+        //chr.equipHelm = Config.Helmet; // assures Wretch always has helmet
+        chr.equipGaunt = Config.Gauntlet; // assures Wretch, Prophet, Prisoner always have gauntlets too
 
         chr.equipHelm = exchangeArmorPiece(chr.equipHelm, Const.HelmType);
         chr.equipArmer = exchangeArmorPiece(chr.equipArmer, Const.BodyType);

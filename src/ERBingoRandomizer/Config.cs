@@ -3,9 +3,13 @@
 // Anything configurable will be in this class.
 public static class Config
 {
-    public const int ArmorChance = 10;
-    public const int SpellChance = 19;
+    public const int ArmorChance = 5;
+    public const int SpellChance = 20;
     public const int Target = 1;
+    public const int Helmet = 660000;
+    public const int Armor = 661100;
+    public const int Gauntlet = 660200;
+    public const int Greaves = 660300;
     // Max
     public const ushort MaxArrows = 30;
     public const ushort FirstClassId = 3000;

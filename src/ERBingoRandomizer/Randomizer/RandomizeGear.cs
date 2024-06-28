@@ -108,7 +108,7 @@ public partial class BingoRandomizer
         {
             chr.equipSpell02 = chanceRandomMagic(chr.equipSpell02, chr, Const.SorceryType, spells);
         }
-        validateUsableWeapon(chr, Const.StaffType);
+        assignUsableWeapon(chr, Const.StaffType);
     }
     private void randomizeIncantations(CharaInitParam chr, IReadOnlyList<int> spells)
     {
@@ -117,7 +117,7 @@ public partial class BingoRandomizer
         {
             chr.equipSpell01 = chanceRandomMagic(chr.equipSpell01, chr, Const.IncantationType, spells);
         }
-        validateUsableWeapon(chr, Const.SealType);
+        assignUsableWeapon(chr, Const.SealType);
     }
     private int getRandomMagic(CharaInitParam chr, byte type, IReadOnlyList<int> spells)
     {
@@ -135,43 +135,17 @@ public partial class BingoRandomizer
     private int chanceRandomMagic(int id, CharaInitParam chr, byte type, IReadOnlyList<int> spells)
     {
         return validateNoItem(id, Config.SpellChance) ? Const.NoItem : getRandomMagic(chr, type, spells);
-
     }
-    private void validateUsableWeapon(CharaInitParam chr, ushort type)
-    {
-        EquipParamWeapon? wep;
-        if (_weaponDictionary.TryGetValue(chr.wepleft, out wep))
-        {
-            if (wep.wepType == type && chrCanUseWeapon(wep, chr))
-            {
-                return;
-            }
-        }
-        else
-        {
-            chr.wepleft = getUsableWeapon(chr, type);
-            return;
-        }
 
-        if (_weaponDictionary.TryGetValue(chr.wepRight, out wep))
-        {
-            if (wep.wepType == type && chrCanUseWeapon(wep, chr))
-            {
-                return;
-            }
-        }
-        else
-        {
-            chr.wepRight = getUsableWeapon(chr, type);
-            return;
-        }
+    private void assignUsableWeapon(CharaInitParam chr, ushort type)
+    {   // starting classes get two random weapons in slot1 left, right
+        // this fills in the next open slot with the desired type.
+        EquipParamWeapon? wep;
 
         if (_weaponDictionary.TryGetValue(chr.subWepLeft, out wep))
         {
             if (wep.wepType == type && chrCanUseWeapon(wep, chr))
-            {
-                return;
-            }
+            { return; }
         }
         else
         {
@@ -182,9 +156,7 @@ public partial class BingoRandomizer
         if (_weaponDictionary.TryGetValue(chr.subWepRight, out wep))
         {
             if (wep.wepType == type && chrCanUseWeapon(wep, chr))
-            {
-                return;
-            }
+            { return; }
         }
         else
         {
@@ -195,9 +167,7 @@ public partial class BingoRandomizer
         if (_weaponDictionary.TryGetValue(chr.subWepLeft3, out wep))
         {
             if (wep.wepType == type && chrCanUseWeapon(wep, chr))
-            {
-                return;
-            }
+            { return; }
         }
         else
         {

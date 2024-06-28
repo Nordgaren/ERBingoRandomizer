@@ -78,7 +78,7 @@ public partial class BingoRandomizer
     }
     private void randomizeStartingClassParams()
     {
-        logItem("Class Randomization - All items are randomized, with each class having a .001% chance to gain or lose and item.");
+        logItem("Class Randomization - All items are randomized, classes with missing armor have a chance to gain armor.");
         logItem("Spells given to a class meet min stat requirements, and their will be a catalyst to cast.");
         logItem("If a class has a ranged weapon, appropriate ammunition will be allocated.\n");
         // TODO get IDs of new DLC Powers of Remembrance "Rembrance Items"
