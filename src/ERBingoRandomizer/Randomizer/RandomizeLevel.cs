@@ -68,7 +68,7 @@ public partial class BingoRandomizer
         return 1; // adjust iterations
     }
 
-    private void randomizeLevels(CharaInitParam tarnished)
+    private void randomizeBaseStats(CharaInitParam tarnished)
     {
         initializeStats(tarnished);
 

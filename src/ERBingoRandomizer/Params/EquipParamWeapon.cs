@@ -2,7 +2,8 @@
 
 namespace ERBingoRandomizer.Params;
 
-public class EquipParamWeapon {
+public class EquipParamWeapon
+{
     private Param.Cell _properAgility;
     private Param.Cell _properFaith;
     private Param.Cell _properLuck;
@@ -13,7 +14,8 @@ public class EquipParamWeapon {
     private Param.Cell _reinforceTypeId;
     private Param.Cell _reinforceShopCategory;
 
-    public EquipParamWeapon(Param.Row wep) {
+    public EquipParamWeapon(Param.Row wep)
+    {
         _wepType = wep["wepType"]!.Value;
         _materialSetId = wep["materialSetId"]!.Value;
         _reinforceTypeId = wep["reinforceTypeId"]!.Value;
@@ -31,7 +33,6 @@ public class EquipParamWeapon {
     public int materialSetId { get => (int)_materialSetId.Value; set => _materialSetId.Value = value; }
     public short reinforceTypeId { get => (short)_reinforceTypeId.Value; set => _reinforceTypeId.Value = value; }
     public byte reinforceShopCategory { get => (byte)_reinforceShopCategory.Value; set => _reinforceShopCategory.Value = value; }
-
     public byte properStrength { get => (byte)_properStrength.Value; set => _properStrength.Value = value; }
     public byte properAgility { get => (byte)_properAgility.Value; set => _properAgility.Value = value; }
     public byte properMagic { get => (byte)_properMagic.Value; set => _properMagic.Value = value; }

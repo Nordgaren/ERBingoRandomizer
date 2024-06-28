@@ -115,7 +115,6 @@ public partial class BingoRandomizer
                 logItem($"{_goodsFmg[chr.equipSpell02]}{getRequiredLevelsSpell(chr, chr.equipSpell02)}");
             }
         }
-
         logItem("");
     }
     void logShopId(int rowId)
@@ -135,16 +134,16 @@ public partial class BingoRandomizer
                 logItem("\n> Merchant Kale");
                 break;
             case 100525:
-                logItem("\n> Merchant - North Limgrave");
+                logItem("\n> Merchant - North Limgrave (Saintsbridge)");
                 break;
             case 100550:
-                logItem("\n> Merchant - East Limgrave");
+                logItem("\n> Merchant - East Limgrave (Fort Haight)");
                 break;
             case 100575:
-                logItem("\n> Merchant - Coastal Cave");
+                logItem("\n> Merchant - West Limgrave (Coastal Cave)");
                 break;
             case 100600:
-                logItem("\n> Merchant - East Weeping Peninsula");
+                logItem("\n> Merchant - Castle Morne Rampart");
                 break;
             case 100625:
                 logItem("\n> Merchant - Liurnia of the Lakes");
@@ -153,7 +152,7 @@ public partial class BingoRandomizer
                 logItem("\n> Isolated Merchant - Weeping Peninsula");
                 break;
             case 100700:
-                logItem("\n> Merchant - North Liurnia");
+                logItem("\n> Merchant - Bellum Church");
                 break;
             case 100725:
                 logItem("\n> Hermit Merchant - Leyndell");

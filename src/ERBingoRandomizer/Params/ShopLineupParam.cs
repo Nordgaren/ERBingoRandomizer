@@ -3,7 +3,8 @@ using FSParam;
 
 namespace ERBingoRandomizer.Params;
 
-public class ShopLineupParam : IEquatable<int>, IEquatable<ShopLineupParam> {
+public class ShopLineupParam : IEquatable<int>, IEquatable<ShopLineupParam>
+{
     private Param.Cell _equipId;
     private Param.Cell _costType;
     private Param.Cell _mtrlId;
@@ -19,7 +20,8 @@ public class ShopLineupParam : IEquatable<int>, IEquatable<ShopLineupParam> {
     private Param.Cell _menuIconId;
     private Param.Cell _menuTitleMsgId;
 
-    public ShopLineupParam(Param.Row lot) {
+    public ShopLineupParam(Param.Row lot)
+    {
         _equipId = lot["equipId"]!.Value;
         _costType = lot["costType"]!.Value;
         _mtrlId = lot["mtrlId"]!.Value;
@@ -50,18 +52,8 @@ public class ShopLineupParam : IEquatable<int>, IEquatable<ShopLineupParam> {
     public int nameMsgId { get => (int)_nameMsgId.Value; set => _nameMsgId.Value = value; }
     public short menuIconId { get => (short)_menuIconId.Value; set => _menuIconId.Value = value; }
     public int menuTitleMsgId { get => (int)_menuTitleMsgId.Value; set => _menuTitleMsgId.Value = value; }
-    public bool Equals(int other) {
-        return other == equipId;
-    }
-    public bool Equals(ShopLineupParam? other) {
-        return other?.equipId == equipId;
-    }
-    public override int GetHashCode() {
-        return equipId.GetHashCode();
-    }
-
-    public override bool Equals(object? obj)
-    {
-        return Equals(obj as ShopLineupParam);
-    }
+    public bool Equals(int other) { return other == equipId; }
+    public bool Equals(ShopLineupParam? other) { return other?.equipId == equipId; }
+    public override int GetHashCode() { return equipId.GetHashCode(); }
+    public override bool Equals(object? obj) { return Equals(obj as ShopLineupParam); }
 }

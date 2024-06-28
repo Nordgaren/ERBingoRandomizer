@@ -66,9 +66,6 @@
         <None Remove="Resources\Params\Defs\ShopLineupParam.xml" />
         <EmbeddedResource Include="Resources\Params\Defs\ShopLineupParam.xml" />
     </ItemGroup>
-    <ItemGroup>
-      <None Include="Randomizer\RandomizeLogger.cs" />
-    </ItemGroup>
 
     <ItemGroup>
         <PackageReference Include="BouncyCastle.Cryptography" Version="2.2.0" />

@@ -61,7 +61,7 @@ public partial class BingoRandomizer
         chr.equipGaunt = exchangeArmorPiece(chr.equipGaunt, Const.ArmType);
         chr.equipLeg = exchangeArmorPiece(chr.equipLeg, Const.LegType);
 
-        randomizeLevels(chr);
+        randomizeBaseStats(chr);
 
         chr.equipArrow = Const.NoItem;
         chr.arrowNum = ushort.MaxValue;
@@ -87,7 +87,6 @@ public partial class BingoRandomizer
         {
             giveBallistaBolts(chr);
         }
-
         chr.equipSpell01 = -1;
         chr.equipSpell02 = -1;
     }
@@ -125,7 +124,7 @@ public partial class BingoRandomizer
     }
     private Dictionary<int, int> getShopReplacementHashmap(IOrderedDictionary orderedDictionary)
     {
-        Dictionary<int, int> dict = new();
+        Dictionary<int, int> output = new();
         for (int i = 0; i < orderedDictionary.Count; i++)
         {
             List<int> value = (List<int>)orderedDictionary[i]!;
@@ -133,27 +132,27 @@ public partial class BingoRandomizer
             itemLotEntries.Shuffle(_random);
             foreach (int entry in itemLotEntries)
             {
-                dict.Add(entry, getNewId(entry, value));
+                output.Add(entry, getNewId(entry, value));
             }
         }
-        return dict;
+        return output;
     }
     private void dedupeAndRandomizeVectors(IOrderedDictionary orderedDictionary)
     {
         for (int i = 0; i < orderedDictionary.Count; i++)
         {
-            List<ItemLotEntry> value = (List<ItemLotEntry>)orderedDictionary[i]!;
-            List<ItemLotEntry> distinct = value.Distinct().ToList();
+            List<ItemLotEntry> values = (List<ItemLotEntry>)orderedDictionary[i]!;
+            List<ItemLotEntry> distinct = values.Distinct().ToList();
             distinct.Shuffle(_random);
             orderedDictionary[i] = distinct;
         }
     }
     private void dedupeAndRandomizeShopVectors(IOrderedDictionary orderedDictionary)
-    {
+    { // TODO are both dedupe and randomize actually the same?
         for (int i = 0; i < orderedDictionary.Count; i++)
         {
-            List<int> value = (List<int>)orderedDictionary[i]!;
-            List<int> distinct = value.Distinct().ToList();
+            List<int> values = (List<int>)orderedDictionary[i]!;
+            List<int> distinct = values.Distinct().ToList();
             distinct.Shuffle(_random);
             orderedDictionary[i] = distinct;
         }
@@ -306,35 +305,30 @@ public partial class BingoRandomizer
                 continue;
             }
             CharaInitParam chr = new(row);
-
             Debug.WriteLine($"{_menuTextFmg[i + 288100]} {chr.soulLv} {addLevels(chr)}");
         }
     }
-    private static T getNewId<T>(int oldId, IList<T> vec) where T : IEquatable<int>
+    private static T getNewId<T>(int oldId, IList<T> queue) where T : IEquatable<int>
     {
-        if (vec.All(i => i.Equals(oldId)))
+        if (queue.All(i => i.Equals(oldId)))
         {
             Debug.WriteLine($"No New Ids for {oldId}");
-            return vec.Pop();
+            return queue.Pop();
         }
 
-        T newId = vec.Pop();
+        T newId = queue.Pop();
         while (newId.Equals(oldId))
         {
-            vec.Insert(0, newId);
-            newId = vec.Pop();
+            queue.Insert(0, newId);
+            newId = queue.Pop();
         }
-
         return newId;
     }
     // ReSharper disable once SuggestBaseTypeForParameter
     private static void addToOrderedDict<T>(IOrderedDictionary orderedDict, object key, T type)
     {
         List<T>? ids = (List<T>?)orderedDict[key];
-        if (ids != null)
-        {
-            ids.Add(type);
-        }
+        if (ids != null) { ids.Add(type); }
         else
         {
             ids = new List<T> {
@@ -365,7 +359,6 @@ public partial class BingoRandomizer
     private static void setBndFile(IBinder binder, string fileName, byte[] bytes)
     {
         BinderFile file = binder.Files.First(file => file.Name.EndsWith(fileName)) ?? throw new BinderFileNotFoundException(fileName);
-        //; // TODO revisit
         file.Bytes = bytes;
     }
     private static void patchSpEffectAtkPowerCorrectRate(AtkParam atkParam)
