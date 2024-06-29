@@ -5,7 +5,7 @@ using System.IO.Compression;
 using System.Linq;
 using System.Security.Cryptography;
 using System.Text.RegularExpressions;
-using SoulsFormats.Util;
+//using SoulsFormats.Util;
 using ZstdNet;
 
 namespace SoulsFormats
@@ -49,7 +49,7 @@ namespace SoulsFormats
             bool checkParam(BinaryReaderEx br)
             {
                 if (br.Length < 0x2C)
-                    return false;
+                { return false; }
 
                 string param = br.GetASCII(0xC, 0x20);
                 return Regex.IsMatch(param, "^[^\0]+\0 *$");
@@ -58,10 +58,10 @@ namespace SoulsFormats
             bool checkTdf(BinaryReaderEx br)
             {
                 if (br.Length < 4)
-                    return false;
+                { return false; }
 
                 if (br.GetASCII(0, 1) != "\"")
-                    return false;
+                { return false; }
 
                 for (int i = 1; i < br.Length; i++)
                 {
@@ -146,9 +146,9 @@ namespace SoulsFormats
             }
 
             if (dcx)
-                return ext + ".dcx";
+            { return ext + ".dcx"; }
             else
-                return ext;
+            { return ext; }
         }
 
         /// <summary>
@@ -165,7 +165,7 @@ namespace SoulsFormats
                 ((value & 0b00100000) >> 3) |
                 ((value & 0b01000000) >> 5) |
                 ((value & 0b10000000) >> 7)
-                );
+            );
         }
 
         /// <summary>
@@ -235,16 +235,16 @@ namespace SoulsFormats
         public static bool IsPrime(uint candidate)
         {
             if (candidate < 2)
-                return false;
+            { return false; }
             if (candidate == 2)
-                return true;
+            { return true; }
             if (candidate % 2 == 0)
-                return false;
+            { return false; }
 
             for (int i = 3; i * i <= candidate; i += 2)
             {
                 if (candidate % i == 0)
-                    return false;
+                { return false; }
             }
             return true;
         }
@@ -466,67 +466,82 @@ namespace SoulsFormats
             }
         }
 
-        private static readonly byte[] ds2RegulationKey = { 0x40, 0x17, 0x81, 0x30, 0xDF, 0x0A, 0x94, 0x54, 0x33, 0x09, 0xE1, 0x71, 0xEC, 0xBF, 0x25, 0x4C };
-        private static readonly byte[] ds3RegulationKey = SFEncoding.ASCII.GetBytes("ds3#jn/8_7(rsY9pg55GFN7VFL#+3n/)");
+        public enum RegulationKey
+        {
+            DarkSouls3 = 0,
+            EldenRing = 1,
+            ArmoredCore6 = 2,
+        }
+        private static readonly Dictionary<RegulationKey, byte[]> RegulationKeyDictionary = new()
+            {
+                { RegulationKey.DarkSouls3, SFEncoding.ASCII.GetBytes("ds3#jn/8_7(rsY9pg55GFN7VFL#+3n/)") },
+                { RegulationKey.EldenRing, ParseHexString(
+                    "99 BF FC 36 6A 6B C8 C6 F5 82 7D 09 36 02 D6 76 C4 28 92 A0 1C 20 7F B0 24 D3 AF 4E 49 3F EF 99")},
+                { RegulationKey.ArmoredCore6, ParseHexString(
+                    "10 CE ED 47 7B 7C D9 D7 E6 93 8E 11 47 13 E7 87 D5 39 13 B1 D 31 8E C1 35 E4 BE 50 50 4E E 10")}
+            };
+
+        //private static readonly byte[] ds2RegulationKey = { 0x40, 0x17, 0x81, 0x30, 0xDF, 0x0A, 0x94, 0x54, 0x33, 0x09, 0xE1, 0x71, 0xEC, 0xBF, 0x25, 0x4C };
+        //private static readonly byte[] ds3RegulationKey = SFEncoding.ASCII.GetBytes("ds3#jn/8_7(rsY9pg55GFN7VFL#+3n/)");
 
 
         /// <summary>
         /// Decrypts and unpacks DS2's regulation BND4 from the specified path.
         /// </summary>
-        public static BND4 DecryptDS2Regulation(string path)
-        {
-            byte[] bytes = File.ReadAllBytes(path);
-            if (BND4.IsRead(bytes, out BND4 bnd4))
-                return bnd4;
-            byte[] iv = new byte[16];
-            iv[0] = 0x80;
-            Array.Copy(bytes, 0, iv, 1, 11);
-            iv[15] = 1;
-            byte[] input = new byte[bytes.Length - 32];
-            Array.Copy(bytes, 32, input, 0, bytes.Length - 32);
-            using (var ms = new MemoryStream(input))
-            {
-                byte[] decrypted = CryptographyUtility.DecryptAesCtr(ms, ds2RegulationKey, iv);
-                return BND4.Read(decrypted);
-            }
-        }
+        // public static BND4 DecryptDS2Regulation(string path)
+        // {
+        //     byte[] bytes = File.ReadAllBytes(path);
+        //     if (BND4.IsRead(bytes, out BND4 bnd4))
+        //         return bnd4;
+        //     byte[] iv = new byte[16];
+        //     iv[0] = 0x80;
+        //     Array.Copy(bytes, 0, iv, 1, 11);
+        //     iv[15] = 1;
+        //     byte[] input = new byte[bytes.Length - 32];
+        //     Array.Copy(bytes, 32, input, 0, bytes.Length - 32);
+        //     using (var ms = new MemoryStream(input))
+        //     {
+        //         byte[] decrypted = CryptographyUtility.DecryptAesCtr(ms, ds2RegulationKey, iv);
+        //         return BND4.Read(decrypted);
+        //     }
+        // }
 
         /// <summary>
         /// Decrypts and unpacks DS3's regulation BND4 from the specified path.
         /// </summary>
-        public static BND4 DecryptDS3Regulation(string path)
-        {
-            byte[] bytes = File.ReadAllBytes(path);
-            if (BND4.IsRead(bytes, out BND4 bnd4))
-                return bnd4;
-            bytes = DecryptByteArray(ds3RegulationKey, bytes);
-            return BND4.Read(bytes);
-        }
+        // public static BND4 DecryptDS3Regulation(string path)
+        // {
+        //     byte[] bytes = File.ReadAllBytes(path);
+        //     if (BND4.IsRead(bytes, out BND4 bnd4))
+        //         return bnd4;
+        //     bytes = DecryptByteArray(ds3RegulationKey, bytes);
+        //     return BND4.Read(bytes);
+        // }
 
         /// <summary>
         /// Repacks and encrypts DS3's regulation BND4 to the specified path.
         /// </summary>
-        public static void EncryptDS3Regulation(string path, BND4 bnd)
-        {
-            byte[] bytes = bnd.Write();
-            bytes = EncryptByteArray(ds3RegulationKey, bytes);
-            Directory.CreateDirectory(Path.GetDirectoryName(path));
-            File.WriteAllBytes(path, bytes);
-        }
+        // public static void EncryptDS3Regulation(string path, BND4 bnd)
+        // {
+        //     byte[] bytes = bnd.Write();
+        //     bytes = EncryptByteArray(ds3RegulationKey, bytes);
+        //     Directory.CreateDirectory(Path.GetDirectoryName(path));
+        //     File.WriteAllBytes(path, bytes);
+        // }
 
         private static readonly byte[] erRegulationKey = ParseHexString("99 BF FC 36 6A 6B C8 C6 F5 82 7D 09 36 02 D6 76 C4 28 92 A0 1C 20 7F B0 24 D3 AF 4E 49 3F EF 99");
 
         /// <summary>
         /// Reads a Zstd block from a BinaryReaderEx and returns the uncompressed data.
         /// </summary>
-        public static byte[] ReadZstd(BinaryReaderEx expression, int compressedSize)
+        public static byte[] ReadZstd(BinaryReaderEx br, int compressedSize)
         {
-            byte[] compressed = expression.ReadBytes(compressedSize);
+            byte[] compressed = br.ReadBytes(compressedSize);
 
             using (var decompressedStream = new MemoryStream())
             {
                 using (var compressedStream = new MemoryStream(compressed))
-                using (var deflateStream = new DecompressionStream(compressedStream)) // TODO add Decompression
+                using (var deflateStream = new DecompressionStream(compressedStream))
                 {
                     deflateStream.CopyTo(decompressedStream);
                 }
@@ -538,7 +553,7 @@ namespace SoulsFormats
         /// </summary>
         public static byte[] WriteZstd(byte[] data, int compressionLevel)
         {
-            var options = new CompressionOptions(compressionLevel); // TODO ensure CompressionOptions exists
+            var options = new CompressionOptions(compressionLevel); // TODO might not be working
             using var compressor = new Compressor(options);
             return compressor.Wrap(data).ToArray();
         }
@@ -548,10 +563,20 @@ namespace SoulsFormats
         /// </summary>
         public static BND4 DecryptERRegulation(string path)
         {
+            return DecryptBndWithKey(path, RegulationKey.EldenRing);
+        }
+        // public static BND4 DecryptERRegulation(string path)
+        // {
+        //     byte[] bytes = File.ReadAllBytes(path);
+        //     if (BND4.IsRead(bytes, out BND4 bnd4))
+        //     { return bnd4; }
+        //     bytes = DecryptByteArray(RegulationKey.EldenRing, bytes);
+        //     return BND4.Read(bytes);
+        // }
+        public static BND4 DecryptBndWithKey(string path, RegulationKey key)
+        {
             byte[] bytes = File.ReadAllBytes(path);
-            if (BND4.IsRead(bytes, out BND4 bnd4))
-                return bnd4;
-            bytes = DecryptByteArray(erRegulationKey, bytes);
+            bytes = DecryptByteArray(RegulationKeyDictionary[key], bytes);
             return BND4.Read(bytes);
         }
 
@@ -560,8 +585,12 @@ namespace SoulsFormats
         /// </summary>
         public static void EncryptERRegulation(string path, BND4 bnd)
         {
+            EncryptRegulationWithKey(path, bnd, RegulationKey.EldenRing);
+        }
+        public static void EncryptRegulationWithKey(string path, BND4 bnd, RegulationKey key)
+        {
             byte[] bytes = bnd.Write();
-            bytes = EncryptByteArray(erRegulationKey, bytes);
+            bytes = EncryptByteArray(RegulationKeyDictionary[key], bytes);
             Directory.CreateDirectory(Path.GetDirectoryName(path));
             File.WriteAllBytes(path, bytes);
         }

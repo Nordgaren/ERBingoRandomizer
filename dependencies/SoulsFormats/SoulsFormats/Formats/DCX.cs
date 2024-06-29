@@ -13,12 +13,12 @@ namespace SoulsFormats
         internal static bool Is(BinaryReaderEx expression)
         {
             if (expression.Stream.Length < 4)
-                return false;
-            string ascii = expression.GetASCII(0, 4);
+            { return false; }
 
-            byte b0 = expression.GetByte(0); // potentially not needed for ER
-            byte b1 = expression.GetByte(1); // potentially not needed for ER
-            return ascii == "DCP\0" || ascii == "DCX\0" || b0 == 0x78 && (b1 == 0x01 || b1 == 0x5E || b1 == 0x9C || b1 == 0xDA);
+            string ascii = expression.GetASCII(0, 4); // TODO verify method is the same
+            // byte b0 = expression.GetByte(0); // potentially not needed for ER
+            // byte b1 = expression.GetByte(1); // potentially not needed for ER
+            return ascii == "DCP\0" || ascii == "DCX\0"; // || b0 == 0x78 && (b1 == 0x01 || b1 == 0x5E || b1 == 0x9C || b1 == 0xDA);
         }
 
         /// <summary>
@@ -90,62 +90,68 @@ namespace SoulsFormats
             switch (ascii)
             { // branching to format
                 case "DCP\0":
-                    string format = expression.GetASCII(4, 4);
-                    switch (format)
                     {
-                        case "DFLT":
-                            type = Type.DCP_DFLT;
-                            break;
-                        case "EDGE":
-                            type = Type.DCP_EDGE;
-                            break;
+                        string format = expression.GetASCII(4, 4);
+                        switch (format)
+                        {
+                            case "DFLT":
+                                type = Type.DCP_DFLT;
+                                break;
+                            case "EDGE":
+                                type = Type.DCP_EDGE;
+                                break;
+                        }
+                        break;
                     }
-                    break;
                 case "DCX\0":
-                    format = expression.GetASCII(0x28, 4);
-                    switch (format)
                     {
-                        case "EDGE":
-                            type = Type.DCX_EDGE;
-                            break;
-                        case "ZSTD":
-                            type = Type.DCX_ZSTD;
-                            break;
-                        case "KRAK":
-                            int compressionLevel = expression.GetByte(0x30);
-                            type = compressionLevel == 9 ? Type.DCX_KRAK_MAX : Type.DCX_KRAK;
-                            break;
-                        case "DFLT":
-                            int unk04 = expression.GetInt32(0x4);
-                            int unk10 = expression.GetInt32(0x10);
-                            byte unk30 = expression.GetByte(0x30);
-                            byte unk38 = expression.GetByte(0x38);
+                        string format = expression.GetASCII(0x28, 4);
+                        switch (format)
+                        {
+                            case "EDGE":
+                                type = Type.DCX_EDGE;
+                                break;
+                            case "ZSTD":
+                                type = Type.DCX_ZSTD;
+                                break;
+                            case "KRAK":
+                                int compressionLevel = expression.GetByte(0x30);
+                                type = compressionLevel == 9 ? Type.DCX_KRAK_MAX : Type.DCX_KRAK;
+                                break;
+                            case "DFLT":
+                                int unk04 = expression.GetInt32(0x4);
+                                int unk10 = expression.GetInt32(0x10);
+                                byte unk30 = expression.GetByte(0x30);
+                                byte unk38 = expression.GetByte(0x38);
 
-                            // TODO check if method exists
-                            if (BinaryReaderEx.IsFlexible && unk04 != 0x11000)
-                                unk04 = 0x10000;
+                                // TODO check if method exists
+                                if (BinaryReaderEx.IsFlexible && unk04 != 0x11000)
+                                    unk04 = 0x10000;
 
-                            if (unk04 == 0x10000 && unk10 == 0x24 && unk30 == 9 && unk38 == 0)
-                                type = Type.DCX_DFLT_10000_24_9;
-                            else if (unk04 == 0x10000 && unk10 == 0x44 && unk30 == 9 && unk38 == 0)
-                                type = Type.DCX_DFLT_10000_44_9;
-                            else if (unk04 == 0x11000 && unk10 == 0x44 && unk30 == 8 && unk38 == 0)
-                                type = Type.DCX_DFLT_11000_44_8;
-                            else if (unk04 == 0x11000 && unk10 == 0x44 && unk30 == 9 && unk38 == 0)
-                                type = Type.DCX_DFLT_11000_44_9;
-                            else if (unk04 == 0x11000 && unk10 == 0x44 && unk30 == 9 && unk38 == 15)
-                                type = Type.DCX_DFLT_11000_44_9_15;
-                            break;
-                        default:
-                            byte b0 = expression.GetByte(0);
-                            byte b1 = expression.GetByte(1);
-                            if (b0 == 0x78 && (b1 == 0x01 || b1 == 0x5E || b1 == 0x9C || b1 == 0xDA))
-                            {
-                                type = Type.Zlib;
-                            }
-                            break;
+                                if (unk04 == 0x10000 && unk10 == 0x24 && unk30 == 9 && unk38 == 0)
+                                    type = Type.DCX_DFLT_10000_24_9;
+                                else if (unk04 == 0x10000 && unk10 == 0x44 && unk30 == 9 && unk38 == 0)
+                                    type = Type.DCX_DFLT_10000_44_9;
+                                else if (unk04 == 0x11000 && unk10 == 0x44 && unk30 == 8 && unk38 == 0)
+                                    type = Type.DCX_DFLT_11000_44_8;
+                                else if (unk04 == 0x11000 && unk10 == 0x44 && unk30 == 9 && unk38 == 0)
+                                    type = Type.DCX_DFLT_11000_44_9;
+                                else if (unk04 == 0x11000 && unk10 == 0x44 && unk30 == 9 && unk38 == 15)
+                                    type = Type.DCX_DFLT_11000_44_9_15;
+                                break;
+                        }
+                        break;
                     }
-                    break;
+                default:
+                    {
+                        byte b0 = expression.GetByte(0);
+                        byte b1 = expression.GetByte(1);
+                        if (b0 == 0x78 && (b1 == 0x01 || b1 == 0x5E || b1 == 0x9C || b1 == 0xDA))
+                        {
+                            type = Type.Zlib;
+                        }
+                        break;
+                    }
             }
             expression.Position = 0;
 
@@ -411,13 +417,14 @@ namespace SoulsFormats
             expression.AssertInt32(0x4C);
 
             expression.AssertASCII("DCS\0");
-            expression.ReadInt32(); // uncompressed size
+            int uncompressedSize = expression.ReadInt32();
             int compressedSize = expression.ReadInt32();
 
             expression.AssertASCII("DCP\0");
             expression.AssertASCII("ZSTD");
             expression.AssertInt32(0x20);
-            expression.ReadByte(); // compression level
+            expression.AssertByte(0x15);
+            //expression.ReadByte(); // compression level
             expression.AssertByte(0);
             expression.AssertByte(0);
             expression.AssertByte(0);
@@ -432,7 +439,7 @@ namespace SoulsFormats
             expression.AssertASCII("DCA\0");
             expression.AssertInt32(8);
 
-            byte[] decompressed = SFUtil.ReadZstd(expression, compressedSize);
+            byte[] decompressed = SFUtil.ReadZstd(expression, compressedSize); // TODO verify method
 
             return decompressed;
         }
@@ -468,20 +475,23 @@ namespace SoulsFormats
 
             switch (type)
             {
+                case Type.Zlib:
+                    SFUtil.WriteZlib(writer, 0xDA, data);
+                    return;
+                case Type.DCP_EDGE:
+                    return;
+                case Type.DCP_DFLT:
+                    CompressDCPDFLT(data, writer);
+                    return;
                 case Type.DCX_ZSTD:
-                    CompressDCXZSTD(data, writer);
+                    CompressDCPDFLT(data, writer); // workaround TODO add longterm implementation
+                    //CompressDCXZSTD(data, writer); // TODO does not work
                     return;
                 case Type.DCX_KRAK:
                     CompressDCXKRAK(data, writer);
                     return;
                 case Type.DCX_EDGE:
                     CompressDCXEDGE(data, writer);
-                    return; 
-                case Type.DCP_DFLT:
-                    CompressDCPDFLT(data, writer);
-                    return;
-                case Type.Zlib:
-                    SFUtil.WriteZlib(writer, 0xDA, data);
                     return;
                 case Type.Unknown:
                     throw new ArgumentException("You cannot compress a DCX with an unknown type.");
@@ -489,7 +499,7 @@ namespace SoulsFormats
                     if (type == Type.DCX_DFLT_10000_24_9 || type == Type.DCX_DFLT_10000_44_9
                      || type == Type.DCX_DFLT_11000_44_8 || type == Type.DCX_DFLT_11000_44_9
                      || type == Type.DCX_DFLT_11000_44_9_15)
-                    CompressDCXDFLT(data, writer, type);
+                        CompressDCXDFLT(data, writer, type);
                     else
                         throw new NotImplementedException("Compression for the given type is not implemented.");
                     break;
@@ -704,8 +714,8 @@ namespace SoulsFormats
 
         private static void CompressDCXZSTD(byte[] data, BinaryWriterEx bw, int compressionLevel = 5)
         {
-            byte[] compressed = SFUtil.WriteZstd(data, compressionLevel); // TODO ensure exists
-
+            byte[] compressed = SFUtil.WriteZstd(data, compressionLevel);
+            //TODO revise implementation
             bw.WriteASCII("DCX\0");
             bw.WriteInt32(0x11000);
             bw.WriteInt32(0x18);
