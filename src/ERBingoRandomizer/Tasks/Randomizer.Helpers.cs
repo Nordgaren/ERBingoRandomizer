@@ -187,12 +187,27 @@ public partial class Randomizer
             orderedDictionary[i] = distinct;
         }
     }
+    public static List<int> KatanaIDs = new List<int>()
+    {   // includes Great Katanas
+        2520000, 9000000, 9010000, 9030000, 9040000,
+        9060000, 9070000, 9080000, 9500000,
+        66500000, 66510000, 66520000,
+    };
     private void replaceShopLineupParam(ShopLineupParam lot, IList<int> shopLineupParamDictionary, IList<ShopLineupParam> shopLineupParamRemembranceList)
     {
         if (lot.mtrlId == -1)
-        {
+        {   // TODO update with new logic, testing 
             int newId = getNewId(lot.equipId, shopLineupParamDictionary);
             logItem($"{_weaponNameDictionary[lot.equipId]} -> {_weaponNameDictionary[newId]} : {newId}");
+
+            //> experimental TODO replace
+            List<int> weapons = Equipment.WeaponShopLists[
+                _random.Next(Equipment.WeaponShopLists.Count)
+            ];
+            int index = _random.Next(weapons.Count);
+            newId = weapons[index];
+            //^
+
             lot.equipId = newId;
             return;
         }
@@ -214,53 +229,53 @@ public partial class Randomizer
         copyShopLineupParam(lot, newRemembrance);
     }
     private void addDescriptionString(CharaInitParam chr, int id)
-    {
-        List<string> str = new() {
-            $"{_weaponNameDictionary[chr.wepleft]}{getRequiredLevelsWeapon(chr, chr.wepleft)}",
-            $"{_weaponNameDictionary[chr.wepRight]}{getRequiredLevelsWeapon(chr, chr.wepRight)}",
-        };
-        if (chr.subWepLeft != -1)
-        {
-            str.Add($"{_weaponNameDictionary[chr.subWepLeft]}{getRequiredLevelsWeapon(chr, chr.subWepLeft)}");
-        }
-        if (chr.subWepRight != -1)
-        {
-            str.Add($"{_weaponNameDictionary[chr.subWepRight]}{getRequiredLevelsWeapon(chr, chr.subWepRight)}");
-        }
-        if (chr.subWepLeft3 != -1)
-        {
-            str.Add($"{_weaponNameDictionary[chr.subWepLeft3]}{getRequiredLevelsWeapon(chr, chr.subWepLeft3)}");
-        }
-        if (chr.subWepRight3 != -1)
-        {
-            str.Add($"{_weaponNameDictionary[chr.subWepRight3]}{getRequiredLevelsWeapon(chr, chr.subWepRight3)}");
-        }
-        if (chr.equipArrow != -1)
-        {
-            str.Add($"{_weaponNameDictionary[chr.equipArrow]}[{chr.arrowNum}]");
-        }
-        if (chr.equipSubArrow != -1)
-        {
-            str.Add($"{_weaponNameDictionary[chr.equipSubArrow]}[{chr.subArrowNum}]");
-        }
-        if (chr.equipBolt != -1)
-        {
-            str.Add($"{_weaponNameDictionary[chr.equipBolt]}[{chr.boltNum}]");
-        }
-        if (chr.equipSubBolt != -1)
-        {
-            str.Add($"{_weaponNameDictionary[chr.equipSubBolt]}[{chr.subBoltNum}]");
-        }
-        if (chr.equipSpell01 != -1)
-        {
-            str.Add($"{_goodsFmg[chr.equipSpell01]}");
-        }
-        if (chr.equipSpell02 != -1)
-        {
-            str.Add($"{_goodsFmg[chr.equipSpell02]}");
-        }
+    { // TODO not updating in 1.12, fix
+        // List<string> str = new() {
+        //     $"{_weaponNameDictionary[chr.wepleft]}{getRequiredLevelsWeapon(chr, chr.wepleft)}",
+        //     $"{_weaponNameDictionary[chr.wepRight]}{getRequiredLevelsWeapon(chr, chr.wepRight)}",
+        // };
+        // if (chr.subWepLeft != -1)
+        // {
+        //     str.Add($"{_weaponNameDictionary[chr.subWepLeft]}{getRequiredLevelsWeapon(chr, chr.subWepLeft)}");
+        // }
+        // if (chr.subWepRight != -1)
+        // {
+        //     str.Add($"{_weaponNameDictionary[chr.subWepRight]}{getRequiredLevelsWeapon(chr, chr.subWepRight)}");
+        // }
+        // if (chr.subWepLeft3 != -1)
+        // {
+        //     str.Add($"{_weaponNameDictionary[chr.subWepLeft3]}{getRequiredLevelsWeapon(chr, chr.subWepLeft3)}");
+        // }
+        // if (chr.subWepRight3 != -1)
+        // {
+        //     str.Add($"{_weaponNameDictionary[chr.subWepRight3]}{getRequiredLevelsWeapon(chr, chr.subWepRight3)}");
+        // }
+        // if (chr.equipArrow != -1)
+        // {
+        //     str.Add($"{_weaponNameDictionary[chr.equipArrow]}[{chr.arrowNum}]");
+        // }
+        // if (chr.equipSubArrow != -1)
+        // {
+        //     str.Add($"{_weaponNameDictionary[chr.equipSubArrow]}[{chr.subArrowNum}]");
+        // }
+        // if (chr.equipBolt != -1)
+        // {
+        //     str.Add($"{_weaponNameDictionary[chr.equipBolt]}[{chr.boltNum}]");
+        // }
+        // if (chr.equipSubBolt != -1)
+        // {
+        //     str.Add($"{_weaponNameDictionary[chr.equipSubBolt]}[{chr.subBoltNum}]");
+        // }
+        // if (chr.equipSpell01 != -1)
+        // {
+        //     str.Add($"{_goodsFmg[chr.equipSpell01]}");
+        // }
+        // if (chr.equipSpell02 != -1)
+        // {
+        //     str.Add($"{_goodsFmg[chr.equipSpell02]}");
+        // }
 
-        _lineHelpFmg[id] = string.Join(", ", str);
+        // _lineHelpFmg[id] = string.Join(", ", str);
     }
     private void writeFiles()
     { //TODO is there an issue with writeFiles() ?
@@ -282,30 +297,31 @@ public partial class Randomizer
     }
 
     private string getRequiredLevelsWeapon(CharaInitParam chr, int id)
-    {
-        EquipParamWeapon wep = _weaponDictionary[id];
-        int reqLevels = 0;
-        if (wep.properStrength > chr.baseStr)
-        {
-            reqLevels += wep.properStrength - chr.baseStr;
-        }
-        if (wep.properAgility > chr.baseDex)
-        {
-            reqLevels += wep.properAgility - chr.baseDex;
-        }
-        if (wep.properMagic > chr.baseMag)
-        {
-            reqLevels += wep.properMagic - chr.baseMag;
-        }
-        if (wep.properFaith > chr.baseFai)
-        {
-            reqLevels += wep.properFaith - chr.baseFai;
-        }
-        if (wep.properLuck > chr.baseLuc)
-        {
-            reqLevels += wep.properLuck - chr.baseLuc;
-        }
-        return reqLevels > 0 ? $" (-{reqLevels})" : "";
+    {   // TODO reimplement to account for DLC gear
+        return "You have Debugged the issue with Class Descriptions";
+        // EquipParamWeapon wep = _weaponDictionary[id]; // TODO dlc weapons not included
+        // int reqLevels = 0;
+        // if (wep.properStrength > chr.baseStr)
+        // {
+        //     reqLevels += wep.properStrength - chr.baseStr;
+        // }
+        // if (wep.properAgility > chr.baseDex)
+        // {
+        //     reqLevels += wep.properAgility - chr.baseDex;
+        // }
+        // if (wep.properMagic > chr.baseMag)
+        // {
+        //     reqLevels += wep.properMagic - chr.baseMag;
+        // }
+        // if (wep.properFaith > chr.baseFai)
+        // {
+        //     reqLevels += wep.properFaith - chr.baseFai;
+        // }
+        // if (wep.properLuck > chr.baseLuc)
+        // {
+        //     reqLevels += wep.properLuck - chr.baseLuc;
+        // }
+        // return reqLevels > 0 ? $" (-{reqLevels})" : "";
     }
     private string getRequiredLevelsSpell(CharaInitParam chr, int id)
     {
@@ -338,8 +354,9 @@ public partial class Randomizer
             Debug.WriteLine($"{_menuTextFmg[i + 288100]} {chr.soulLv} {addLevels(chr)}");
         }
     }
+
     private static T getNewId<T>(int oldId, IList<T> queue) where T : IEquatable<int>
-    {
+    {   // used to allocate shop items
         if (queue.All(i => i.Equals(oldId)))
         {
             Debug.WriteLine($"No New Ids for {oldId}");
@@ -348,7 +365,7 @@ public partial class Randomizer
 
         T newId = queue.Pop();
         while (newId.Equals(oldId))
-        {
+        {   // does not allow original weapon at shop slot
             queue.Insert(0, newId);
             newId = queue.Pop();
         }
@@ -430,29 +447,4 @@ public partial class Randomizer
             + chr.baseFai
             + chr.baseLuc;
     }
-
-    List<int> Sorceries = new List<int>()
-    {
-        4000, 4001, 4010, 4020, 4021,
-        // glintstone pebble, great glinstone shard, swift glinstone shard, glintstone comet shard, comet 
-        4030, 4040, 4050, 4060, 4070, 
-        // shard spiral, glinstone stars 
-        4080, 4090, 4100, 4110, 4120,
-        4130, 4140, 4200, 4210, 4220,
-        4300, 4301, 4302, 4360, 4361,
-        4370, 4380, 4381, 4390, 4400,
-        4410, 4420, 4430, 4431, 4440,
-        4450, 4460, 4470, 4480, 4490,
-        4500, 4510, 4520, 4600, 4610,
-        4620, 4630, 4640, 5100, 5110,
-        4650, 4660, 4670, 4700, 4701,
-        4710, 4720, 4721, 4800, 4810,
-        4820, 4830, 4900, 4910, 5000,
-        5001, 5010, 5020, 5030, 6500, 
-        // DLC
-        2004300, 2004310, 2004320, 2004500,
-        2004510, 2004700, 2004710, 2004900,
-        2004910, 2005000, 2006200, 2006210,
-        2007410, 2007420,
-    };
 }

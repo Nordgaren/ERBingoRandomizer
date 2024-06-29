@@ -133,8 +133,9 @@ public partial class Randomizer
                 continue;
             }
             EquipParamWeapon wep = new(row);
-            if (row.ID == 17030000)
-            {
+
+            if (row.ID == Const.SerpentHunter)
+            {   // weapon is not randomized and cannot be leveled
                 wep.materialSetId = 0;
                 wep.reinforceTypeId = 3000;
                 wep.reinforceShopCategory = 0;
@@ -165,9 +166,8 @@ public partial class Randomizer
         foreach (Param.Row row in _equipParamCustomWeapon.Rows)
         { // TODO visit why is this necessary
             if (!_weaponDictionary.TryGetValue((int)row["baseWepId"]!.Value.Value, out EquipParamWeapon? wep))
-            {
-                continue;
-            }
+            { continue; }
+
             EquipParamCustomWeapon customWep = new(row);
             _weaponNameDictionary[row.ID] = $"{_weaponNameDictionary[customWep.baseWepId]} +{customWep.reinforceLv}";
             _customWeaponDictionary.Add(row.ID, wep);
@@ -179,9 +179,7 @@ public partial class Randomizer
             int sortId = (int)row["sortId"]!.Value.Value;
             string rowString = _protectorFmg[row.ID];
             if (sortId == 9999999 || sortId == 99999 || string.IsNullOrWhiteSpace(rowString) || rowString.ToLower().Contains("[error]"))
-            {
-                continue;
-            }
+            { continue; }
 
             byte protectorCategory = (byte)row["protectorCategory"]!.Value.Value;
             if (_armorTypeDictionary.TryGetValue(protectorCategory, out List<Param.Row>? rows))
@@ -203,9 +201,7 @@ public partial class Randomizer
             int sortId = (int)row["sortId"]!.Value.Value;
             string rowString = _goodsFmg[row.ID];
             if (sortId == 9999999 || sortId == 0 || string.IsNullOrWhiteSpace(rowString) || rowString.ToLower().Contains("[error]"))
-            {
-                continue;
-            }
+            { continue; }
 
             EquipParamGoods good = new(row);
             _goodsDictionary.Add(row.ID, good);
@@ -217,14 +213,10 @@ public partial class Randomizer
         {
             string rowString = _goodsFmg[row.ID];
             if (!_goodsDictionary.TryGetValue(row.ID, out EquipParamGoods? good) || string.IsNullOrWhiteSpace(rowString) || rowString.ToLower().Contains("[error]"))
-            {
-                continue;
-            }
+            { continue; }
 
             if (!isSpellGoods(good))
-            {
-                continue;
-            }
+            { continue; }
 
             Magic magic = new(row);
             _magicDictionary.Add(row.ID, magic);
@@ -251,7 +243,6 @@ public partial class Randomizer
             case Const.GoodsSelfIncantationType:
                 return true;
         }
-
         return false;
     }
     private void getParams(BinderFile file)

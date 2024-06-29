@@ -128,11 +128,14 @@ public partial class Randomizer
             int totalWeight = chances.Sum(a => (ushort)a.GetValue(row));
             for (int i = 0; i < Const.ItemLots; i++)
             {
-                int category = (int)categories[i].GetValue(row);
+                int category = (int)categories[i].GetValue(row); // TODO visit the categories
                 if (category != Const.ItemLotWeaponCategory && category != Const.ItemLotCustomWeaponCategory)
                 { continue; }
 
                 int id = (int)itemIds[i].GetValue(row); // getting weapon at item lot
+                //> TODO revisit for longterm
+
+                //^ TODO revisit for longterm
                 int sanitizedId = washWeaponLevels(id);
                 if (category == Const.ItemLotWeaponCategory)
                 {   // if it is not a weapon, skip. if it is a stave or seal, skip.
@@ -265,7 +268,7 @@ public partial class Randomizer
         foreach (Param.Row row in _shopLineupParam.Rows)
         {
             logShopId(row.ID);
-            if ((byte)row["equipType"]!.Value.Value != Const.ShopLineupWeaponCategory || row.ID > 101980)
+            if ((byte)row["equipType"]!.Value.Value != Const.ShopLineupWeaponCategory || row.ID > 101980) // TODO find out what this row.ID is
             { continue; }
 
             ShopLineupParam lot = new(row);

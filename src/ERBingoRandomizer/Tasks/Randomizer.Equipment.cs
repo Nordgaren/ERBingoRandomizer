@@ -10,14 +10,14 @@ namespace Project.Tasks;
 public partial class Randomizer
 {
     private int randomizeStartingWeapon(int id, IReadOnlyList<int> weapons)
-    {
+    { // TODO Rely on weapons table
         int limit = weapons.Count;
-        int newID = weapons[_random.Next(limit)];
-
-        while (!_weaponDictionary.ContainsKey(newID))
-        { // TODO update _weaponDictionary for DLC weapons
-            newID = weapons[_random.Next(limit)];
-        }
+        // int newID = weapons[_random.Next(limit)];
+        // while (!_weaponDictionary.ContainsKey(newID))
+        // { // TODO update _weaponDictionary for DLC weapons
+        //     newID = weapons[_random.Next(limit)];
+        // }
+        int newID = Equipment.StartingWeaponIDs[_random.Next(Equipment.StartingWeaponIDs.Count)];
         return washWeaponMetadata(newID);
     }
     private int exchangeArmorPiece(int id, byte type)

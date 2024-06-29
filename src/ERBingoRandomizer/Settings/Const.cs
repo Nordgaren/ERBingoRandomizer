@@ -54,6 +54,7 @@ public static class Const
     public const byte GoodsSelfIncantationType = 18;
     public const ushort StaffType = 57;
     public const ushort SealType = 61;
+    public const int SerpentHunter = 17030000;
     public static readonly string ExeDir = Environment.CurrentDirectory;
     // Level Randomizer  
     public const byte NumStats = 8;
