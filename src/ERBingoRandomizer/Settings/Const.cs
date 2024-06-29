@@ -1,9 +1,9 @@
-﻿using ERBingoRandomizer.Utility;
-using System;
+﻿using System;
 
-namespace ERBingoRandomizer;
+namespace Project.Settings;
 // Non configurable constants  
-public static class Const {
+public static class Const
+{
     // Paths  
     public const string ME2Path = $"{Config.ResourcesPath}/ME2";
     public const string BingoPath = $"{ME2Path}/bingo";
@@ -73,7 +73,8 @@ public static class Const {
         297130, 297131, 297132, 297133, 297134, 297135, 297138, 297136, 297137, 297139,
     };
     // BHD5  
-    public static class ArchiveKeys {
+    public static class ArchiveKeys
+    {
         public const string DATA0 = @"-----BEGIN RSA PUBLIC KEY-----
 MIIBCwKCAQEA9Rju2whruXDVQZpfylVEPeNxm7XgMHcDyaaRUIpXQE0qEo+6Y36L
 P0xpFvL0H0kKxHwpuISsdgrnMHJ/yj4S61MWzhO8y4BQbw/zJehhDSRCecFJmFBz

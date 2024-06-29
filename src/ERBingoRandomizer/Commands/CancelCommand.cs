@@ -1,8 +1,8 @@
-﻿using ERBingoRandomizer.Utility;
-using ERBingoRandomizer.ViewModels;
+﻿using Project.Utility;
+using Project.ViewModels;
 using System.ComponentModel;
 
-namespace ERBingoRandomizer.Commands;
+namespace Project.Commands;
 
 public class CancelCommand : CommandBase {
     private readonly MainWindowViewModel _mwViewModel;

@@ -8,8 +8,9 @@ using System.Linq;
 using System.Security.Cryptography;
 using System.Windows.Forms;
 using System.Xml;
+using Project.Settings;
 
-namespace ERBingoRandomizer.Utility;
+namespace Project.Utility;
 
 static class Util
 {

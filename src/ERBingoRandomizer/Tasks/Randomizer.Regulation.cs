@@ -1,12 +1,12 @@
-﻿using ERBingoRandomizer.FileHandler;
-using ERBingoRandomizer.Params;
-using ERBingoRandomizer.Utility;
+﻿using Project.FileHandler;
+using Project.Params;
+using Project.Settings;
+using Project.Utility;
 using FSParam;
 using SoulsFormats;
 using System;
 using System.Collections.Generic;
 using System.Collections.Specialized;
-using System.Diagnostics;
 using System.IO;
 using System.Linq;
 using System.Security.Cryptography;
@@ -14,9 +14,9 @@ using System.Text.Json;
 using System.Threading.Tasks;
 
 
-namespace ERBingoRandomizer.Randomizer;
+namespace Project.Tasks;
 
-public partial class BingoRandomizer
+public partial class Randomizer
 {
     public SeedInfo SeedInfo { get; private set; }
 

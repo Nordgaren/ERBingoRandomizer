@@ -1,7 +1,7 @@
 ﻿using FSParam;
 
 
-namespace ERBingoRandomizer.Params;
+namespace Project.Params;
 
 public class Magic
 {

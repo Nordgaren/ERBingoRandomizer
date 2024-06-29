@@ -1,4 +1,5 @@
-﻿using ERBingoRandomizer.Utility;
+﻿using Project.Utility;
+using Project.Settings;
 using SoulsFormats;
 using System;
 using System.Collections.Generic;
@@ -7,7 +8,7 @@ using System.IO;
 using System.Threading;
 using System.Threading.Tasks;
 
-namespace ERBingoRandomizer.FileHandler;
+namespace Project.FileHandler;
 
 public class BHD5Reader {
     private const string Data0 = "Data0";

@@ -5,7 +5,7 @@ using System;
 using System.IO;
 using System.Threading;
 
-namespace ERBingoRandomizer.Utility;
+namespace Project.Utility;
 
 /// <summary>
 ///     These RSA functions are copy-pasted straight from BinderTool. Thank you Atvaark!

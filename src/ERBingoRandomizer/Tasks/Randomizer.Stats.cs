@@ -1,10 +1,10 @@
-﻿using ERBingoRandomizer.Params;
+﻿using Project.Params;
 using FSParam;
-using ERBingoRandomizer.Utility;
+using Project.Settings;
 
-namespace ERBingoRandomizer.Randomizer;
+namespace Project.Tasks;
 
-public partial class BingoRandomizer
+public partial class Randomizer
 {   // ideally would get each class ID, then create a method for each class
     private void initializeStats(CharaInitParam tarnished)
     {

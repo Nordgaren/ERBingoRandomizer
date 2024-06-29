@@ -1,6 +1,6 @@
 ﻿using FSParam;
 
-namespace ERBingoRandomizer.Params; 
+namespace Project.Params; 
 
 public class EquipParamCustomWeapon {
     private Param.Cell _baseWepId;

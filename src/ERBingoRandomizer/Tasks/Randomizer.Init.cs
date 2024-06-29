@@ -1,6 +1,7 @@
-﻿using ERBingoRandomizer.FileHandler;
-using ERBingoRandomizer.Params;
-using ERBingoRandomizer.Utility;
+﻿using Project.FileHandler;
+using Project.Params;
+using Project.Settings;
+using Project.Utility;
 using FSParam;
 using SoulsFormats;
 using System;
@@ -14,21 +15,21 @@ using System.Threading.Tasks;
 
 #pragma warning disable CS8618
 
-namespace ERBingoRandomizer.Randomizer;
+namespace Project.Tasks;
 
-public partial class BingoRandomizer
+public partial class Randomizer
 {
     //static async method that behaves like a constructor    
-    public static async Task<BingoRandomizer> BuildRandomizerAsync(string path, string seed, CancellationToken cancellationToken)
+    public static async Task<Randomizer> BuildRandomizerAsync(string path, string seed, CancellationToken cancellationToken)
     {
-        BingoRandomizer rando = new(path, seed, cancellationToken);
+        Randomizer rando = new(path, seed, cancellationToken);
         cancellationToken.ThrowIfCancellationRequested();
         await Task.Run(() => rando.init());
         return rando;
     }
     // Cancellation Token
     private readonly CancellationToken _cancellationToken;
-    private BingoRandomizer(string path, string seed, CancellationToken cancellationToken)
+    private Randomizer(string path, string seed, CancellationToken cancellationToken)
     {
         _path = Path.GetDirectoryName(path) ?? throw new InvalidOperationException("Path.GetDirectoryName(path) was null. Incorrect path provided.");
         _regulationPath = $"{_path}/{Const.RegulationName}";

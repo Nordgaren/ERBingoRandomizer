@@ -1,5 +1,5 @@
-﻿using ERBingoRandomizer.Utility;
-using ERBingoRandomizer.ViewModels;
+﻿using Project.Settings;
+using Project.ViewModels;
 using ICSharpCode.SharpZipLib.Zip;
 using System;
 using System.ComponentModel;
@@ -7,7 +7,7 @@ using System.Diagnostics;
 using System.IO;
 using System.Threading.Tasks;
 
-namespace ERBingoRandomizer.Commands;
+namespace Project.Commands;
 
 public class PackageFilesCommand : AsyncCommandBase {
     private readonly MainWindowViewModel _mwViewModel;

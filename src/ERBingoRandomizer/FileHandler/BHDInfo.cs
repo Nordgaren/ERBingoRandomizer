@@ -1,7 +1,7 @@
 ﻿using SoulsFormats;
 using System.IO;
 
-namespace ERBingoRandomizer.FileHandler;
+namespace Project.FileHandler;
 
 public class BHDInfo {
     private readonly string _bdtPath;

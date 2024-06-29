@@ -1,13 +1,13 @@
-﻿using ERBingoRandomizer.Params;
+﻿using Project.Params;
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using ERBingoRandomizer.Utility;
+using Project.Settings;
 using FSParam;
 
-namespace ERBingoRandomizer.Randomizer;
+namespace Project.Tasks;
 
-public partial class BingoRandomizer
+public partial class Randomizer
 {
     private int randomizeStartingWeapon(int id, IReadOnlyList<int> weapons)
     {

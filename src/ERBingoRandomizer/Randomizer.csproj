@@ -40,7 +40,7 @@
         <Move SourceFiles="Elden Ring Debug Tool.7z" DestinationFiles="$(PublishDir)..\Elden Ring Debug Tool $(AssemblyVersion).7z" />-->
     </Target>
     <ItemGroup>
-      <Compile Remove="Randomizer\RandomizeLogger.cs" />
+      <Compile Remove="Tasks\RandomizeLogger.cs" />
     </ItemGroup>
 
 

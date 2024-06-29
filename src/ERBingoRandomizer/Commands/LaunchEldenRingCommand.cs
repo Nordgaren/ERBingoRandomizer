@@ -1,8 +1,9 @@
-﻿using ERBingoRandomizer.ViewModels;
+﻿using Project.ViewModels;
 using System.ComponentModel;
 using System.Diagnostics;
+using Project.Settings;
 
-namespace ERBingoRandomizer.Commands;
+namespace Project.Commands;
 
 public class LaunchEldenRingCommand : CommandBase {
     private readonly MainWindowViewModel _mwViewModel;

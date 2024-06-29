@@ -1,4 +1,5 @@
-﻿namespace ERBingoRandomizer.Utility;
+﻿
+namespace Project.Settings;
 
 // Anything configurable will be in this class.
 public static class Config

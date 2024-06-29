@@ -1,17 +1,15 @@
-﻿using ERBingoRandomizer.Params;
-using ERBingoRandomizer.Utility;
+﻿using Project.Params;
+using Project.Settings;
 using FSParam;
 using SoulsFormats;
 using System;
 using System.Collections.Generic;
 using System.Collections.Specialized;
-using System.Diagnostics;
 using System.IO;
-using System.Linq;
 
-namespace ERBingoRandomizer.Randomizer;
+namespace Project.Tasks;
 
-public partial class BingoRandomizer
+public partial class Randomizer
 {
     List<string> _randomizerLog;
     void logItem(string item)

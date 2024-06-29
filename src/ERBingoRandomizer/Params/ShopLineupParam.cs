@@ -1,7 +1,7 @@
 ﻿using System;
 using FSParam;
 
-namespace ERBingoRandomizer.Params;
+namespace Project.Params;
 
 public class ShopLineupParam : IEquatable<int>, IEquatable<ShopLineupParam>
 {
