@@ -3,7 +3,8 @@ using System.Collections.Generic;
 namespace Project.Settings;
 
 public static class Equipment
-{
+{   // TODO make into an initialization method for repeat randomizer calls
+    // WEAPONS
     public static List<int> RemembranceWeaponIDs = new List<int>()
     {
         3500000, 17500000, 23510000, 67520000, 18510000, 4530000, 4550000, 3510000,
@@ -87,7 +88,7 @@ public static class Equipment
         12500000, 12520000,
     };
     public static List<int> GreatswordIDs = new List<int>
-    {
+    { // TODO testing
         2090000, 3000000, 3010000, 3020000, 3030000, 3040000, 3050000,
         3060000, 3070000, 3080000, 3090000, 3130000, 3150000, 3160000,
         3170000, 3180000, 3190000, 3200000, 3210000, 3520000, 3550000,
@@ -98,7 +99,7 @@ public static class Equipment
         18070000, 18080000, 18090000, 18100000, 18110000, 18130000, 18140000,
         18150000, 18160000, 18500000,
     };
-    public static List<int> MaceIDs = new List<int>
+    public static List<int> HammerIDs = new List<int>
     {
         11000000, 11010000, 11030000, 11040000, 11050000, 11060000, 11070000,
         11080000, 11090000, 11100000, 11110000, 11120000, 11130000, 11140000,
@@ -188,12 +189,14 @@ public static class Equipment
         ClawIDs, CurvedSwordIDs, DaggerIDs, FistIDs, HeavyThrustingIDs,
         KatanaIDs, AxeIDs, CurvedGreatSwordIDs, ColossalSwordIDs,
         ColossalWeaponIDs, FlailIDs, GreatSpearIDs, GreataxeIDs,
-        GreatHammerIDs, GreatswordIDs, HalberdIDs, MaceIDs, ReaperIDs,
+        GreatHammerIDs, GreatswordIDs, HalberdIDs, HammerIDs, ReaperIDs,
         SpearIDs, StraightSwordIDs, ThrustingSwordIDs, TwinbladeIDs,
         WhipIDs, PerfumeBottleIDs, GreatShieldIDs, MediumShieldIDs, SmallShieldIDs,
         LightBowIDs, BowIDs, GreatBowIDs, BallistaIDs,
     };
+    // INCANTATIONS
 
+    // SORCERIES
     static List<int> SorceryIDs = new List<int>()
     {
         4000, 4001, 4010, 4020, 4021,
@@ -219,7 +222,7 @@ public static class Equipment
         2007410, 2007420,
     };
     public static List<int> StartingWeaponIDs = new List<int>()
-    {
+    {   // TODO non-exhaustive list of weapons. Until level calc is working again a smaller list of weapons that are more likely to be equippable
         // DLC
         1510000, 1500000, 63500000, // daggers
         14540000, 14500000, 14520000, 14510000, // axes
@@ -253,5 +256,106 @@ public static class Equipment
         32040000, 32050000, 32080000, 32090000, 32120000, 32130000, 32150000, 32220000, 32230000, 32250000,
         32280000, 40000000, 40010000, 40020000, 40030000, 40050000, 41000000, 41010000, 41020000, 41030000,
         41040000, 41060000, 41070000, 43000000, 43020000, 43030000, 43050000, 43060000, 43080000, 43110000,
+    };
+    // ARMOR
+    public static List<int> HeadArmorIDs = new List<int>()
+    {   // non-exhaustive list of armor, deliberate at this time
+        //DLC 
+        5253000, 5021000, 5180000, 5120000, 3010000, 5230000, 5320000, 5090000, 5130000,
+        5060000, 5250000, 5100000, 5101000, 5330000, 5191000, 5190000, 5140000, 5220000,
+        5221000, 5000000, 5020000, 5160000, 5260000, 5184000, 5280000, 5300000, 5030000,
+        5010000, 5183000, 5110000, 5270000, 
+        
+        //BASE
+        1060000, 370000, 380000, 581000, 650000, 1130000, 850000, 963000, 870000, 1080000,
+        130000, 640000, 1880000, 580000, 770000, 250000, 1040000, 1840000, 801000, 460000,
+        120000, 200000, 180000, 170000, 881000, 940000, 340000, 891000, 730000, 670000,
+        651000, 540000, 140000, 210000, 230000, 860000, 300000, 1120000,
+    };
+    public static List<int> BodyArmorIDs = new List<int>()
+    {   // non-exhaustive list of armor, deliberate at this time
+        //DLC
+        5252100, 5253100, 3000100, 3001100, 5180100, 5181100, 5120100, 5121100, 3010100,
+        5190100, 5231100, 5230100, 5060100, 5191100, 5250100, 5100100, 5101100, 5020100,
+        5000100, 5140100, 5141100, 5220100, 5002100, 5160100, 5260100, 5280100, 5030100,
+        5031100, 5010100, 5270100, 5271100,
+
+        //BASE
+        670100, 171100, 240100, 1100100, 1930100, 940100, 80100, 1010100, 661100, 872100,
+        1070100, 341100, 951100, 1040100, 311100, 331100, 1991100, 652100, 1400100, 181100,
+        200100, 320100, 740100, 761100, 481100, 641100, 870100, 50100, 520100, 1050100,
+        292100, 930100, 151100, 131100, 771100, 580100, 1740100, 911100, 861100,
+    };
+    public static List<int> ArmsArmorIDs = new List<int>()
+    {   // non-exhaustive list of armor, deliberate at this time
+        //DLC
+        5253200, 3000200, 5180200, 5120200, 3010200, 5090200, 5130200, 5230200, 5060200,
+        5250200, 5100200, 5020200, 5190200, 5140200, 5220200, 5000200, 5160200, 5260200,
+        5280200, 5030200, 5010200, 5270200,
+
+        //BASE
+        581200, 1000200, 351200, 790200, 730200, 880200, 460200, 990200, 360200, 1700200,
+        1040200, 330200, 50200, 640200, 580200, 760200, 470200, 260200, 230200, 290200,
+        150200, 872200, 670200, 1070200, 860200,
+    };
+    public static List<int> LegsArmorIDs = new List<int>()
+    {   // non-exhaustive list of armor, deliberate at this time
+        //DLC
+        5253300, 3000300, 5180300, 5120300, 3010300, 5230300, 5090300, 5130300, 5060300, 5250300,
+        5100300, 5020300, 5190300, 5140300, 5220300, 5000300, 5160300, 5260300, 5280300, 5030300,
+        5010300, 5270300,
+
+        //BASE
+        120300, 730300, 340300, 880300, 940300, 460300, 300300, 520300, 530300, 650300,
+        870300, 640300, 760300, 1130300, 470300, 320300, 600300, 872300, 90300, 150300,
+        290300, 310300, 580300, 1040300, 1740300, 1070300, 540300, 330300, 620300, 390300,
+        1010300, 280300, 130300, 860300,
+     };
+    public static IReadOnlyDictionary<byte, List<int>> ArmorLists = new Dictionary<byte, List<int>>()
+    {
+        { Const.HelmType, HeadArmorIDs },
+        { Const.BodyType, BodyArmorIDs },
+        { Const.ArmType, ArmsArmorIDs },
+        { Const.LegType, LegsArmorIDs }
+    };
+    public static IReadOnlyDictionary<ushort, List<int>> WeaponSpellDropLists = new Dictionary<ushort, List<int>>()
+    {
+        { Const.DaggerType, DaggerIDs },
+        { Const.StraightSwordType, StraightSwordIDs },
+        { Const.GreatswordType, GreatswordIDs },
+        { Const.ColossalSwordType, ColossalSwordIDs },
+        { Const.CurvedSwordType, CurvedSwordIDs },
+        { Const.CurvedGreatswordType, CurvedGreatSwordIDs },
+        { Const.KatanaType, KatanaIDs },
+        { Const.TwinbladeType, TwinbladeIDs },
+        { Const.ThrustingSwordType, ThrustingSwordIDs },
+        { Const.HeavyThrustingType, HeavyThrustingIDs },
+        { Const.AxeType, AxeIDs },
+        { Const.GreataxeType, GreataxeIDs },
+        { Const.HammerType, HammerIDs },
+        { Const.GreatHammerType, GreatHammerIDs },
+        { Const.FlailType, FlailIDs },
+        { Const.SpearType, SpearIDs },
+        { Const.GreatSpearType, GreatSpearIDs },
+        { Const.HalberdType, HalberdIDs },
+        { Const.FistType, FistIDs },
+        { Const.ClawType, ClawIDs },
+        { Const.WhipType, WhipIDs },
+        { Const.ColossalWeaponType, ColossalWeaponIDs },
+        { Const.SmallShieldType, SmallShieldIDs },
+        { Const.MediumShieldType, MediumShieldIDs },
+        { Const.GreatShieldType, GreatShieldIDs },
+        { Const.BowType, BowIDs },
+        { Const.LightBowType, LightBowIDs },
+        { Const.GreatbowType, GreatBowIDs },
+        { Const.CrossbowType, CrossBowIDs },
+        { Const.BallistaType, BallistaIDs },
+        // TODO add spells
+        // { Const. },
+        // { Const. },
+    };
+    public static IReadOnlyDictionary<int, string> EquipmentNameList = new Dictionary<int, string>()
+    {   // TODO fill
+
     };
 }

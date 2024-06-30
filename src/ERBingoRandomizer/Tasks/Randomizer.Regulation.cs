@@ -152,6 +152,7 @@ public partial class Randomizer
                     if (chance == totalWeight)
                     {
                         addToOrderedDict(categoryDictMap, wep.wepType, new ItemLotEntry(id, category));
+                        logItem($"{id},{wep.wepType}"); // TODO remove when unneeded
                         break; // Break here because the entire item lot param is just a single entry.
                     }
                     addToOrderedDict(categoryDictEnemy, wep.wepType, new ItemLotEntry(id, category));
@@ -164,6 +165,12 @@ public partial class Randomizer
                     { continue; }
 
                     ushort chance = (ushort)chances[i].GetValue(row);
+                    //> TODO testing how to get DLC weapons in
+                    // List<int> weaponList = Equipment.WeaponSpellDropLists[wep.wepType];
+                    // int index = _random.Next(weaponList.Count);
+                    // id = weaponList[index];
+                    // weaponList.RemoveAt(index);
+                    //^
                     if (chance == totalWeight)
                     {
                         addToOrderedDict(categoryDictMap, wep.wepType, new ItemLotEntry(id, category));
@@ -177,8 +184,9 @@ public partial class Randomizer
         dedupeAndRandomizeVectors(categoryDictMap);
         dedupeAndRandomizeVectors(categoryDictEnemy);
 
-        Dictionary<int, ItemLotEntry> guaranteedDropReplace = getReplacementHashmap(categoryDictMap);
+        Dictionary<int, ItemLotEntry> guaranteedDropReplace = getReplacementHashmap(categoryDictMap); // TODO get replacement Hashmap throws error
         Dictionary<int, ItemLotEntry> chanceDropReplace = getReplacementHashmap(categoryDictEnemy);
+
         // Application now has weapons set to randomize
         logItem(">> Item Replacements - all instances of item on left will be replaced with item on right");
         logItem("## Guaranteed Weapons");

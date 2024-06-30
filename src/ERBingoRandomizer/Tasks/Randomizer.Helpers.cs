@@ -85,8 +85,10 @@ public partial class Randomizer
         chr.subWepLeft3 = Const.NoItem;
         chr.subWepRight3 = Const.NoItem;
 
-        //chr.equipHelm = Config.Helmet; // assures Wretch always has helmet
-        chr.equipGaunt = Config.Gauntlet; // assures Wretch, Prophet, Prisoner always have gauntlets too
+        chr.equipHelm = Config.Helmet; // assures Wretch, Prophet, Prisoner are not behind on armor
+        chr.equipArmer = Config.Armor;
+        chr.equipGaunt = Config.Gauntlet;
+        chr.equipLeg = Config.Greaves;
 
         chr.equipHelm = exchangeArmorPiece(chr.equipHelm, Const.HelmType);
         chr.equipArmer = exchangeArmorPiece(chr.equipArmer, Const.BodyType);
@@ -187,20 +189,15 @@ public partial class Randomizer
             orderedDictionary[i] = distinct;
         }
     }
-    public static List<int> KatanaIDs = new List<int>()
-    {   // includes Great Katanas
-        2520000, 9000000, 9010000, 9030000, 9040000,
-        9060000, 9070000, 9080000, 9500000,
-        66500000, 66510000, 66520000,
-    };
+
     private void replaceShopLineupParam(ShopLineupParam lot, IList<int> shopLineupParamDictionary, IList<ShopLineupParam> shopLineupParamRemembranceList)
     {
         if (lot.mtrlId == -1)
-        {   // TODO update with new logic, testing 
+        {
             int newId = getNewId(lot.equipId, shopLineupParamDictionary);
             logItem($"{_weaponNameDictionary[lot.equipId]} -> {_weaponNameDictionary[newId]} : {newId}");
 
-            //> experimental TODO replace
+            //> TODO: currently has DLC weapons available, longterm will want DLC items read as params 
             List<int> weapons = Equipment.WeaponShopLists[
                 _random.Next(Equipment.WeaponShopLists.Count)
             ];
@@ -278,7 +275,7 @@ public partial class Randomizer
         // _lineHelpFmg[id] = string.Join(", ", str);
     }
     private void writeFiles()
-    { //TODO is there an issue with writeFiles() ?
+    {
         if (Directory.Exists(Const.BingoPath))
         {
             Directory.Delete(Const.BingoPath, true);

@@ -26,8 +26,10 @@ public partial class Randomizer
     }
     private int getRandomArmor(int id, byte type)
     {
-        IReadOnlyList<Param.Row> armors = _armorTypeDictionary[type];
-        return armors[_random.Next(armors.Count)].ID;
+        //IReadOnlyList<Param.Row> armors = _armorTypeDictionary[type];
+        // return armors[_random.Next(armors.Count)].ID;
+        IReadOnlyList<int> armors = Equipment.ArmorLists[type];
+        return armors[_random.Next(armors.Count)];
     }
     private bool validateNoItem(int id, int chance)
     {   // If the entry is -1 (no item) validate for a small chance to becomes an item.
