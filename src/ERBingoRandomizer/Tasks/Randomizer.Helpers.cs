@@ -76,10 +76,10 @@ public partial class Randomizer
         chr.equipSpell02 = -1;
         randomizeIncantations(chr, spells);
     }
-    private void randomizeEquipment(CharaInitParam chr, IReadOnlyList<int> weapons)
+    private void randomizeEquipment(CharaInitParam chr, IReadOnlyList<int> main, IReadOnlyList<int> side)
     {
-        chr.wepleft = randomizeStartingWeapon(chr.wepleft, weapons);
-        chr.wepRight = randomizeStartingWeapon(chr.wepRight, weapons);
+        chr.wepleft = randomizeStartingWeapon(chr.wepleft, side);
+        chr.wepRight = randomizeStartingWeapon(chr.wepRight, main);
         chr.subWepLeft = Const.NoItem;
         chr.subWepRight = Const.NoItem;
         chr.subWepLeft3 = Const.NoItem;
@@ -295,30 +295,31 @@ public partial class Randomizer
 
     private string getRequiredLevelsWeapon(CharaInitParam chr, int id)
     {   // TODO reimplement to account for DLC gear
-        return "You have Debugged the issue with Class Descriptions";
-        // EquipParamWeapon wep = _weaponDictionary[id]; // TODO dlc weapons not included
-        // int reqLevels = 0;
-        // if (wep.properStrength > chr.baseStr)
-        // {
-        //     reqLevels += wep.properStrength - chr.baseStr;
-        // }
-        // if (wep.properAgility > chr.baseDex)
-        // {
-        //     reqLevels += wep.properAgility - chr.baseDex;
-        // }
-        // if (wep.properMagic > chr.baseMag)
-        // {
-        //     reqLevels += wep.properMagic - chr.baseMag;
-        // }
-        // if (wep.properFaith > chr.baseFai)
-        // {
-        //     reqLevels += wep.properFaith - chr.baseFai;
-        // }
-        // if (wep.properLuck > chr.baseLuc)
-        // {
-        //     reqLevels += wep.properLuck - chr.baseLuc;
-        // }
-        // return reqLevels > 0 ? $" (-{reqLevels})" : "";
+        return " :: ";
+        
+        EquipParamWeapon wep = _weaponDictionary[id]; // TODO dlc weapons not included
+        int reqLevels = 0;
+        if (wep.properStrength > chr.baseStr)
+        {
+            reqLevels += wep.properStrength - chr.baseStr;
+        }
+        if (wep.properAgility > chr.baseDex)
+        {
+            reqLevels += wep.properAgility - chr.baseDex;
+        }
+        if (wep.properMagic > chr.baseMag)
+        {
+            reqLevels += wep.properMagic - chr.baseMag;
+        }
+        if (wep.properFaith > chr.baseFai)
+        {
+            reqLevels += wep.properFaith - chr.baseFai;
+        }
+        if (wep.properLuck > chr.baseLuc)
+        {
+            reqLevels += wep.properLuck - chr.baseLuc;
+        }
+        return reqLevels > 0 ? $" (-{reqLevels})" : "";
     }
     private string getRequiredLevelsSpell(CharaInitParam chr, int id)
     {

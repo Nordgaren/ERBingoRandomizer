@@ -82,15 +82,11 @@ public partial class Randomizer
         logItem("Spells given to a class meet min stat requirements, and their will be a catalyst to cast.");
         logItem("If a class has a ranged weapon, appropriate ammunition will be allocated.\n");
         // TODO get IDs of new DLC Powers of Remembrance "Rembrance Items"
-        // TODO update seals and staves
-        IEnumerable<int> remembranceItems = _shopLineupParam.Rows.Where(r => r.ID is >= 101900 and <= 101929).Select(r => new ShopLineupParam(r).equipId);
+
         List<Param.Row> staves = _weaponTypeDictionary[Const.StaffType];
         List<Param.Row> seals = _weaponTypeDictionary[Const.SealType];
-        List<int> weapons = _weaponDictionary.Keys.Select(washWeaponMetadata).Distinct()
-            .Where(id => remembranceItems.All(i => i != id))
-            .Where(id => staves.All(s => s.ID != id) && seals.All(s => s.ID != id))
-            .ToList();
-        weapons.Shuffle(_random);
+        IEnumerable<int> remembranceItems = _shopLineupParam.Rows.Where(r => r.ID is >= 101900 and <= 101929)
+            .Select(r => new ShopLineupParam(r).equipId);
 
         List<int> spells = _magicDictionary.Keys.Select(id => id).Distinct()
             .Where(id => remembranceItems.All(r => r != id))
@@ -105,12 +101,11 @@ public partial class Randomizer
             { continue; }
 
             CharaInitParam startingClass = new(row);
-            randomizeEquipment(startingClass, weapons);
+            randomizeEquipment(startingClass, Equipment.StartingWeaponIDs, Equipment.SideWeaponIDs);
             allocateStatsAndSpells(row.ID, startingClass, spells);
             logCharaInitEntry(startingClass, i + 288100);
             addDescriptionString(startingClass, Const.ChrInfoMapping[i]);
         }
-
     }
     private void randomizeItemLotParams()
     {

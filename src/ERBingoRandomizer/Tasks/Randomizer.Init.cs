@@ -121,17 +121,19 @@ public partial class Randomizer
     }
     private void buildDictionaries()
     {
-        _weaponDictionary = new Dictionary<int, EquipParamWeapon>(); // TODO update for DLC weapons
-        _weaponTypeDictionary = new Dictionary<ushort, List<Param.Row>>(); // TODO update for DLC weapons
-        _weaponNameDictionary = new Dictionary<int, string>(); // TODO update for DLC weapons
+        _weaponDictionary = new Dictionary<int, EquipParamWeapon>();
+        _weaponTypeDictionary = new Dictionary<ushort, List<Param.Row>>();
+        _weaponNameDictionary = new Dictionary<int, string>();
 
-        foreach (Param.Row row in _equipParamWeapon.Rows)
+        foreach (Param.Row row in _equipParamWeapon.Rows) // TODO missing rows for DLC weapons
         {
             string rowString = _weaponFmg[row.ID];
-            if ((int)row["sortId"]!.Value.Value == 9999999 || string.IsNullOrWhiteSpace(rowString) || rowString.ToLower().Contains("[error]"))
-            {
-                continue;
-            }
+            if ((int)row["sortId"]!.Value.Value == 9999999
+                || string.IsNullOrWhiteSpace(rowString)
+                || rowString.ToLower().Contains("[error]")
+            )
+            { continue; }
+
             EquipParamWeapon wep = new(row);
 
             if (row.ID == Const.SerpentHunter)
@@ -143,9 +145,9 @@ public partial class Randomizer
             }
 
             _weaponNameDictionary[row.ID] = rowString;
-            if (!Enumerable.Range(81, 86).Contains(wep.wepType))
+            if (!Enumerable.Range(81, 86).Contains(wep.wepType)) // TODO missing rows for DLC weapons
             {
-                _weaponDictionary.Add(row.ID, new EquipParamWeapon(row)); // TODO visit
+                _weaponDictionary.Add(row.ID, new EquipParamWeapon(row));
             }
 
             if (_weaponTypeDictionary.TryGetValue(wep.wepType, out List<Param.Row>? rows))
@@ -250,9 +252,9 @@ public partial class Randomizer
         string fileName = Path.GetFileName(file.Name);
         switch (fileName)
         {
-            case Const.EquipParamWeaponName:
+            case Const.EquipParamWeaponName: // TODO are DLC weapons not in EquipParamWeapon.param ?
                 {
-                    _equipParamWeapon = Param.Read(file.Bytes); // TODO visit
+                    _equipParamWeapon = Param.Read(file.Bytes); // TODO does not read DLC gear
                     if (!_equipParamWeapon.ApplyParamDefsCarefully(_paramDefs))
                     {
                         throw new InvalidParamDefException(_equipParamWeapon.ParamType);

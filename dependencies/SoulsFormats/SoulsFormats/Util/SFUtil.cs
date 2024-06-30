@@ -565,17 +565,12 @@ namespace SoulsFormats
         {
             return DecryptBndWithKey(path, RegulationKey.EldenRing);
         }
-        // public static BND4 DecryptERRegulation(string path)
-        // {
-        //     byte[] bytes = File.ReadAllBytes(path);
-        //     if (BND4.IsRead(bytes, out BND4 bnd4))
-        //     { return bnd4; }
-        //     bytes = DecryptByteArray(RegulationKey.EldenRing, bytes);
-        //     return BND4.Read(bytes);
-        // }
         public static BND4 DecryptBndWithKey(string path, RegulationKey key)
         {
             byte[] bytes = File.ReadAllBytes(path);
+            if (BND4.IsRead(bytes, out BND4 bnd4))
+            { return bnd4; }
+
             bytes = DecryptByteArray(RegulationKeyDictionary[key], bytes);
             return BND4.Read(bytes);
         }
