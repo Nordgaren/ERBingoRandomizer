@@ -17,22 +17,19 @@ public partial class Randomizer
         // { // TODO update _weaponDictionary for DLC weapons
         //     newID = weapons[_random.Next(limit)];
         // }
-        // int newID = Equipment.StartingWeaponIDs[_random.Next(Equipment.StartingWeaponIDs.Count)];
         return washWeaponMetadata(newID);
     }
     private int exchangeArmorPiece(int id, byte type)
     {
-        return validateNoItem(id, Config.ArmorChance) ? Const.NoItem : getRandomArmor(id, type);
+        return getRandomArmor(id, type, Equipment.ArmorLists);
     }
-    private int getRandomArmor(int id, byte type)
+    private int getRandomArmor(int id, byte type, IReadOnlyDictionary<byte, List<int>> gearLists)
     {
-        //IReadOnlyList<Param.Row> armors = _armorTypeDictionary[type];
-        // return armors[_random.Next(armors.Count)].ID;
-        IReadOnlyList<int> armors = Equipment.ArmorLists[type];
+        IReadOnlyList<int> armors = gearLists[type];
         return armors[_random.Next(armors.Count)];
     }
     private bool validateNoItem(int id, int chance)
-    {   // If the entry is -1 (no item) validate for a small chance to becomes an item.
+    {   // currently never used, but could be handy in a chaos mode where classes start with potentially nothing
         int randomChance = _random.Next(chance);
 
         if (id == Const.NoItem)
@@ -54,9 +51,8 @@ public partial class Randomizer
     private bool checkWeaponType(int id, params ushort[] types)
     {
         if (id == Const.NoItem)
-        {
-            return false;
-        }
+        { return false; }
+
         return _weaponDictionary.TryGetValue(id, out EquipParamWeapon? wep) && types.Contains(wep.wepType);
     }
     private bool hasSpellOfType(CharaInitParam chr, params byte[] types)
@@ -65,66 +61,54 @@ public partial class Randomizer
         {
             throw new ArgumentException("types cannot be null, and must contain 1 or more values. Please pass in a valid weapon type.", nameof(types));
         }
-
         return checkSpellType(chr.equipSpell01, types) || checkSpellType(chr.equipSpell02, types);
-
     }
     private bool checkSpellType(int id, params byte[] types)
     {
         if (id == Const.NoItem)
-        {
-            return false;
-        }
-        return _magicDictionary.TryGetValue(id, out Magic? magic) && types.Contains(magic.ezStateBehaviorType);
+        { return false; }
 
+        return _magicDictionary.TryGetValue(id, out Magic? magic) && types.Contains(magic.ezStateBehaviorType);
     }
     private void giveArrows(CharaInitParam chr)
     {
         chr.equipArrow = getRandomAmmo(Const.ArrowType);
-        chr.arrowNum = (ushort)(_random.Next() % Config.MaxArrows);
+        chr.arrowNum = (ushort)(_random.Next(Config.MaxArrows));
     }
     private void giveGreatArrows(CharaInitParam chr)
     {
         chr.equipSubArrow = getRandomAmmo(Const.GreatArrowType);
-        chr.subArrowNum = (ushort)(_random.Next() % Config.MaxGreatArrows);
+        chr.subArrowNum = (ushort)(_random.Next(Config.MaxGreatArrows));
     }
     private void giveBolts(CharaInitParam chr)
     {
         chr.equipBolt = getRandomAmmo(Const.BoltType);
-        chr.boltNum = (ushort)(_random.Next() % Config.MaxBolts);
+        chr.boltNum = (ushort)(_random.Next(Config.MaxBolts));
     }
     private void giveBallistaBolts(CharaInitParam chr)
     {
         chr.equipSubBolt = getRandomAmmo(Const.BallistaBoltType);
-        chr.subBoltNum = (ushort)(_random.Next() % Config.MaxBallistaBolts);
+        chr.subBoltNum = (ushort)(_random.Next(Config.MaxBallistaBolts));
     }
     private int getRandomAmmo(ushort type)
     {
         IList<Param.Row> arrows = _weaponTypeDictionary[type];
-        return arrows[_random.Next() % arrows.Count].ID;
+        return arrows[_random.Next(arrows.Count)].ID;
     }
     private void randomizeSorceries(CharaInitParam chr, IReadOnlyList<int> spells)
     {
-        chr.equipSpell01 = getRandomMagic(chr, Const.SorceryType, spells);
-        if (chr.equipSpell02 == Const.NoItem)
-        {
-            chr.equipSpell02 = chanceRandomMagic(chr.equipSpell02, chr, Const.SorceryType, spells);
-        }
         assignUsableWeapon(chr, Const.StaffType);
+        chr.equipSpell01 = assignStartingSpell(chr, Const.SorceryType, spells);
     }
     private void randomizeIncantations(CharaInitParam chr, IReadOnlyList<int> spells)
     {
-        chr.equipSpell02 = getRandomMagic(chr, Const.IncantationType, spells);
-        if (chr.equipSpell01 == Const.NoItem)
-        {
-            chr.equipSpell01 = chanceRandomMagic(chr.equipSpell01, chr, Const.IncantationType, spells);
-        }
         assignUsableWeapon(chr, Const.SealType);
+        chr.equipSpell02 = assignStartingSpell(chr, Const.IncantationType, spells);
     }
-    private int getRandomMagic(CharaInitParam chr, byte type, IReadOnlyList<int> spells)
+    private int assignStartingSpell(CharaInitParam chr, byte type, IReadOnlyList<int> spells)
     {
         IReadOnlyList<Param.Row> table = _magicTypeDictionary[type];
-        while (true)
+        while (true) // TODO refactor to not be a while (true)
         {
             int i = _random.Next() % table.Count;
             Magic entry = _magicDictionary[table[i].ID];
@@ -134,14 +118,9 @@ public partial class Randomizer
             }
         }
     }
-    private int chanceRandomMagic(int id, CharaInitParam chr, byte type, IReadOnlyList<int> spells)
-    {
-        return validateNoItem(id, Config.SpellChance) ? Const.NoItem : getRandomMagic(chr, type, spells);
-    }
 
     private void assignUsableWeapon(CharaInitParam chr, ushort type)
-    {   // starting classes get two random weapons in slot1 left, right
-        // this fills in the next open slot with the desired type.
+    {   // starting classes get two random weapons in slot1 left, right this fills in the next open slot with the desired type.
         EquipParamWeapon? wep;
 
         if (_weaponDictionary.TryGetValue(chr.subWepLeft, out wep))
@@ -180,27 +159,63 @@ public partial class Randomizer
         chr.subWepRight3 = getUsableWeapon(chr, type);
     }
     private int getUsableWeapon(CharaInitParam chr, ushort type)
-    {
+    { // currently only used for starting classes (staves and seals)
         IReadOnlyList<Param.Row> table = _weaponTypeDictionary[type];
         int limit = table.Count;
+        int i = _random.Next(limit);
+        EquipParamWeapon entry = _weaponDictionary[table[i].ID];
 
-        while (true)
+        while (!chrCanUseWeapon(entry, chr))
         {
-            int i = _random.Next() % limit;
-            if (_weaponDictionary.TryGetValue(table[i].ID, out EquipParamWeapon? entry))
-            {
-                if (chrCanUseWeapon(entry, chr))
-                {
-                    return table[i].ID;
-                }
-                continue;
-            }
-
-            entry = _customWeaponDictionary[table[i].ID];
-            if (chrCanUseWeapon(entry, chr))
-            {
-                return table[i].ID;
-            }
+            i = _random.Next(limit);
+            entry = _weaponDictionary[table[i].ID];
         }
+        return table[i].ID;
+    }
+    private void randomizeEquipment(CharaInitParam chr, IReadOnlyList<int> main, IReadOnlyList<int> side)
+    {
+        chr.wepleft = randomizeStartingWeapon(chr.wepleft, side);
+        chr.wepRight = randomizeStartingWeapon(chr.wepRight, main);
+        chr.subWepLeft = Const.NoItem;
+        chr.subWepRight = Const.NoItem;
+        chr.subWepLeft3 = Const.NoItem;
+        chr.subWepRight3 = Const.NoItem;
+
+        chr.equipHelm = Config.Helmet; // assures no class is behind on armor
+        chr.equipArmer = Config.Armor;
+        chr.equipGaunt = Config.Gauntlet;
+        chr.equipLeg = Config.Greaves;
+
+        chr.equipHelm = exchangeArmorPiece(chr.equipHelm, Const.HelmType);
+        chr.equipArmer = exchangeArmorPiece(chr.equipArmer, Const.BodyType);
+        chr.equipGaunt = exchangeArmorPiece(chr.equipGaunt, Const.ArmType);
+        chr.equipLeg = exchangeArmorPiece(chr.equipLeg, Const.LegType);
+
+        chr.equipArrow = Const.NoItem;
+        chr.arrowNum = ushort.MaxValue;
+        if (hasWeaponOfType(chr, Const.BowType, Const.LightBowType))
+        {
+            giveArrows(chr);
+        }
+        chr.equipSubArrow = Const.NoItem;
+        chr.subArrowNum = ushort.MaxValue;
+        if (hasWeaponOfType(chr, Const.GreatbowType))
+        {
+            giveGreatArrows(chr);
+        }
+        chr.equipBolt = Const.NoItem;
+        chr.boltNum = ushort.MaxValue;
+        if (hasWeaponOfType(chr, Const.CrossbowType))
+        {
+            giveBolts(chr);
+        }
+        chr.equipSubBolt = Const.NoItem;
+        chr.subBoltNum = ushort.MaxValue;
+        if (hasWeaponOfType(chr, Const.BallistaType))
+        {
+            giveBallistaBolts(chr);
+        }
+        chr.equipSpell01 = -1;
+        chr.equipSpell02 = -1;
     }
 }

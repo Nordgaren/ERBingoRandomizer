@@ -24,8 +24,7 @@ public partial class Randomizer
     private readonly string _regulationPath;
     private BND4 _regulationBnd;
     private readonly string _seed;
-    private int _seedInt;
-    private readonly Random _random; // TODO where is this initialized
+    private readonly Random _random;
     private BHD5Reader _bhd5Reader;
     private IntPtr _oodlePtr;
     // FMGs
@@ -127,13 +126,13 @@ public partial class Randomizer
                 if (category != Const.ItemLotWeaponCategory && category != Const.ItemLotCustomWeaponCategory)
                 { continue; }
 
-                int id = (int)itemIds[i].GetValue(row); // getting weapon at item lot
-                //> TODO revisit for longterm
+                int id = (int)itemIds[i].GetValue(row);
+                //> Should work if it were item lot entries
 
                 //^ TODO revisit for longterm
                 int sanitizedId = washWeaponLevels(id);
                 if (category == Const.ItemLotWeaponCategory)
-                {   // if it is not a weapon, skip. if it is a stave or seal, skip.
+                {
                     if (!_weaponDictionary.TryGetValue(sanitizedId, out EquipParamWeapon? wep))
                     { continue; }
                     if (wep.wepType is Const.StaffType or Const.SealType)
@@ -179,7 +178,7 @@ public partial class Randomizer
         dedupeAndRandomizeVectors(categoryDictMap);
         dedupeAndRandomizeVectors(categoryDictEnemy);
 
-        Dictionary<int, ItemLotEntry> guaranteedDropReplace = getReplacementHashmap(categoryDictMap); // TODO get replacement Hashmap throws error
+        Dictionary<int, ItemLotEntry> guaranteedDropReplace = getReplacementHashmap(categoryDictMap);
         Dictionary<int, ItemLotEntry> chanceDropReplace = getReplacementHashmap(categoryDictEnemy);
 
         // Application now has weapons set to randomize

@@ -15,7 +15,7 @@ namespace SoulsFormats
             if (expression.Stream.Length < 4)
             { return false; }
 
-            string ascii = expression.GetASCII(0, 4); // TODO verify method is the same
+            string ascii = expression.GetASCII(0, 4);
             // byte b0 = expression.GetByte(0); // potentially not needed for ER
             // byte b1 = expression.GetByte(1); // potentially not needed for ER
             return ascii == "DCP\0" || ascii == "DCX\0"; // || b0 == 0x78 && (b1 == 0x01 || b1 == 0x5E || b1 == 0x9C || b1 == 0xDA);
@@ -124,7 +124,6 @@ namespace SoulsFormats
                                 byte unk30 = expression.GetByte(0x30);
                                 byte unk38 = expression.GetByte(0x38);
 
-                                // TODO check if method exists
                                 if (BinaryReaderEx.IsFlexible && unk04 != 0x11000)
                                     unk04 = 0x10000;
 

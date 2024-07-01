@@ -16,7 +16,12 @@ public partial class Randomizer
 {
     private string createSeed()
     {
-        return "seed" + Random.Shared.NextInt64().ToString();
+        return "s" + Random.Shared.NextInt64().ToString() + "d";
+    }
+    private static int getSeedFromHashData(IEnumerable<byte> hashData)
+    {   // TODO visit why "toastx" breaks the app
+        IEnumerable<byte[]> chunks = hashData.Chunk(4);
+        return chunks.Aggregate(0, (current, chunk) => current ^ BitConverter.ToInt32(chunk));
     }
     private void allocateStatsAndSpells(int rowId, CharaInitParam startingClass, IReadOnlyList<int> spells)
     {
@@ -59,9 +64,8 @@ public partial class Randomizer
     private void guaranteeSorceries(CharaInitParam chr, IReadOnlyList<int> spells)
     {
         if (hasSpellOfType(chr, Const.SorceryType))
-        {
-            return;
-        }
+        { return; }
+
         chr.equipSpell01 = -1;
         chr.equipSpell02 = -1;
         randomizeSorceries(chr, spells);
@@ -69,58 +73,11 @@ public partial class Randomizer
     private void guaranteeIncantations(CharaInitParam chr, IReadOnlyList<int> spells)
     {
         if (hasSpellOfType(chr, Const.IncantationType))
-        {
-            return;
-        }
+        { return; }
+
         chr.equipSpell01 = -1;
         chr.equipSpell02 = -1;
         randomizeIncantations(chr, spells);
-    }
-    private void randomizeEquipment(CharaInitParam chr, IReadOnlyList<int> main, IReadOnlyList<int> side)
-    {
-        chr.wepleft = randomizeStartingWeapon(chr.wepleft, side);
-        chr.wepRight = randomizeStartingWeapon(chr.wepRight, main);
-        chr.subWepLeft = Const.NoItem;
-        chr.subWepRight = Const.NoItem;
-        chr.subWepLeft3 = Const.NoItem;
-        chr.subWepRight3 = Const.NoItem;
-
-        chr.equipHelm = Config.Helmet; // assures Wretch, Prophet, Prisoner are not behind on armor
-        chr.equipArmer = Config.Armor;
-        chr.equipGaunt = Config.Gauntlet;
-        chr.equipLeg = Config.Greaves;
-
-        chr.equipHelm = exchangeArmorPiece(chr.equipHelm, Const.HelmType);
-        chr.equipArmer = exchangeArmorPiece(chr.equipArmer, Const.BodyType);
-        chr.equipGaunt = exchangeArmorPiece(chr.equipGaunt, Const.ArmType);
-        chr.equipLeg = exchangeArmorPiece(chr.equipLeg, Const.LegType);
-
-        chr.equipArrow = Const.NoItem;
-        chr.arrowNum = ushort.MaxValue;
-        if (hasWeaponOfType(chr, Const.BowType, Const.LightBowType))
-        {
-            giveArrows(chr);
-        }
-        chr.equipSubArrow = Const.NoItem;
-        chr.subArrowNum = ushort.MaxValue;
-        if (hasWeaponOfType(chr, Const.GreatbowType))
-        {
-            giveGreatArrows(chr);
-        }
-        chr.equipBolt = Const.NoItem;
-        chr.boltNum = ushort.MaxValue;
-        if (hasWeaponOfType(chr, Const.CrossbowType))
-        {
-            giveBolts(chr);
-        }
-        chr.equipSubBolt = Const.NoItem;
-        chr.subBoltNum = ushort.MaxValue;
-        if (hasWeaponOfType(chr, Const.BallistaType))
-        {
-            giveBallistaBolts(chr);
-        }
-        chr.equipSpell01 = -1;
-        chr.equipSpell02 = -1;
     }
     private Dictionary<int, ItemLotEntry> getReplacementHashmap(IOrderedDictionary orderedDictionary)
     {
@@ -180,7 +137,7 @@ public partial class Randomizer
         }
     }
     private void dedupeAndRandomizeShopVectors(IOrderedDictionary orderedDictionary)
-    { // TODO are both dedupe and randomize actually the same?
+    {
         for (int i = 0; i < orderedDictionary.Count; i++)
         {
             List<int> values = (List<int>)orderedDictionary[i]!;
@@ -194,17 +151,15 @@ public partial class Randomizer
     {
         if (lot.mtrlId == -1)
         {
-            int newId = getNewId(lot.equipId, shopLineupParamDictionary);
-            logItem($"{_weaponNameDictionary[lot.equipId]} -> {_weaponNameDictionary[newId]} : {newId}");
-
-            //> TODO: currently has DLC weapons available, longterm will want DLC items read as params 
+            // int newId = getNewId(lot.equipId, shopLineupParamDictionary);
+            // TODO: currently has DLC weapons available, longterm will want DLC items read as params 
             List<int> weapons = Equipment.WeaponShopLists[
                 _random.Next(Equipment.WeaponShopLists.Count)
             ];
             int index = _random.Next(weapons.Count);
-            newId = weapons[index];
-            //^
+            int newId = weapons[index];
 
+            logItem($"{_weaponNameDictionary[lot.equipId]} -> {/*_weaponNameDictionary[newId]*/ "Fix Name Dictionary"} : {newId}");
             lot.equipId = newId;
             return;
         }
@@ -296,7 +251,7 @@ public partial class Randomizer
     private string getRequiredLevelsWeapon(CharaInitParam chr, int id)
     {   // TODO reimplement to account for DLC gear
         return " :: ";
-        
+
         EquipParamWeapon wep = _weaponDictionary[id]; // TODO dlc weapons not included
         int reqLevels = 0;
         if (wep.properStrength > chr.baseStr)
@@ -339,19 +294,6 @@ public partial class Randomizer
         }
         return reqLevels > 0 ? $" (-{reqLevels})" : "";
     }
-    private void calculateLevels()
-    {
-        for (int i = 0; i < 10; i++)
-        {
-            Param.Row? row = _charaInitParam[i + 3000];
-            if (row == null)
-            {
-                continue;
-            }
-            CharaInitParam chr = new(row);
-            Debug.WriteLine($"{_menuTextFmg[i + 288100]} {chr.soulLv} {addLevels(chr)}");
-        }
-    }
 
     private static T getNewId<T>(int oldId, IList<T> queue) where T : IEquatable<int>
     {   // used to allocate shop items
@@ -373,12 +315,11 @@ public partial class Randomizer
     private static void addToOrderedDict<T>(IOrderedDictionary orderedDict, object key, T type)
     {
         List<T>? ids = (List<T>?)orderedDict[key];
-        if (ids != null) { ids.Add(type); }
+        if (ids != null)
+        { ids.Add(type); }
         else
         {
-            ids = new List<T> {
-                type,
-            };
+            ids = new List<T> { type, };
             orderedDict.Add(key, ids);
         }
     }
@@ -395,11 +336,6 @@ public partial class Randomizer
         return spell.requirementIntellect <= chr.baseMag
             && spell.requirementFaith <= chr.baseFai
             && spell.requirementLuck <= chr.baseLuc;
-    }
-    private static int getSeedFromHashData(IEnumerable<byte> hashData)
-    {
-        IEnumerable<byte[]> chunks = hashData.Chunk(4);
-        return chunks.Aggregate(0, (current, chunk) => current ^ BitConverter.ToInt32(chunk));
     }
     private static void setBndFile(IBinder binder, string fileName, byte[] bytes)
     {
@@ -433,16 +369,5 @@ public partial class Randomizer
     private static int washWeaponLevels(int id)
     {
         return id / 100 * 100;
-    }
-    private static int addLevels(CharaInitParam chr)
-    {
-        return chr.baseVit
-            + chr.baseWil
-            + chr.baseEnd
-            + chr.baseStr
-            + chr.baseDex
-            + chr.baseMag
-            + chr.baseFai
-            + chr.baseLuc;
     }
 }

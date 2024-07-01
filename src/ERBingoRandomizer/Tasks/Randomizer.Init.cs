@@ -34,9 +34,10 @@ public partial class Randomizer
         _path = Path.GetDirectoryName(path) ?? throw new InvalidOperationException("Path.GetDirectoryName(path) was null. Incorrect path provided.");
         _regulationPath = $"{_path}/{Const.RegulationName}";
         _seed = string.IsNullOrWhiteSpace(seed) ? createSeed() : seed.Trim();
-        byte[] hashData = SHA256.HashData(Encoding.UTF8.GetBytes(_seed));
-        _seedInt = getSeedFromHashData(hashData);
-        _random = new Random(_seedInt);
+        byte[] array = Encoding.UTF8.GetBytes(_seed);
+        byte[] hashData = SHA256.HashData(array);
+        int sequence = getSeedFromHashData(hashData);
+        _random = new Random(sequence);
         _cancellationToken = cancellationToken;
     }
     private Task init()
@@ -166,7 +167,7 @@ public partial class Randomizer
         _customWeaponDictionary = new Dictionary<int, EquipParamWeapon>();
 
         foreach (Param.Row row in _equipParamCustomWeapon.Rows)
-        { // TODO visit why is this necessary
+        {
             if (!_weaponDictionary.TryGetValue((int)row["baseWepId"]!.Value.Value, out EquipParamWeapon? wep))
             { continue; }
 

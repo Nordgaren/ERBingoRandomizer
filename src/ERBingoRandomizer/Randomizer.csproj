@@ -3,6 +3,9 @@
     <PropertyGroup>
         <OutputType>WinExe</OutputType>
         <TargetFramework>net7.0-windows</TargetFramework>
+        <!-- <PublishSingleFile>true</PublishSingleFile>
+        <SelfContained>true</SelfContained>
+        <RuntimeIdentifier>win-x64</RuntimeIdentifier> -->
         <Nullable>enable</Nullable>
         <UseWPF>true</UseWPF>
     </PropertyGroup>
@@ -15,6 +18,8 @@
     </PropertyGroup>
     <PropertyGroup Condition=" '$(Configuration)' == 'Release' ">
       <PlatformTarget>x64</PlatformTarget>
+      <DebugSymbols>False</DebugSymbols>
+      <DebugType>None</DebugType>
     </PropertyGroup>
 
     <!-- Copy all resources to the build output directy except when building in publish mode, to have them exist in a debug/release build, but not have them packed into an executable when publishing -->
@@ -39,10 +44,6 @@
         <!--<Exec Command="7za.exe a -t7z &quot;Elden Ring Debug Tool.7z&quot; .\bin\Publish\win-x64\* -xr!*.pdb" />
         <Move SourceFiles="Elden Ring Debug Tool.7z" DestinationFiles="$(PublishDir)..\Elden Ring Debug Tool $(AssemblyVersion).7z" />-->
     </Target>
-    <ItemGroup>
-      <Compile Remove="Tasks\RandomizeLogger.cs" />
-    </ItemGroup>
-
 
     <ItemGroup>
         <ProjectReference Include="..\..\dependencies\FSParam\FSParam.csproj" />
@@ -84,6 +85,5 @@
             <HintPath>..\..\..\..\..\..\..\..\Windows\Microsoft.NET\Framework64\v4.0.30319\System.Windows.Forms.dll</HintPath>
         </Reference>
     </ItemGroup>
-
 
 </Project>

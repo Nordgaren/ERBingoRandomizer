@@ -37,7 +37,6 @@ public static class Const
     public const byte BodyType = 1;
     public const byte ArmType = 2;
     public const byte LegType = 3;
-    //> TODO experimenting, still need long term solution
     public const ushort DaggerType = 1;
     public const ushort StraightSwordType = 3;
     public const ushort GreatswordType = 5;
@@ -64,7 +63,6 @@ public static class Const
     public const ushort SmallShieldType = 65;
     public const ushort MediumShieldType = 67;
     public const ushort GreatShieldType = 69;
-    //^
     public const ushort BowType = 51;
     public const ushort LightBowType = 50;
     public const ushort GreatbowType = 53;
