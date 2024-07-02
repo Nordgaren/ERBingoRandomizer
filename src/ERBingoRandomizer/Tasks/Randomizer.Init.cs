@@ -34,9 +34,10 @@ public partial class Randomizer
         _path = Path.GetDirectoryName(path) ?? throw new InvalidOperationException("Path.GetDirectoryName(path) was null. Incorrect path provided.");
         _regulationPath = $"{_path}/{Const.RegulationName}";
         _seed = string.IsNullOrWhiteSpace(seed) ? createSeed() : seed.Trim();
-        byte[] array = Encoding.UTF8.GetBytes(_seed);
-        byte[] hashData = SHA256.HashData(array);
-        int sequence = getSeedFromHashData(hashData);
+        // byte[] array = Encoding.UTF8.GetBytes(_seed);
+        // byte[] hashData = SHA256.HashData(array);
+        // int sequence = getSeedFromHashData(hashData);
+        int sequence = hashStringToInteger(_seed);
         _random = new Random(sequence);
         _cancellationToken = cancellationToken;
     }

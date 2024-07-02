@@ -80,7 +80,6 @@ public partial class Randomizer
         logItem("Class Randomization - All items are randomized, classes with missing armor have a chance to gain armor.");
         logItem("Spells given to a class meet min stat requirements, and their will be a catalyst to cast.");
         logItem("If a class has a ranged weapon, appropriate ammunition will be allocated.\n");
-        // TODO get IDs of new DLC Powers of Remembrance "Rembrance Items"
 
         List<Param.Row> staves = _weaponTypeDictionary[Const.StaffType];
         List<Param.Row> seals = _weaponTypeDictionary[Const.SealType];
@@ -99,10 +98,14 @@ public partial class Randomizer
             if (row == null)
             { continue; }
 
+            int index = _random.Next(Equipment.SideWeaponLists.Count);
+            List<int> sideArms = Equipment.SideWeaponLists[index];
+            List<int> main = Equipment.StartingWeaponIDs;
+
             CharaInitParam startingClass = new(row);
-            randomizeEquipment(startingClass, Equipment.StartingWeaponIDs, Equipment.SideWeaponIDs);
+            randomizeEquipment(startingClass, main, sideArms);
             allocateStatsAndSpells(row.ID, startingClass, spells);
-            logCharaInitEntry(startingClass, i + 288100);
+            logCharaInitEntry(startingClass, i + 288100); // TODO update config
             addDescriptionString(startingClass, Const.ChrInfoMapping[i]);
         }
     }

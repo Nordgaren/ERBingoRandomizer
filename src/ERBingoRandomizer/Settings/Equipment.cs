@@ -2,9 +2,8 @@ using System.Collections.Generic;
 
 namespace Project.Settings;
 
-public static class Equipment
+public class Equipment
 {   // TODO make into an initialization method for repeat randomizer calls
-    // WEAPONS
     public static List<int> RemembranceWeaponIDs = new List<int>()
     {
         3500000, 17500000, 23510000, 67520000, 18510000, 4530000, 4550000, 3510000,
@@ -213,6 +212,21 @@ public static class Equipment
         2004910, 2005000, 2006200, 2006210,
         2007410, 2007420,
     };
+    public static List<int> StartingSorceryIDs = new List<int>()
+    {
+        4000, 4010, 4040, 4460, 4470, 4660, 4070, 4390, 4440, 6500,
+        4100, 4140, 4370, 4400, 4490, 4001, 4670, 5000, 4480, 4640,
+        4720, 4090, 4610, 4630, 4710,
+        // 2004500,
+    };
+    public static List<int> StartingIncantationIDs = new List<int>()
+    {
+        6000, 6420, 6820, 6220, 6850, 6010, 6460, 6510, 6800, 7230,
+        7200, 7210, 6040, 6320, 6400, 6421, 6840, 7220, 6030, 6300,
+        6520, 6700, 6770, 6810, 7010, 6050, 6422, 6830, 6960, 7000,
+        7020, 7030, 7040, 6001, 7310,
+        // 2006800, 2007800
+    };
     public static List<int> StartingWeaponIDs = new List<int>()
     {   // TODO non-exhaustive list of weapons. Until level calc is working again a smaller list of weapons that are more likely to be equippable
         // DLC
@@ -235,6 +249,21 @@ public static class Equipment
         11000000, 11010000, 11030000, 11040000, 11050000, 11060000, 11070000, 11080000, 11090000,
         11100000, 11110000, 11120000, 11130000, 16000000, 16050000, 16140000, 16030000, 16080000,
         9000000, 9030000, 9040000, 9060000, 9070000, 9080000,
+    };
+    public static IReadOnlyList<List<int>> SideWeaponLists = new List<List<int>>()
+    {
+        TorchIDs,
+        GreatShieldIDs,
+        MediumShieldIDs,
+        SmallShieldIDs,
+        DaggerIDs,
+        ClawIDs,
+        FistIDs,
+        ThrustingSwordIDs,
+        WhipIDs,
+        PerfumeBottleIDs,
+        LightBowAndBowIDs,
+        BallistaOrGreatBowIDs,
     };
     public static List<int> SideWeaponIDs = new List<int>()
     {

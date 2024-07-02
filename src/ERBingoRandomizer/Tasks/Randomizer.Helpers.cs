@@ -9,6 +9,8 @@ using System.Collections.Specialized;
 using System.Diagnostics;
 using System.IO;
 using System.Linq;
+using System.Security.Cryptography;
+using System.Text;
 
 namespace Project.Tasks;
 
@@ -18,8 +20,10 @@ public partial class Randomizer
     {
         return "s" + Random.Shared.NextInt64().ToString() + "d";
     }
-    private static int getSeedFromHashData(IEnumerable<byte> hashData)
+    private static int hashStringToInteger(string input)
     {   // TODO visit why "toastx" breaks the app
+        byte[] array = Encoding.UTF8.GetBytes(input);
+        byte[] hashData = SHA256.HashData(array);
         IEnumerable<byte[]> chunks = hashData.Chunk(4);
         return chunks.Aggregate(0, (current, chunk) => current ^ BitConverter.ToInt32(chunk));
     }
@@ -181,7 +185,7 @@ public partial class Randomizer
         copyShopLineupParam(lot, newRemembrance);
     }
     private void addDescriptionString(CharaInitParam chr, int id)
-    { // TODO not updating in 1.12, fix
+    { // TODO not updating in 1.12, fix DLC weapon params are never read
         // List<string> str = new() {
         //     $"{_weaponNameDictionary[chr.wepleft]}{getRequiredLevelsWeapon(chr, chr.wepleft)}",
         //     $"{_weaponNameDictionary[chr.wepRight]}{getRequiredLevelsWeapon(chr, chr.wepRight)}",

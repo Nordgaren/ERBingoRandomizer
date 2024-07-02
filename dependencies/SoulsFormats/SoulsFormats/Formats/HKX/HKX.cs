@@ -822,8 +822,7 @@ namespace SoulsFormats
                     {
                         var reference = dest.Reference;
                         reference.DestLocalOffset = dest.Dst - SectionOffset;
-                        // todo: see why this turns ds1 parent bone indices into hkaAnimation
-                        // and remove this horrible "solution"
+                        // see why this turns ds1 parent bone indices into hkaAnimation and remove this horrible "solution"
                         if (!(hkx.Variation == HKXVariation.HKXDS1 && this is HKASkeleton))
                             reference.DestObject = this;
                     }

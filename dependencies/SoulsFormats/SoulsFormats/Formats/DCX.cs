@@ -714,7 +714,7 @@ namespace SoulsFormats
         private static void CompressDCXZSTD(byte[] data, BinaryWriterEx bw, int compressionLevel = 5)
         {
             byte[] compressed = SFUtil.WriteZstd(data, compressionLevel);
-            //TODO revise implementation
+            //TODO revise implementation, currently doesn't seem to work
             bw.WriteASCII("DCX\0");
             bw.WriteInt32(0x11000);
             bw.WriteInt32(0x18);

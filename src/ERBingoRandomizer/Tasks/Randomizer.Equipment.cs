@@ -1,16 +1,19 @@
 ﻿using Project.Params;
 using System;
 using System.Collections.Generic;
+using System.Collections.Specialized;
 using System.Linq;
 using Project.Settings;
 using FSParam;
+using Project.Utility;
 
 namespace Project.Tasks;
 
 public partial class Randomizer
 {
-    private int randomizeStartingWeapon(int id, IReadOnlyList<int> weapons)
+    private int randomizeStartingWeapon(int id, List<int> weapons)
     { // TODO Rely on weapons table
+        weapons.Shuffle(_random);
         int limit = weapons.Count;
         int newID = weapons[_random.Next(limit)];
         // while (!_weaponDictionary.ContainsKey(newID))
@@ -25,7 +28,8 @@ public partial class Randomizer
     }
     private int getRandomArmor(int id, byte type, IReadOnlyDictionary<byte, List<int>> gearLists)
     {
-        IReadOnlyList<int> armors = gearLists[type];
+        List<int> armors = gearLists[type];
+        armors.Shuffle(_random);
         return armors[_random.Next(armors.Count)];
     }
     private bool validateNoItem(int id, int chance)
@@ -98,25 +102,29 @@ public partial class Randomizer
     private void randomizeSorceries(CharaInitParam chr, IReadOnlyList<int> spells)
     {
         assignUsableWeapon(chr, Const.StaffType);
-        chr.equipSpell01 = assignStartingSpell(chr, Const.SorceryType, spells);
+        chr.equipSpell01 = assignStartingSpell(chr, Const.SorceryType, Equipment.StartingSorceryIDs);
     }
     private void randomizeIncantations(CharaInitParam chr, IReadOnlyList<int> spells)
     {
         assignUsableWeapon(chr, Const.SealType);
-        chr.equipSpell02 = assignStartingSpell(chr, Const.IncantationType, spells);
+        chr.equipSpell02 = assignStartingSpell(chr, Const.IncantationType, Equipment.StartingIncantationIDs);
     }
     private int assignStartingSpell(CharaInitParam chr, byte type, IReadOnlyList<int> spells)
     {
-        IReadOnlyList<Param.Row> table = _magicTypeDictionary[type];
-        while (true) // TODO refactor to not be a while (true)
-        {
-            int i = _random.Next() % table.Count;
-            Magic entry = _magicDictionary[table[i].ID];
-            if (chrCanUseSpell(entry, chr) && spells.Contains(table[i].ID))
-            {
-                return table[i].ID;
-            }
-        }
+        // if cannot be equipped pop spell off of list (make stack instead)
+        // TODO use while to debugging cancel button
+        // IReadOnlyList<Param.Row> table = _magicTypeDictionary[type];
+        // int index = _random.Next(table.Count);
+        // Magic entry = _magicDictionary[table[index].ID];
+
+        // while (!chrCanUseSpell(entry, chr))
+        // {
+        //     index = _random.Next(table.Count);
+        //     entry = _magicDictionary[table[index].ID];
+        // }
+        // return table[index].ID;
+        int index = _random.Next(spells.Count);
+        return spells[index];
     }
 
     private void assignUsableWeapon(CharaInitParam chr, ushort type)
@@ -172,7 +180,7 @@ public partial class Randomizer
         }
         return table[i].ID;
     }
-    private void randomizeEquipment(CharaInitParam chr, IReadOnlyList<int> main, IReadOnlyList<int> side)
+    private void randomizeEquipment(CharaInitParam chr, List<int> main, List<int> side)
     {
         chr.wepleft = randomizeStartingWeapon(chr.wepleft, side);
         chr.wepRight = randomizeStartingWeapon(chr.wepRight, main);
