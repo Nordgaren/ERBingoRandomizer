@@ -1,6 +1,6 @@
 ﻿using System.Windows;
 
-namespace ERBingoRandomizer {
+namespace Project {
     /// <summary>
     /// Interaction logic for App.xaml
     /// </summary>

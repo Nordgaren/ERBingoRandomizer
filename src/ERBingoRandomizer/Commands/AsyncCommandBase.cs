@@ -1,6 +1,6 @@
 ﻿using System.Threading.Tasks;
 
-namespace ERBingoRandomizer.Commands;
+namespace Project.Commands;
 
 public abstract class AsyncCommandBase : CommandBase {
     public override async void Execute(object? parameter) {

@@ -1,12 +1,15 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ERBingoRandomizer", "src\ERBingoRandomizer\ERBingoRandomizer.csproj", "{DB6A5EB7-432D-46C9-BB65-870662AAEA23}"
+# Visual Studio Version 17
+VisualStudioVersion = 17.10.35013.160
+MinimumVisualStudioVersion = 10.0.40219.1
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Randomizer", "src\ERBingoRandomizer\Randomizer.csproj", "{DB6A5EB7-432D-46C9-BB65-870662AAEA23}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SoulsFormats", "dependencies\SoulsFormats\SoulsFormats\SoulsFormats.csproj", "{61A28E91-0106-4822-A010-618AA38643F6}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "SoulsFormats", "dependencies\SoulsFormats\SoulsFormats\SoulsFormats.csproj", "{61A28E91-0106-4822-A010-618AA38643F6}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "FSParam", "dependencies\FSParam\FSParam.csproj", "{DAE8F7D3-8041-44DD-9DCD-605529590030}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "FSParam", "dependencies\FSParam\FSParam.csproj", "{DAE8F7D3-8041-44DD-9DCD-605529590030}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "StudioUtils", "dependencies\StudioUtils\StudioUtils.csproj", "{973EC008-1D13-445C-832B-BABEBE7B1317}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "StudioUtils", "dependencies\StudioUtils\StudioUtils.csproj", "{973EC008-1D13-445C-832B-BABEBE7B1317}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -30,5 +33,8 @@ Global
 		{973EC008-1D13-445C-832B-BABEBE7B1317}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{973EC008-1D13-445C-832B-BABEBE7B1317}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{973EC008-1D13-445C-832B-BABEBE7B1317}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
 	EndGlobalSection
 EndGlobal

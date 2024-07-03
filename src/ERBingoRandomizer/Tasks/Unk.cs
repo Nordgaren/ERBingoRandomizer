@@ -1,4 +1,4 @@
-namespace ERBingoRandomizer.Randomizer;
+namespace Project.Tasks;
 
 static class Unk {
     internal static int[] unkItemLotParamMapWeapons = {

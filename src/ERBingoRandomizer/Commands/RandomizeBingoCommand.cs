@@ -1,11 +1,11 @@
-﻿using ERBingoRandomizer.Randomizer;
-using ERBingoRandomizer.ViewModels;
+﻿using Project.Settings;
+using Project.ViewModels;
 using System;
 using System.ComponentModel;
 using System.IO;
 using System.Threading.Tasks;
 
-namespace ERBingoRandomizer.Commands;
+namespace Project.Commands;
 
 public class RandomizeBingoCommand : AsyncCommandBase {
     private readonly MainWindowViewModel _mwViewModel;
@@ -27,7 +27,7 @@ public class RandomizeBingoCommand : AsyncCommandBase {
         _mwViewModel.RandoButtonText = "Cancel";
         // _mwViewModel.Path is not null, and is a valid path to eldenring.exe, because of the conditions in CanExecute.
         try {
-            BingoRandomizer randomizer = await BingoRandomizer.BuildRandomizerAsync(_mwViewModel.Path!, _mwViewModel.Seed, _mwViewModel.CancellationToken);
+            Tasks.Randomizer randomizer = await Tasks.Randomizer.BuildRandomizerAsync(_mwViewModel.Path!, _mwViewModel.Seed, _mwViewModel.CancellationToken);
             await Task.Run(() => randomizer.RandomizeRegulation());
             _mwViewModel.LastSeed = randomizer.SeedInfo;
             _mwViewModel.FilesReady = true;

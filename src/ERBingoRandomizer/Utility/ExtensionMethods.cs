@@ -4,7 +4,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 
-namespace ERBingoRandomizer.Utility;
+namespace Project.Utility;
 
 public static class ExtensionMethods {
     public static bool ApplyParamDefsCarefully(this Param param, List<PARAMDEF> defs) {

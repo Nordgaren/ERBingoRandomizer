@@ -1,4 +1,4 @@
-﻿namespace ERBingoRandomizer.Randomizer;
+﻿namespace Project.Tasks;
 
 public class SeedInfo {
     public SeedInfo(string seed, string sha256Hash) {

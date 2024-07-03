@@ -5,7 +5,7 @@ using System.Runtime.CompilerServices;
 using System.Windows;
 using System.Windows.Input;
 
-namespace ERBingoRandomizer.Commands;
+namespace Project.Commands;
 
 public abstract class CommandBase : ICommand, INotifyPropertyChanged {
     public event EventHandler? CanExecuteChanged;

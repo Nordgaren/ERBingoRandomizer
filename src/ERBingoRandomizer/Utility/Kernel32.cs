@@ -2,7 +2,7 @@
 using System.IO;
 using System.Runtime.InteropServices;
 
-namespace ERBingoRandomizer.Utility;
+namespace Project.Utility;
 
 public static class Kernel32 {
     [DllImport("kernel32", SetLastError = true)]

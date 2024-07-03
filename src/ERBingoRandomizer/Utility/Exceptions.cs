@@ -1,6 +1,6 @@
 ﻿using System;
 
-namespace ERBingoRandomizer.Utility;
+namespace Project.Utility;
 
 class InvalidParamDefException : Exception {
     public InvalidParamDefException(string paramType) : base($"Could not find ParamDef for {paramType}") { }

@@ -1,6 +1,7 @@
-﻿using ERBingoRandomizer.Commands;
-using ERBingoRandomizer.Randomizer;
-using ERBingoRandomizer.Utility;
+﻿using Project.Commands;
+using Project.Tasks;
+using Project.Settings;
+using Project.Utility;
 using System;
 using System.Collections.ObjectModel;
 using System.ComponentModel;
@@ -11,7 +12,7 @@ using System.Threading;
 using System.Windows.Data;
 using System.Windows.Input;
 
-namespace ERBingoRandomizer.ViewModels;
+namespace Project.ViewModels;
 
 public class MainWindowViewModel : ViewModelBase, IDisposable {
     private readonly FileSystemWatcher _watcher;

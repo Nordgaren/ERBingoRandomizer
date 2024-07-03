@@ -4,7 +4,7 @@ using System.Linq;
 using System.Text;
 using System.Windows;
 
-namespace ERBingoRandomizer {
+namespace Project {
     /// <summary>
     /// Interaction logic for MainWindow.xaml
     /// </summary>

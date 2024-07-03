@@ -1,7 +1,7 @@
-﻿<Application x:Class="ERBingoRandomizer.App"
+﻿<Application x:Class="Project.App"
              xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
              xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
-             xmlns:converter="clr-namespace:ERBingoRandomizer.Converter"
+             xmlns:converter="clr-namespace:Project.Converter"
              StartupUri="MainWindow.xaml">
     <Application.Resources>
         <ResourceDictionary>

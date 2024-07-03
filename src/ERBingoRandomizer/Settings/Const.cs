@@ -1,9 +1,9 @@
-﻿using ERBingoRandomizer.Utility;
-using System;
+﻿using System;
 
-namespace ERBingoRandomizer;
+namespace Project.Settings;
 // Non configurable constants  
-public static class Const {
+public static class Const
+{
     // Paths  
     public const string ME2Path = $"{Config.ResourcesPath}/ME2";
     public const string BingoPath = $"{ME2Path}/bingo";
@@ -37,6 +37,32 @@ public static class Const {
     public const byte BodyType = 1;
     public const byte ArmType = 2;
     public const byte LegType = 3;
+    public const ushort DaggerType = 1;
+    public const ushort StraightSwordType = 3;
+    public const ushort GreatswordType = 5;
+    public const ushort ColossalSwordType = 7;
+    public const ushort CurvedSwordType = 9;
+    public const ushort CurvedGreatswordType = 11;
+    public const ushort KatanaType = 13;
+    public const ushort TwinbladeType = 14;
+    public const ushort ThrustingSwordType = 15;
+    public const ushort HeavyThrustingType = 16;
+    public const ushort AxeType = 17;
+    public const ushort GreataxeType = 19;
+    public const ushort HammerType = 21;
+    public const ushort GreatHammerType = 23;
+    public const ushort FlailType = 24;
+    public const ushort SpearType = 25;
+    public const ushort GreatSpearType = 28;
+    public const ushort HalberdType = 29;
+    public const ushort ReaperType = 31;
+    public const ushort FistType = 35;
+    public const ushort ClawType = 37;
+    public const ushort WhipType = 39;
+    public const ushort ColossalWeaponType = 41;
+    public const ushort SmallShieldType = 65;
+    public const ushort MediumShieldType = 67;
+    public const ushort GreatShieldType = 69;
     public const ushort BowType = 51;
     public const ushort LightBowType = 50;
     public const ushort GreatbowType = 53;
@@ -54,6 +80,7 @@ public static class Const {
     public const byte GoodsSelfIncantationType = 18;
     public const ushort StaffType = 57;
     public const ushort SealType = 61;
+    public const int SerpentHunter = 17030000;
     public static readonly string ExeDir = Environment.CurrentDirectory;
     // Level Randomizer  
     public const byte NumStats = 8;
@@ -73,7 +100,8 @@ public static class Const {
         297130, 297131, 297132, 297133, 297134, 297135, 297138, 297136, 297137, 297139,
     };
     // BHD5  
-    public static class ArchiveKeys {
+    public static class ArchiveKeys
+    {
         public const string DATA0 = @"-----BEGIN RSA PUBLIC KEY-----
 MIIBCwKCAQEA9Rju2whruXDVQZpfylVEPeNxm7XgMHcDyaaRUIpXQE0qEo+6Y36L
 P0xpFvL0H0kKxHwpuISsdgrnMHJ/yj4S61MWzhO8y4BQbw/zJehhDSRCecFJmFBz
@@ -118,5 +146,5 @@ pdCQ3+HuoaFiJ0dW0ly5qdEXjbSv2QEYe36nWCtsd6hEY9LjbBX8D1fK3D2c6C0g
 NdHJGH2iEONUN6DMK9t0v2JBnwCOZQ7W+Gt7SpNNrkx8xKEM8gH9na10g9ne11Mi
 O1FnLm8i4zOxVdPHQBKICkKcGS1o3C2dfwIEXw/f3w==
 -----END RSA PUBLIC KEY-----";
-    }
+    } // TODO revisit if this is correct for the DLC
 }

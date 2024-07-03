@@ -1,7 +1,7 @@
 # Global mod engine configuration
 [modengine]
 # If set to true the debug console will appear while the game is running
-debug = false
+debug = true
 
 # Mod loader configuration
 [extension.mod_loader]

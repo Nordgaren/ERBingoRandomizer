@@ -1,6 +1,6 @@
 <Project Sdk="Microsoft.NET.Sdk">
   <PropertyGroup>
-    <TargetFrameworks>net6.0-windows</TargetFrameworks>
+    <TargetFramework>net8.0-windows</TargetFramework>
     <GenerateDocumentationFile>true</GenerateDocumentationFile>
     <Copyright>Copyright © Joseph Anderson 2019</Copyright>
     <Description>A .NET library for reading and writing FromSoftware file formats.</Description>
@@ -12,10 +12,11 @@
 
   <ItemGroup Condition="$(TargetFramework.StartsWith('netstandard'))">
     <PackageReference Include="System.Text.Encoding.CodePages" Version="4.7.0" />
+    <!-- <PackageReference Include="ZstdNet" Version="4.7.0" /> -->
   </ItemGroup>
-
   <ItemGroup>
-    <PackageReference Include="BouncyCastle" Version="1.8.9" />
-    <PackageReference Include="System.Text.Encoding.CodePages" Version="5.0.0" />
+    <PackageReference Include="BouncyCastle.Cryptography" Version="2.3.1" />
+    <PackageReference Include="System.Text.Encoding.CodePages" Version="7.0.0" />
+    <PackageReference Include="ZstdNet" Version="1.4.5" />
   </ItemGroup>
 </Project>

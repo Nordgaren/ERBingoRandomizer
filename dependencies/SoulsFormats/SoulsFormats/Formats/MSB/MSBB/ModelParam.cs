@@ -382,7 +382,6 @@ namespace SoulsFormats
                 /// <summary>
                 /// Creates an Other with default values.
                 /// </summary>
-                // TODO verify this
                 public Other() : base("lXXXXXX") { }
 
                 internal Other(BinaryReaderEx br) : base(br) { }

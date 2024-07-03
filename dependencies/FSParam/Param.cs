@@ -9,9 +9,9 @@ namespace FSParam
     /// <summary>
     /// An alternative to the SoulsFormats param class that's designed to be faster to read/write and be
     /// much more memory efficient. This tries to match the SoulsFormats PARAM API as much as possible but
-    /// has some differences out of necessity. The main difference is rows and cells are separate rather
-    /// than each row having an array of cells. For convenience, a CellHandle struct was added that provides
-    /// a similar API to the SoulsFormats Cell.
+    /// has some differences out of necessity. 
+    /// The main difference is rows and cells are separate rather than each row having an array of cells. 
+    /// For convenience, a CellHandle struct was added that provides a similar API to the SoulsFormats Cell.
     ///
     /// A lot of this code is based off the SoulsFormats PARAM class (especially the read/write), so thanks TKGP.
     /// </summary>
@@ -23,14 +23,10 @@ namespace FSParam
         [Flags]
         public enum FormatFlags1 : byte
         {
-            /// <summary>
-            /// No flags set.
-            /// </summary>
+            /// <summary>No flags set.</summary>
             None = 0,
 
-            /// <summary>
-            /// Unknown.
-            /// </summary>
+            /// <summary>Unknown Param.</summary>
             Flag01 = 0b0000_0001,
 
             /// <summary>
@@ -43,24 +39,16 @@ namespace FSParam
             /// </summary>
             LongDataOffset = 0b0000_0100,
 
-            /// <summary>
-            /// Unused?
-            /// </summary>
+            /// <summary> Unused Param? </summary>
             Flag08 = 0b0000_1000,
 
-            /// <summary>
-            /// Unused?
-            /// </summary>
+            /// <summary> Unused Param? </summary>
             Flag10 = 0b0001_0000,
 
-            /// <summary>
-            /// Unused?
-            /// </summary>
+            /// <summary> Unused Param? </summary>
             Flag20 = 0b0010_0000,
 
-            /// <summary>
-            /// Unused?
-            /// </summary>
+            /// <summary> Unused Param? </summary>
             Flag40 = 0b0100_0000,
 
             /// <summary>
@@ -75,9 +63,7 @@ namespace FSParam
         [Flags]
         public enum FormatFlags2 : byte
         {
-            /// <summary>
-            /// No flags set.
-            /// </summary>
+            /// <summary>No flags set.</summary>
             None = 0,
 
             /// <summary>
@@ -85,39 +71,25 @@ namespace FSParam
             /// </summary>
             UnicodeRowNames = 0b0000_0001,
 
-            /// <summary>
-            /// Unknown.
-            /// </summary>
+            /// <summary>Unknown Param.</summary>
             Flag02 = 0b0000_0010,
 
-            /// <summary>
-            /// Unknown.
-            /// </summary>
+            /// <summary>Unknown Param.</summary>
             Flag04 = 0b0000_0100,
 
-            /// <summary>
-            /// Unused?
-            /// </summary>
+            /// <summary> Unused Param? </summary>
             Flag08 = 0b0000_1000,
 
-            /// <summary>
-            /// Unused?
-            /// </summary>
+            /// <summary> Unused Param? </summary>
             Flag10 = 0b0001_0000,
 
-            /// <summary>
-            /// Unused?
-            /// </summary>
+            /// <summary> Unused Param? </summary>
             Flag20 = 0b0010_0000,
 
-            /// <summary>
-            /// Unused?
-            /// </summary>
+            /// <summary> Unused Param? </summary>
             Flag40 = 0b0100_0000,
 
-            /// <summary>
-            /// Unused?
-            /// </summary>
+            /// <summary> Unused Param? </summary>
             Flag80 = 0b1000_0000,
         }
 
