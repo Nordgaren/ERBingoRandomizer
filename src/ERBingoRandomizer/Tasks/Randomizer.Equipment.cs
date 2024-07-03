@@ -111,8 +111,9 @@ public partial class Randomizer
     }
     private int assignStartingSpell(CharaInitParam chr, byte type, IReadOnlyList<int> spells)
     {
-        // if cannot be equipped pop spell off of list (make stack instead)
-        // TODO use while to debugging cancel button
+        //   if cannot be equipped pop spell off of list(make stack instead)
+        //   TODO use while to debugging cancel button
+
         // IReadOnlyList<Param.Row> table = _magicTypeDictionary[type];
         // int index = _random.Next(table.Count);
         // Magic entry = _magicDictionary[table[index].ID];
@@ -121,6 +122,7 @@ public partial class Randomizer
         // {
         //     index = _random.Next(table.Count);
         //     entry = _magicDictionary[table[index].ID];
+        //     _cancellationToken.ThrowIfCancellationRequested();
         // }
         // return table[index].ID;
         int index = _random.Next(spells.Count);
