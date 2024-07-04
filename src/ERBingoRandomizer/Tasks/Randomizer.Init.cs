@@ -34,9 +34,6 @@ public partial class Randomizer
         _path = Path.GetDirectoryName(path) ?? throw new InvalidOperationException("Path.GetDirectoryName(path) was null. Incorrect path provided.");
         _regulationPath = $"{_path}/{Const.RegulationName}";
         _seed = string.IsNullOrWhiteSpace(seed) ? createSeed() : seed.Trim();
-        // byte[] array = Encoding.UTF8.GetBytes(_seed);
-        // byte[] hashData = SHA256.HashData(array);
-        // int sequence = getSeedFromHashData(hashData);
         int sequence = hashStringToInteger(_seed);
         _random = new Random(sequence);
         _cancellationToken = cancellationToken;
@@ -45,7 +42,7 @@ public partial class Randomizer
     {
         if (!allCacheFilesExist())
         {
-            _bhd5Reader = new BHD5Reader(_path, Config.CacheBHDs, _cancellationToken);
+            _bhd5Reader = new BHD5Reader(_path, Config.CacheBHDs, _cancellationToken); // TODO examine
         }
         _cancellationToken.ThrowIfCancellationRequested();
         _oodlePtr = Kernel32.LoadLibrary($"{_path}/oo2core_6_win64.dll");
@@ -256,7 +253,7 @@ public partial class Randomizer
         {
             case Const.EquipParamWeaponName: // TODO are DLC weapons not in EquipParamWeapon.param ?
                 {
-                    _equipParamWeapon = Param.Read(file.Bytes); // TODO does not read DLC gear
+                    _equipParamWeapon = Param.Read(file.Bytes);
                     if (!_equipParamWeapon.ApplyParamDefsCarefully(_paramDefs))
                     {
                         throw new InvalidParamDefException(_equipParamWeapon.ParamType);

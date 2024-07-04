@@ -90,7 +90,7 @@ public partial class Randomizer
             .Where(id => remembranceItems.All(r => r != id))
             .Where(id => staves.All(s => s.ID != id) && seals.All(s => s.ID != id))
             .ToList();
-        spells.Shuffle(_random);
+        spells.Shuffle(_random); // TODO investigate if thise matters
 
         for (int i = 0; i < Config.NumberOfClasses; i++)
         {
@@ -265,8 +265,8 @@ public partial class Randomizer
             .Where(i => shopLineupParamRemembranceList.All(s => s.equipId != i))
             .Where(id => staves.All(s => s.ID != id) && seals.All(s => s.ID != id))
             .ToList();
-        shopLineupParamList.Shuffle(_random);
-        shopLineupParamRemembranceList.Shuffle(_random);
+        shopLineupParamList.Shuffle(_random); // TODO investigate if thise matters
+        shopLineupParamRemembranceList.Shuffle(_random); // TODO investigate if thise matters
 
         logItem("<> Shop Replacements - Random item selected from pool of all weapons (not including infused weapons). Remembrances are randomized amongst each-other.");
 
@@ -343,8 +343,8 @@ public partial class Randomizer
         dedupeAndRandomizeShopVectors(magicCategoryDictMap);
 
         Dictionary<int, int> magicShopReplacement = getShopReplacementHashmap(magicCategoryDictMap);
-        shopLineupParamRemembranceList.Shuffle(_random);
-        shopLineupParamDragonList.Shuffle(_random);
+        shopLineupParamRemembranceList.Shuffle(_random); // TODO investigate if thise matters
+        shopLineupParamDragonList.Shuffle(_random); // TODO investigate if thise matters
         logItem("\n## All Magic Replacement.");
         logReplacementDictionaryMagic(magicShopReplacement);
 
