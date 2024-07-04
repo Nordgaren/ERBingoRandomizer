@@ -483,7 +483,7 @@ namespace SoulsFormats
                     return;
                 case Type.DCX_ZSTD:
                     CompressDCPDFLT(data, writer); // workaround TODO add longterm implementation
-                    //CompressDCXZSTD(data, writer); // TODO does not work
+                    CompressDCXZSTD(data, writer); // TODO does not work
                     return;
                 case Type.DCX_KRAK:
                     CompressDCXKRAK(data, writer);
