@@ -13,7 +13,6 @@ public partial class Randomizer
 {
     private int randomizeStartingWeapon(int id, List<int> weapons)
     { // TODO Rely on weapons table
-        weapons.Shuffle(_random);
         int limit = weapons.Count;
         int newID = weapons[_random.Next(limit)];
         // while (!_weaponDictionary.ContainsKey(newID))
@@ -29,7 +28,6 @@ public partial class Randomizer
     private int getRandomArmor(int id, byte type, IReadOnlyDictionary<byte, List<int>> gearLists)
     {
         List<int> armors = gearLists[type];
-        armors.Shuffle(_random);
         return armors[_random.Next(armors.Count)];
     }
     private bool validateNoItem(int id, int chance)

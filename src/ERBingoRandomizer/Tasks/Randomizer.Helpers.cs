@@ -21,7 +21,7 @@ public partial class Randomizer
         return "s" + Random.Shared.NextInt64().ToString() + "d";
     }
     private static int hashStringToInteger(string input)
-    {   // TODO visit why "toastx" breaks the app
+    {
         byte[] array = Encoding.UTF8.GetBytes(input);
         byte[] hashData = SHA256.HashData(array);
         IEnumerable<byte[]> chunks = hashData.Chunk(4);
@@ -107,7 +107,7 @@ public partial class Randomizer
         {
             List<ItemLotEntry> value = (List<ItemLotEntry>)orderedDictionary[i]!;
             List<ItemLotEntry> itemLotEntries = new(value);
-            itemLotEntries.Shuffle(_random);
+            itemLotEntries.Shuffle(_random); // TODO investigate if thise matters
             foreach (ItemLotEntry entry in itemLotEntries)
             {
                 dict.Add(entry.Id, getNewId(entry.Id, value));
@@ -122,7 +122,7 @@ public partial class Randomizer
         {
             List<int> value = (List<int>)orderedDictionary[i]!;
             List<int> itemLotEntries = new(value);
-            itemLotEntries.Shuffle(_random);
+            itemLotEntries.Shuffle(_random); // TODO investigate if thise matters
             foreach (int entry in itemLotEntries)
             {
                 output.Add(entry, getNewId(entry, value));
@@ -136,7 +136,7 @@ public partial class Randomizer
         {
             List<ItemLotEntry> values = (List<ItemLotEntry>)orderedDictionary[i]!;
             List<ItemLotEntry> distinct = values.Distinct().ToList();
-            distinct.Shuffle(_random);
+            distinct.Shuffle(_random); // TODO investigate if thise matters
             orderedDictionary[i] = distinct;
         }
     }
@@ -146,7 +146,7 @@ public partial class Randomizer
         {
             List<int> values = (List<int>)orderedDictionary[i]!;
             List<int> distinct = values.Distinct().ToList();
-            distinct.Shuffle(_random);
+            distinct.Shuffle(_random); // TODO investigate if thise matters
             orderedDictionary[i] = distinct;
         }
     }
