@@ -19,29 +19,8 @@ namespace Project.Tasks;
 public partial class Randomizer
 {
     public SeedInfo SeedInfo { get; private set; }
-
-    private readonly string _path;
-    private readonly string _regulationPath;
-    private BND4 _regulationBnd;
     private readonly string _seed;
     private readonly Random _random;
-    private BHD5Reader _bhd5Reader;
-    private IntPtr _oodlePtr;
-    // FMGs
-    private BND4 _menuMsgBND;
-    private FMG _lineHelpFmg;
-    private FMG _menuTextFmg;
-    private FMG _weaponFmg;
-    private FMG _protectorFmg;
-    private FMG _goodsFmg;
-    // Params
-    private List<PARAMDEF> _paramDefs;
-    private Param _equipParamWeapon;
-    private Param _equipParamCustomWeapon;
-    private Param _equipParamGoods;
-    private Param _equipParamProtector;
-    private Param _charaInitParam;
-    private Param _goodsParam;
     private Param _itemLotParam_map;
     private Param _itemLotParam_enemy;
     private Param _shopLineupParam;
@@ -149,7 +128,6 @@ public partial class Randomizer
                     if (chance == totalWeight)
                     {
                         addToOrderedDict(categoryDictMap, wep.wepType, new ItemLotEntry(id, category));
-                        logItem($"{id},{wep.wepType}"); // TODO remove when unneeded
                         break; // Break here because the entire item lot param is just a single entry.
                     }
                     addToOrderedDict(categoryDictEnemy, wep.wepType, new ItemLotEntry(id, category));
