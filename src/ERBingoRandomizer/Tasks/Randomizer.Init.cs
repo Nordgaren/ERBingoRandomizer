@@ -19,6 +19,26 @@ namespace Project.Tasks;
 
 public partial class Randomizer
 {
+    private readonly CancellationToken _cancellationToken;
+    private readonly string _path;
+    private readonly string _regulationPath;
+    private IntPtr _oodlePtr;
+    private BHD5Reader _bhd5Reader;
+    private BND4 _menuMsgBND;
+    // FMGs
+    private FMG _lineHelpFmg;
+    private FMG _menuTextFmg;
+    private FMG _weaponFmg;
+    private FMG _protectorFmg;
+    private FMG _goodsFmg;
+    // Params
+    private List<PARAMDEF> _paramDefs;
+    private Param _charaInitParam;
+    private Param _equipParamWeapon;
+    private Param _equipParamCustomWeapon;
+    private Param _equipParamGoods;
+    private Param _equipParamProtector;
+    private Param _goodsParam;
     //static async method that behaves like a constructor    
     public static async Task<Randomizer> BuildRandomizerAsync(string path, string seed, CancellationToken cancellationToken)
     {
@@ -27,8 +47,6 @@ public partial class Randomizer
         await Task.Run(() => rando.init());
         return rando;
     }
-    // Cancellation Token
-    private readonly CancellationToken _cancellationToken;
     private Randomizer(string path, string seed, CancellationToken cancellationToken)
     {
         _path = Path.GetDirectoryName(path) ?? throw new InvalidOperationException("Path.GetDirectoryName(path) was null. Incorrect path provided.");
@@ -42,7 +60,8 @@ public partial class Randomizer
     {
         if (!allCacheFilesExist())
         {
-            _bhd5Reader = new BHD5Reader(_path, Config.CacheBHDs, _cancellationToken); // TODO examine
+            // _bhd5Reader = new BHD5Reader(_path, Config.CacheBHDs, _cancellationToken);
+            // TODO is this really a no op?
         }
         _cancellationToken.ThrowIfCancellationRequested();
         _oodlePtr = Kernel32.LoadLibrary($"{_path}/oo2core_6_win64.dll");
@@ -81,7 +100,7 @@ public partial class Randomizer
         }
     }
     private void getFmgs()
-    {
+    {   // TODO BND4 ?
         byte[] itemMsgBndBytes = getOrOpenFile(Const.ItemMsgBNDPath);
         if (itemMsgBndBytes == null)
         {
@@ -89,22 +108,17 @@ public partial class Randomizer
         }
         BND4 itemBnd = BND4.Read(itemMsgBndBytes);
         foreach (BinderFile file in itemBnd.Files)
-        {
-            getFmgs(file);
-        }
+        { getFmgs(file); }
 
         _cancellationToken.ThrowIfCancellationRequested();
 
         byte[] menuMsgBndBytes = getOrOpenFile(Const.MenuMsgBNDPath);
         if (itemMsgBndBytes == null)
-        {
-            throw new InvalidFileException(Const.MenuMsgBNDPath);
-        }
+        { throw new InvalidFileException(Const.MenuMsgBNDPath); }
+
         _menuMsgBND = BND4.Read(menuMsgBndBytes);
         foreach (BinderFile file in _menuMsgBND.Files)
-        {
-            getFmgs(file);
-        }
+        { getFmgs(file); }
     }
     private byte[] getOrOpenFile(string path)
     {
@@ -113,7 +127,7 @@ public partial class Randomizer
             return File.ReadAllBytes($"{Config.CachePath}/{path}");
         }
 
-        byte[] file = _bhd5Reader.GetFile(path) ?? throw new InvalidOperationException($"Could not find file {Config.CachePath}/{path}");
+        byte[] file = _bhd5Reader.GetFile(path) ?? throw new InvalidOperationException($"Could not find file {Config.CachePath}/{path}"); // TODO BHD5, where is the hold up?
         Directory.CreateDirectory(Path.GetDirectoryName($"{Config.CachePath}/{path}") ?? throw new InvalidOperationException($"Could not get directory name for file {Config.CachePath}/{path}"));
         File.WriteAllBytes($"{Config.CachePath}/{path}", file);
         return file;
@@ -124,14 +138,20 @@ public partial class Randomizer
         _weaponTypeDictionary = new Dictionary<ushort, List<Param.Row>>();
         _weaponNameDictionary = new Dictionary<int, string>();
 
-        foreach (Param.Row row in _equipParamWeapon.Rows) // TODO missing rows for DLC weapons
+        foreach (Param.Row row in _equipParamWeapon.Rows)
         {
             string rowString = _weaponFmg[row.ID];
+            string docPath = Environment.GetFolderPath(Environment.SpecialFolder.MyDocuments);
+            using (StreamWriter outputFile = new StreamWriter(Path.Combine(docPath, "WriteLines.txt"), true))
+            { outputFile.WriteLine($"{row.ID}: {rowString}"); }
+
             if ((int)row["sortId"]!.Value.Value == 9999999
-                || string.IsNullOrWhiteSpace(rowString)
+                || string.IsNullOrWhiteSpace(rowString)         // TODO weapon IDs are tossed
                 || rowString.ToLower().Contains("[error]")
             )
             { continue; }
+
+
 
             EquipParamWeapon wep = new(row);
 
@@ -247,11 +267,11 @@ public partial class Randomizer
         return false;
     }
     private void getParams(BinderFile file)
-    {
+    {   // TODO still does not pick up on params from DLC
         string fileName = Path.GetFileName(file.Name);
         switch (fileName)
         {
-            case Const.EquipParamWeaponName: // TODO are DLC weapons not in EquipParamWeapon.param ?
+            case Const.EquipParamWeaponName:
                 {
                     _equipParamWeapon = Param.Read(file.Bytes);
                     if (!_equipParamWeapon.ApplyParamDefsCarefully(_paramDefs))

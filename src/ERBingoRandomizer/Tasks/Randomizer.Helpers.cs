@@ -16,6 +16,7 @@ namespace Project.Tasks;
 
 public partial class Randomizer
 {
+    private BND4 _regulationBnd;
     private string createSeed()
     {
         return "s" + Random.Shared.NextInt64().ToString() + "d";
@@ -163,12 +164,12 @@ public partial class Randomizer
             int index = _random.Next(weapons.Count);
             int newId = weapons[index];
 
-            logItem($"{_weaponNameDictionary[lot.equipId]} -> {/*_weaponNameDictionary[newId]*/ "Fix Name Dictionary"} : {newId}");
+            logItem($"{_weaponNameDictionary[lot.equipId]} --> {Equipment.EquipmentNameList[newId]}");
             lot.equipId = newId;
             return;
         }
         ShopLineupParam newRemembrance = getNewId(lot.equipId, shopLineupParamRemembranceList);
-        logItem($"{_weaponNameDictionary[lot.equipId]} -> {_weaponNameDictionary[newRemembrance.equipId]}");
+        logItem($"{_weaponNameDictionary[lot.equipId]} --> {_weaponNameDictionary[newRemembrance.equipId]}");
         copyShopLineupParam(lot, newRemembrance);
     }
     private void replaceShopLineupParamMagic(ShopLineupParam lot, IReadOnlyDictionary<int, int> shopLineupParamDictionary, IList<ShopLineupParam> shopLineupParamRemembranceList)
@@ -176,69 +177,58 @@ public partial class Randomizer
         if (lot.mtrlId == -1)
         {
             int newItem = shopLineupParamDictionary[lot.equipId];
-            logItem($"{_goodsFmg[lot.equipId]} -> {_goodsFmg[newItem]} : {newItem}");
+            logItem($"{_goodsFmg[lot.equipId]} --> {_goodsFmg[newItem]}");
             lot.equipId = newItem;
             return;
         }
         ShopLineupParam newRemembrance = getNewId(lot.equipId, shopLineupParamRemembranceList);
-        logItem($"{_goodsFmg[lot.equipId]} -> {_goodsFmg[newRemembrance.equipId]}");
+        logItem($"{_goodsFmg[lot.equipId]} --> {_goodsFmg[newRemembrance.equipId]}");
         copyShopLineupParam(lot, newRemembrance);
     }
     private void addDescriptionString(CharaInitParam chr, int id)
-    { // TODO not updating in 1.12, fix DLC weapon params are never read
-        // List<string> str = new() {
-        //     $"{_weaponNameDictionary[chr.wepleft]}{getRequiredLevelsWeapon(chr, chr.wepleft)}",
-        //     $"{_weaponNameDictionary[chr.wepRight]}{getRequiredLevelsWeapon(chr, chr.wepRight)}",
-        // };
-        // if (chr.subWepLeft != -1)
-        // {
-        //     str.Add($"{_weaponNameDictionary[chr.subWepLeft]}{getRequiredLevelsWeapon(chr, chr.subWepLeft)}");
-        // }
-        // if (chr.subWepRight != -1)
-        // {
-        //     str.Add($"{_weaponNameDictionary[chr.subWepRight]}{getRequiredLevelsWeapon(chr, chr.subWepRight)}");
-        // }
-        // if (chr.subWepLeft3 != -1)
-        // {
-        //     str.Add($"{_weaponNameDictionary[chr.subWepLeft3]}{getRequiredLevelsWeapon(chr, chr.subWepLeft3)}");
-        // }
-        // if (chr.subWepRight3 != -1)
-        // {
-        //     str.Add($"{_weaponNameDictionary[chr.subWepRight3]}{getRequiredLevelsWeapon(chr, chr.subWepRight3)}");
-        // }
-        // if (chr.equipArrow != -1)
-        // {
-        //     str.Add($"{_weaponNameDictionary[chr.equipArrow]}[{chr.arrowNum}]");
-        // }
-        // if (chr.equipSubArrow != -1)
-        // {
-        //     str.Add($"{_weaponNameDictionary[chr.equipSubArrow]}[{chr.subArrowNum}]");
-        // }
-        // if (chr.equipBolt != -1)
-        // {
-        //     str.Add($"{_weaponNameDictionary[chr.equipBolt]}[{chr.boltNum}]");
-        // }
-        // if (chr.equipSubBolt != -1)
-        // {
-        //     str.Add($"{_weaponNameDictionary[chr.equipSubBolt]}[{chr.subBoltNum}]");
-        // }
-        // if (chr.equipSpell01 != -1)
-        // {
-        //     str.Add($"{_goodsFmg[chr.equipSpell01]}");
-        // }
-        // if (chr.equipSpell02 != -1)
-        // {
-        //     str.Add($"{_goodsFmg[chr.equipSpell02]}");
-        // }
+    {
+        List<string> str = new() {
+            $"{Equipment.EquipmentNameList[chr.wepleft]}{getRequiredLevelsWeapon(chr, chr.wepleft)}",
+            $"{Equipment.EquipmentNameList[chr.wepRight]}{getRequiredLevelsWeapon(chr, chr.wepRight)}",
+        };
+        if (chr.subWepLeft != -1)
+        { str.Add($"{Equipment.EquipmentNameList[chr.subWepLeft]}{getRequiredLevelsWeapon(chr, chr.subWepLeft)}"); }
 
-        // _lineHelpFmg[id] = string.Join(", ", str);
+        if (chr.subWepRight != -1)
+        { str.Add($"{Equipment.EquipmentNameList[chr.subWepRight]}{getRequiredLevelsWeapon(chr, chr.subWepRight)}"); }
+
+        if (chr.subWepLeft3 != -1)
+        { str.Add($"{Equipment.EquipmentNameList[chr.subWepLeft3]}{getRequiredLevelsWeapon(chr, chr.subWepLeft3)}"); }
+
+        if (chr.subWepRight3 != -1)
+        { str.Add($"{Equipment.EquipmentNameList[chr.subWepRight3]}{getRequiredLevelsWeapon(chr, chr.subWepRight3)}"); }
+
+        if (chr.equipArrow != -1)
+        { str.Add($"{_weaponNameDictionary[chr.equipArrow]}[{chr.arrowNum}]"); }
+
+        if (chr.equipSubArrow != -1)
+        { str.Add($"{_weaponNameDictionary[chr.equipSubArrow]}[{chr.subArrowNum}]"); }
+
+        if (chr.equipBolt != -1)
+        { str.Add($"{_weaponNameDictionary[chr.equipBolt]}[{chr.boltNum}]"); }
+
+        if (chr.equipSubBolt != -1)
+        { str.Add($"{_weaponNameDictionary[chr.equipSubBolt]}[{chr.subBoltNum}]"); }
+
+        if (chr.equipSpell01 != -1)
+        { str.Add($"{_goodsFmg[chr.equipSpell01]}"); }
+
+        if (chr.equipSpell02 != -1)
+        { str.Add($"{_goodsFmg[chr.equipSpell02]}"); }
+
+        _lineHelpFmg[id] = string.Join(", ", str);
+        logItem(_lineHelpFmg[id]); // TODO lineHelp gets updated, but not added to game
     }
     private void writeFiles()
     {
         if (Directory.Exists(Const.BingoPath))
-        {
-            Directory.Delete(Const.BingoPath, true);
-        }
+        { Directory.Delete(Const.BingoPath, true); }
+
         Directory.CreateDirectory(Path.GetDirectoryName($"{Const.BingoPath}/{Const.RegulationName}") ?? throw new InvalidOperationException());
         setBndFile(_regulationBnd, Const.CharaInitParamName, _charaInitParam.Write());
         setBndFile(_regulationBnd, Const.ItemLotParam_mapName, _itemLotParam_map.Write());
@@ -248,54 +238,48 @@ public partial class Randomizer
         setBndFile(_regulationBnd, Const.AtkParamPcName, _atkParam_Pc.Write());
         SFUtil.EncryptERRegulation($"{Const.BingoPath}/{Const.RegulationName}", _regulationBnd);
         Directory.CreateDirectory(Path.GetDirectoryName($"{Const.BingoPath}/{Const.MenuMsgBNDPath}") ?? throw new InvalidOperationException());
-        setBndFile(_menuMsgBND, Const.GR_LineHelpName, _lineHelpFmg.Write());
+        setBndFile(_menuMsgBND, Const.GR_LineHelpName, _lineHelpFmg.Write()); // TODO why isn't this updating starting classes ?
         File.WriteAllBytes($"{Const.BingoPath}/{Const.MenuMsgBNDPath}", _menuMsgBND.Write());
     }
 
     private string getRequiredLevelsWeapon(CharaInitParam chr, int id)
     {   // TODO reimplement to account for DLC gear
-        return " :: ";
+        return " []";
 
         EquipParamWeapon wep = _weaponDictionary[id]; // TODO dlc weapons not included
         int reqLevels = 0;
-        if (wep.properStrength > chr.baseStr)
-        {
-            reqLevels += wep.properStrength - chr.baseStr;
-        }
+
+        if (wep.properStrength > (chr.baseStr * 3 / 2))
+        { reqLevels += wep.properStrength - (chr.baseStr * 3 / 2); }
+
         if (wep.properAgility > chr.baseDex)
-        {
-            reqLevels += wep.properAgility - chr.baseDex;
-        }
+        { reqLevels += wep.properAgility - chr.baseDex; }
+
         if (wep.properMagic > chr.baseMag)
-        {
-            reqLevels += wep.properMagic - chr.baseMag;
-        }
+        { reqLevels += wep.properMagic - chr.baseMag; }
+
         if (wep.properFaith > chr.baseFai)
-        {
-            reqLevels += wep.properFaith - chr.baseFai;
-        }
+        { reqLevels += wep.properFaith - chr.baseFai; }
+
         if (wep.properLuck > chr.baseLuc)
-        {
-            reqLevels += wep.properLuck - chr.baseLuc;
-        }
+        { reqLevels += wep.properLuck - chr.baseLuc; }
+
         return reqLevels > 0 ? $" (-{reqLevels})" : "";
     }
     private string getRequiredLevelsSpell(CharaInitParam chr, int id)
     {
         Magic spell = _magicDictionary[id];
         int reqLevels = 0;
+
         if (spell.requirementIntellect > chr.baseMag)
-        {
-            reqLevels += spell.requirementIntellect - chr.baseMag;
-        }
+        { reqLevels += spell.requirementIntellect - chr.baseMag; }
+
         if (spell.requirementFaith > chr.baseFai)
-        {
-            reqLevels += spell.requirementFaith - chr.baseFai;
-        }
+        { reqLevels += spell.requirementFaith - chr.baseFai; }
+
         if (spell.requirementLuck > chr.baseLuc)
-        {
-            reqLevels += spell.requirementLuck - chr.baseLuc;
-        }
+        { reqLevels += spell.requirementLuck - chr.baseLuc; }
+
         return reqLevels > 0 ? $" (-{reqLevels})" : "";
     }
 

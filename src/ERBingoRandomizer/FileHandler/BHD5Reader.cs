@@ -9,67 +9,65 @@ using System.Threading;
 using System.Threading.Tasks;
 
 namespace Project.FileHandler;
-
 public class BHD5Reader
 {
+    const uint FileCount = 5;
+    private const string DataDLC = "DLC"; // TODO get file name
     private const string Data0 = "Data0";
-    private const string Data1 = "Data1";
-    private const string Data2 = "Data2";
-    private const string Data3 = "Data3";
-    private const string Data_DLC = "SD";
+    //> unused for project
+    // private const string Data1 = "Data1";
+    // private const string Data2 = "Data2";
+    // private const string Data3 = "Data3";
+    // private static readonly string Data1CachePath = $"{Config.CachePath}/{Data1}";
+    // private static readonly string Data2CachePath = $"{Config.CachePath}/{Data2}";
+    // private static readonly string Data3CachePath = $"{Config.CachePath}/{Data3}";
+    // private readonly BHDInfo _data1;
+    // private readonly BHDInfo _data2;
+    // private readonly BHDInfo _data3;
+    //^ unused for project
+    private static readonly string DlcCachePath = $"{Config.CachePath}/{DataDLC}";
     private static readonly string Data0CachePath = $"{Config.CachePath}/{Data0}";
-    private static readonly string Data1CachePath = $"{Config.CachePath}/{Data1}";
-    private static readonly string Data2CachePath = $"{Config.CachePath}/{Data2}";
-    private static readonly string Data3CachePath = $"{Config.CachePath}/{Data3}";
-    private static readonly string DataSDCachePath = $"{Config.CachePath}/{Data_DLC}";
 
-    private readonly BHDInfo _data0;
-    private readonly BHDInfo _data1;
-    private readonly BHDInfo _data2;
-    private readonly BHDInfo _data3;
-    private readonly BHDInfo _dataSD;
+    private readonly BHDInfo _dataDLC;
+    private readonly BHDInfo _data0; // TODO where is this used
 
     public BHD5Reader(string path, bool cache, CancellationToken cancellationToken)
     {
+        if (!Directory.Exists(Config.CachePath)) Directory.CreateDirectory(Config.CachePath);
 
-        if (!Directory.Exists(Config.CachePath))
-        {
-            Directory.CreateDirectory(Config.CachePath);
-        }
-
-        bool cacheExists = File.Exists(Data0CachePath);
-        byte[][] msbBytes = new byte[4][];
+        bool cacheExists = File.Exists(Data0CachePath) && File.Exists(DlcCachePath);
+        byte[][] msbBytes = new byte[FileCount][];
         List<Task> tasks = new();
-        switch (cacheExists)
+
+        if (cacheExists)
         {
-            case false:
-                tasks.Add(Task.Run(() => { msbBytes[0] = CryptoUtil.DecryptRsa($"{path}/{Data0}.bhd", Const.ArchiveKeys.DATA0, cancellationToken).ToArray(); }));
-                break;
-            default:
-                msbBytes[0] = File.ReadAllBytes(Data0CachePath);
-                break;
+            msbBytes[0] = File.ReadAllBytes(Data0CachePath);
+            msbBytes[1] = File.ReadAllBytes(DlcCachePath);
+        }
+        else
+        {
+            tasks.Add(Task.Run(() =>
+            {
+                msbBytes[0] = CryptoUtil.DecryptRsa($"{path}/{Data0}.bhd", Const.ArchiveKeys.DATA0, cancellationToken).ToArray();
+                msbBytes[1] = CryptoUtil.DecryptRsa($"{path}/{DataDLC}.bhd", Const.ArchiveKeys.DLC, cancellationToken).ToArray();
+            }));
         }
 
         try
-        {
-            Task.WaitAll(tasks.ToArray(), cancellationToken);
-        }
+        { Task.WaitAll(tasks.ToArray(), cancellationToken); }
         catch (AggregateException)
-        {
-            if (!cancellationToken.IsCancellationRequested)
-            {
-                throw;
-            }
-            cancellationToken.ThrowIfCancellationRequested();
-        }
+        { throw; } // TODO maybe have more in depth error handling
 
         BHD5 data0 = readBHD5(msbBytes[0]);
+        BHD5 dlc00 = readBHD5(msbBytes[1]);
         _data0 = new BHDInfo(data0, $"{path}/{Data0}");
-        cancellationToken.ThrowIfCancellationRequested();
+        _dataDLC = new BHDInfo(dlc00, $"{path}/{DataDLC}");
+        // cancellationToken.ThrowIfCancellationRequested();
 
         if (cache && !cacheExists)
         {
             File.WriteAllBytes($"{Data0CachePath}.bhd", msbBytes[0]);
+            File.WriteAllBytes($"{DlcCachePath}.bhd", msbBytes[1]);
         }
     }
     // This is for cached decrypted BHD5s.
@@ -83,7 +81,8 @@ public class BHD5Reader
         using MemoryStream fs = new(bytes);
         return BHD5.Read(fs, BHD5.Game.EldenRing);
     }
-    // Right now just works for data0, as that is where all of the files we need, are, and none of the other header files are being loaded, as it takes a while to decrypt them.    
+    // Right now just works for data0 (needed basegame files)
+    // Need to add DLC gear    
     public byte[]? GetFile(string filePath)
     {
         ulong hash = Util.ComputeHash(filePath, BHD5.Game.EldenRing);
@@ -93,21 +92,19 @@ public class BHD5Reader
             Debug.WriteLine($"{filePath} Data0: {_data0.GetSalt()}");
             return file;
         }
+        file = _dataDLC.GetFile(hash);
+        if (file != null)
+        {
+            Debug.WriteLine($"{filePath} DLC01: {(_dataDLC.GetSalt)}");
+            return file;
+        }
+
         // file = _data1.GetFile(hash);
         // if (file != null) {
         //     Debug.WriteLine($"{filePath} Data1: {_data1.GetSalt()}");
         //     return file;
         // }
-        // file = _data2.GetFile(hash);
-        // if (file != null) {
-        //     Debug.WriteLine($"{filePath} Data2: {_data2.GetSalt()}");
-        //     return file;
-        // }
-        // file = _data2.GetFile(hash);
-        // if (file != null) {
-        //     Debug.WriteLine($"{filePath} Data3: {_data3.GetSalt()}");
-        //     return file;
-        // }
+        // would continue on for other files, but unneeded for project
         return file;
     }
 }
