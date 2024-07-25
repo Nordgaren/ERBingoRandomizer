@@ -58,10 +58,9 @@ public partial class Randomizer
     }
     private Task init()
     {
-        if (!allCacheFilesExist())
-        {   // writes cache folder
-            _bhd5Reader = new BHD5Reader(_path, Config.CacheBHDs, _cancellationToken);
-        }
+        if (!allCacheFilesExist()) // writes cache folder
+        { _bhd5Reader = new BHD5Reader(_path, Config.CacheBHDs, _cancellationToken); }
+
         _cancellationToken.ThrowIfCancellationRequested();
         _oodlePtr = Kernel32.LoadLibrary($"{_path}/oo2core_6_win64.dll");
         _cancellationToken.ThrowIfCancellationRequested();
@@ -79,32 +78,28 @@ public partial class Randomizer
     }
     private static bool allCacheFilesExist()
     {
-        return File.Exists(Const.ItemMsgBNDPath) && File.Exists(Const.MenuMsgBNDPath);
+        return File.Exists(Const.ItemMsgBNDPath)
+        && File.Exists(Const.MenuMsgBNDPath);
     }
     private void getDefs()
     {
         _paramDefs = new List<PARAMDEF>();
         string[] defs = Util.GetResourcesInFolder("Params/Defs");
         foreach (string def in defs)
-        {
-            _paramDefs.Add(Util.XmlDeserialize(def));
-        }
+        { _paramDefs.Add(Util.XmlDeserialize(def)); }
     }
     private void getParams()
     {
         _regulationBnd = SFUtil.DecryptERRegulation(_regulationPath);
         foreach (BinderFile file in _regulationBnd.Files)
-        {
-            getParams(file);
-        }
+        { getParams(file); }
     }
     private void getFmgs()
     {   // TODO BND4 ?
         byte[] itemMsgBndBytes = getOrOpenFile(Const.ItemMsgBNDPath);
         if (itemMsgBndBytes == null)
-        {
-            throw new InvalidFileException(Const.ItemMsgBNDPath);
-        }
+        { throw new InvalidFileException(Const.ItemMsgBNDPath); }
+
         BND4 itemBnd = BND4.Read(itemMsgBndBytes);
         foreach (BinderFile file in itemBnd.Files)
         { getFmgs(file); }
@@ -122,9 +117,7 @@ public partial class Randomizer
     private byte[] getOrOpenFile(string path)
     {
         if (File.Exists($"{Config.CachePath}/{path}"))
-        {
-            return File.ReadAllBytes($"{Config.CachePath}/{path}");
-        }
+        { return File.ReadAllBytes($"{Config.CachePath}/{path}"); }
 
         byte[] file = _bhd5Reader.GetFile(path) ?? throw new InvalidOperationException($"Could not find file {Config.CachePath}/{path}"); // TODO BHD5, where is the hold up?
         Directory.CreateDirectory(Path.GetDirectoryName($"{Config.CachePath}/{path}") ?? throw new InvalidOperationException($"Could not get directory name for file {Config.CachePath}/{path}"));
@@ -140,17 +133,15 @@ public partial class Randomizer
         foreach (Param.Row row in _equipParamWeapon.Rows)
         {
             string rowString = _weaponFmg[row.ID];
-            string docPath = Environment.GetFolderPath(Environment.SpecialFolder.MyDocuments);
-            using (StreamWriter outputFile = new StreamWriter(Path.Combine(docPath, "WriteLines.txt"), true))
-            { outputFile.WriteLine($"{row.ID}: {rowString}"); }
+            // string docPath = Environment.GetFolderPath(Environment.SpecialFolder.MyDocuments);
+            // using (StreamWriter outputFile = new StreamWriter(Path.Combine(docPath, "WriteLines.txt"), true))
+            // { outputFile.WriteLine($"{row.ID}: {rowString}"); }
 
             if ((int)row["sortId"]!.Value.Value == 9999999
                 || string.IsNullOrWhiteSpace(rowString)         // TODO weapon IDs are tossed
                 || rowString.ToLower().Contains("[error]")
             )
             { continue; }
-
-
 
             EquipParamWeapon wep = new(row);
 
@@ -164,19 +155,13 @@ public partial class Randomizer
 
             _weaponNameDictionary[row.ID] = rowString;
             if (!Enumerable.Range(81, 86).Contains(wep.wepType)) // TODO missing rows for DLC weapons
-            {
-                _weaponDictionary.Add(row.ID, new EquipParamWeapon(row));
-            }
+            { _weaponDictionary.Add(row.ID, new EquipParamWeapon(row)); }
 
             if (_weaponTypeDictionary.TryGetValue(wep.wepType, out List<Param.Row>? rows))
-            {
-                rows.Add(row);
-            }
+            { rows.Add(row); }
             else
             {
-                rows = new List<Param.Row> {
-                    row,
-                };
+                rows = new List<Param.Row> { row, };
                 _weaponTypeDictionary.Add(wep.wepType, rows);
             }
         }
@@ -202,15 +187,12 @@ public partial class Randomizer
             { continue; }
 
             byte protectorCategory = (byte)row["protectorCategory"]!.Value.Value;
+
             if (_armorTypeDictionary.TryGetValue(protectorCategory, out List<Param.Row>? rows))
-            {
-                rows.Add(row);
-            }
+            { rows.Add(row); }
             else
             {
-                rows = new List<Param.Row> {
-                    row,
-                };
+                rows = new List<Param.Row> { row, };
                 _armorTypeDictionary.Add(protectorCategory, rows);
             }
         }
@@ -240,15 +222,12 @@ public partial class Randomizer
 
             Magic magic = new(row);
             _magicDictionary.Add(row.ID, magic);
+
             if (_magicTypeDictionary.TryGetValue(magic.ezStateBehaviorType, out List<Param.Row>? rows))
-            {
-                rows.Add(row);
-            }
+            { rows.Add(row); }
             else
             {
-                rows = new List<Param.Row> {
-                    row,
-                };
+                rows = new List<Param.Row> { row, };
                 _magicTypeDictionary.Add(magic.ezStateBehaviorType, rows);
             }
         }
@@ -274,90 +253,70 @@ public partial class Randomizer
                 {
                     _equipParamWeapon = Param.Read(file.Bytes);
                     if (!_equipParamWeapon.ApplyParamDefsCarefully(_paramDefs))
-                    {
-                        throw new InvalidParamDefException(_equipParamWeapon.ParamType);
-                    }
+                    { throw new InvalidParamDefException(_equipParamWeapon.ParamType); }
                     break;
                 }
             case Const.EquipParamCustomWeaponName:
                 {
                     _equipParamCustomWeapon = Param.Read(file.Bytes);
                     if (!_equipParamCustomWeapon.ApplyParamDefsCarefully(_paramDefs))
-                    {
-                        throw new InvalidParamDefException(_equipParamCustomWeapon.ParamType);
-                    }
+                    { throw new InvalidParamDefException(_equipParamCustomWeapon.ParamType); }
                     break;
                 }
             case Const.EquipParamGoodsName:
                 {
                     _equipParamGoods = Param.Read(file.Bytes);
                     if (!_equipParamGoods.ApplyParamDefsCarefully(_paramDefs))
-                    {
-                        throw new InvalidParamDefException(_equipParamGoods.ParamType);
-                    }
+                    { throw new InvalidParamDefException(_equipParamGoods.ParamType); }
                     break;
                 }
             case Const.EquipParamProtectorName:
                 {
                     _equipParamProtector = Param.Read(file.Bytes);
                     if (!_equipParamProtector.ApplyParamDefsCarefully(_paramDefs))
-                    {
-                        throw new InvalidParamDefException(_equipParamProtector.ParamType);
-                    }
+                    { throw new InvalidParamDefException(_equipParamProtector.ParamType); }
                     break;
                 }
             case Const.CharaInitParamName:
                 {
                     _charaInitParam = Param.Read(file.Bytes);
                     if (!_charaInitParam.ApplyParamDefsCarefully(_paramDefs))
-                    {
-                        throw new InvalidParamDefException(_charaInitParam.ParamType);
-                    }
+                    { throw new InvalidParamDefException(_charaInitParam.ParamType); }
                     break;
                 }
             case Const.MagicName:
                 {
                     _goodsParam = Param.Read(file.Bytes);
                     if (!_goodsParam.ApplyParamDefsCarefully(_paramDefs))
-                    {
-                        throw new InvalidParamDefException(_goodsParam.ParamType);
-                    }
+                    { throw new InvalidParamDefException(_goodsParam.ParamType); }
                     break;
                 }
             case Const.ItemLotParam_mapName:
                 {
                     _itemLotParam_map = Param.Read(file.Bytes);
                     if (!_itemLotParam_map.ApplyParamDefsCarefully(_paramDefs))
-                    {
-                        throw new InvalidParamDefException(_itemLotParam_map.ParamType);
-                    }
+                    { throw new InvalidParamDefException(_itemLotParam_map.ParamType); }
                     break;
                 }
             case Const.ItemLotParam_enemyName:
                 {
                     _itemLotParam_enemy = Param.Read(file.Bytes);
                     if (!_itemLotParam_enemy.ApplyParamDefsCarefully(_paramDefs))
-                    {
-                        throw new InvalidParamDefException(_itemLotParam_enemy.ParamType);
-                    }
+                    { throw new InvalidParamDefException(_itemLotParam_enemy.ParamType); }
                     break;
                 }
             case Const.ShopLineupParamName:
                 {
                     _shopLineupParam = Param.Read(file.Bytes);
                     if (!_shopLineupParam.ApplyParamDefsCarefully(_paramDefs))
-                    {
-                        throw new InvalidParamDefException(_shopLineupParam.ParamType);
-                    }
+                    { throw new InvalidParamDefException(_shopLineupParam.ParamType); }
                     break;
                 }
             case Const.AtkParamPcName:
                 {
                     _atkParam_Pc = Param.Read(file.Bytes);
                     if (!_atkParam_Pc.ApplyParamDefsCarefully(_paramDefs))
-                    {
-                        throw new InvalidParamDefException(_atkParam_Pc.ParamType);
-                    }
+                    { throw new InvalidParamDefException(_atkParam_Pc.ParamType); }
                     break;
                 }
         }
