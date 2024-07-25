@@ -129,18 +129,17 @@ namespace SoulsFormats
             bw.ReserveInt32("GroupCount");
             bw.WriteInt32(Entries.Count);
 
-            if (wide)
-                bw.WriteInt32(0xFF);
+            if (wide) bw.WriteInt32(0xFF);
 
             if (wide)
-                bw.ReserveInt64("StringOffsets");
+            { bw.ReserveInt64("StringOffsets"); }
             else
-                bw.ReserveInt32("StringOffsets");
+            { bw.ReserveInt32("StringOffsets"); }
 
             if (wide)
-                bw.WriteInt64(0);
+            { bw.WriteInt64(0); }
             else
-                bw.WriteInt32(0);
+            { bw.WriteInt32(0); }
 
             int groupCount = 0;
             Entries.Sort((e1, e2) => e1.ID.CompareTo(e2.ID));
@@ -148,41 +147,36 @@ namespace SoulsFormats
             {
                 bw.WriteInt32(i);
                 bw.WriteInt32(Entries[i].ID);
+
                 while (i < Entries.Count - 1 && Entries[i + 1].ID == Entries[i].ID + 1)
-                    i++;
+                { i++; }
+
                 bw.WriteInt32(Entries[i].ID);
 
                 if (wide)
-                    bw.WriteInt32(0);
+                { bw.WriteInt32(0); }
 
                 groupCount++;
             }
             bw.FillInt32("GroupCount", groupCount);
 
-            if (wide)
-                bw.FillInt64("StringOffsets", bw.Position);
-            else
-                bw.FillInt32("StringOffsets", (int)bw.Position);
+            if (wide) bw.FillInt64("StringOffsets", bw.Position);
+            else { bw.FillInt32("StringOffsets", (int)bw.Position); }
 
             for (int i = 0; i < Entries.Count; i++)
             {
-                if (wide)
-                    bw.ReserveInt64($"StringOffset{i}");
-                else
-                    bw.ReserveInt32($"StringOffset{i}");
+                if (wide) bw.ReserveInt64($"StringOffset{i}");
+                else { bw.ReserveInt32($"StringOffset{i}"); }
             }
 
             for (int i = 0; i < Entries.Count; i++)
             {
                 string text = Entries[i].Text;
 
-                if (wide)
-                    bw.FillInt64($"StringOffset{i}", text == null ? 0 : bw.Position);
-                else
-                    bw.FillInt32($"StringOffset{i}", text == null ? 0 : (int)bw.Position);
+                if (wide) bw.FillInt64($"StringOffset{i}", text == null ? 0 : bw.Position);
+                else { bw.FillInt32($"StringOffset{i}", text == null ? 0 : (int)bw.Position); }
 
-                if (text != null)
-                    bw.WriteUTF16(Entries[i].Text, true);
+                if (text != null) bw.WriteUTF16(Entries[i].Text, true);
             }
 
             bw.FillInt32("FileSize", (int)bw.Position);
@@ -217,7 +211,7 @@ namespace SoulsFormats
             /// <summary>
             /// The text of this entry.
             /// </summary>
-            public string Text {get;set;}
+            public string Text { get; set; }
 
             /// <summary>
             /// Creates a new entry with the specified ID and text.

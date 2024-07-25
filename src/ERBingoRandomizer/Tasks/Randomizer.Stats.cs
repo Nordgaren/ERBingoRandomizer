@@ -24,6 +24,7 @@ public partial class Randomizer
         int stat = 0; // bumps vigor on 1st iteration
         while (iterations > 0)
         {
+            _cancellationToken.ThrowIfCancellationRequested();
             if ((iterations & 1) == 0 && lastUpdated == stat) stat = _random.Next(Const.NumStats);
             //^ decreases chance of a repeat increase by checking to redraw every other iteration. 
             switch (stat)

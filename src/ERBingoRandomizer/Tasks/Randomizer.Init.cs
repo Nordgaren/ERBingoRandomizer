@@ -59,9 +59,8 @@ public partial class Randomizer
     private Task init()
     {
         if (!allCacheFilesExist())
-        {
-            // _bhd5Reader = new BHD5Reader(_path, Config.CacheBHDs, _cancellationToken);
-            // TODO is this really a no op?
+        {   // writes cache folder
+            _bhd5Reader = new BHD5Reader(_path, Config.CacheBHDs, _cancellationToken);
         }
         _cancellationToken.ThrowIfCancellationRequested();
         _oodlePtr = Kernel32.LoadLibrary($"{_path}/oo2core_6_win64.dll");
