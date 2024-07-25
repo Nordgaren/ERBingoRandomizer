@@ -17,18 +17,20 @@ namespace Project.Tasks;
 public partial class Randomizer
 {
     private BND4 _regulationBnd;
+
     private string createSeed()
     {
-        long number = Random.Shared.NextInt64();
-        int ascii = Random.Shared.Next(0, 26);
-        int alphaStart = 65;
+        Random random = new();
+        long number = random.NextInt64();
+        int id = random.Next(0, 26);
+        int start = 65;
 
-        if (0 == (number % 2))
-        { alphaStart = 97; }
+        if (0 == (number & 1))
+        { start = 97; }
 
-        char glyph = Convert.ToChar(ascii + alphaStart);
+        char rune = Convert.ToChar(id + start);
 
-        return char.ToString(glyph) + number.ToString();
+        return char.ToString(rune) + number.ToString();
     }
     private static int hashStringToInteger(string input)
     {
@@ -118,10 +120,9 @@ public partial class Randomizer
             List<ItemLotEntry> value = (List<ItemLotEntry>)orderedDictionary[i]!;
             List<ItemLotEntry> itemLotEntries = new(value);
             itemLotEntries.Shuffle(_random); // TODO investigate if thise matters
+
             foreach (ItemLotEntry entry in itemLotEntries)
-            {
-                dict.Add(entry.Id, getNewId(entry.Id, value));
-            }
+            { dict.Add(entry.Id, getNewId(entry.Id, value)); }
         }
         return dict;
     }
@@ -173,12 +174,12 @@ public partial class Randomizer
             int index = _random.Next(weapons.Count);
             int newId = weapons[index];
 
-            logItem($"{_weaponNameDictionary[lot.equipId]} --> {Equipment.EquipmentNameList[newId]}");
+            // logItem($"{_weaponNameDictionary[lot.equipId]} --> {Equipment.EquipmentNameList[newId]}");
             lot.equipId = newId;
             return;
         }
         ShopLineupParam newRemembrance = getNewId(lot.equipId, shopLineupParamRemembranceList);
-        logItem($"{_weaponNameDictionary[lot.equipId]} --> {_weaponNameDictionary[newRemembrance.equipId]}");
+        // logItem($"{_weaponNameDictionary[lot.equipId]} --> {_weaponNameDictionary[newRemembrance.equipId]}");
         copyShopLineupParam(lot, newRemembrance);
     }
     private void replaceShopLineupParamMagic(ShopLineupParam lot, IReadOnlyDictionary<int, int> shopLineupParamDictionary, IList<ShopLineupParam> shopLineupParamRemembranceList)
@@ -186,12 +187,12 @@ public partial class Randomizer
         if (lot.mtrlId == -1)
         {
             int newItem = shopLineupParamDictionary[lot.equipId];
-            logItem($"{_goodsFmg[lot.equipId]} --> {_goodsFmg[newItem]}");
+            // logItem($"{_goodsFmg[lot.equipId]} --> {_goodsFmg[newItem]}");
             lot.equipId = newItem;
             return;
         }
         ShopLineupParam newRemembrance = getNewId(lot.equipId, shopLineupParamRemembranceList);
-        logItem($"{_goodsFmg[lot.equipId]} --> {_goodsFmg[newRemembrance.equipId]}");
+        // logItem($"{_goodsFmg[lot.equipId]} --> {_goodsFmg[newRemembrance.equipId]}");
         copyShopLineupParam(lot, newRemembrance);
     }
     private void addDescriptionString(CharaInitParam chr, int id)
@@ -231,7 +232,6 @@ public partial class Randomizer
         { str.Add($"{_goodsFmg[chr.equipSpell02]}"); }
 
         _lineHelpFmg[id] = string.Join(", ", str);
-        logItem(_lineHelpFmg[id]); // TODO lineHelp gets updated, but not added to game
     }
     private void writeFiles()
     {

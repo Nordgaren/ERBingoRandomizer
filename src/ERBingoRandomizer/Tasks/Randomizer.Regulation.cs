@@ -56,9 +56,7 @@ public partial class Randomizer
     }
     private void randomizeStartingClassParams()
     {
-        logItem("Class Randomization - All items are randomized, classes with missing armor have a chance to gain armor.");
-        logItem("Spells given to a class meet min stat requirements, and their will be a catalyst to cast.");
-        logItem("If a class has a ranged weapon, appropriate ammunition will be allocated.\n");
+        logItem("Starting Class Randomization");
 
         List<Param.Row> staves = _weaponTypeDictionary[Const.StaffType];
         List<Param.Row> seals = _weaponTypeDictionary[Const.SealType];
@@ -163,11 +161,11 @@ public partial class Randomizer
         Dictionary<int, ItemLotEntry> chanceDropReplace = getReplacementHashmap(categoryDictEnemy);
 
         // Application now has weapons set to randomize
-        logItem(">> Item Replacements - all instances of item on left will be replaced with item on right");
-        logItem("## Guaranteed Weapons");
-        logReplacementDictionary(guaranteedDropReplace);
-        logItem("\n## Chance Weapons");
-        logReplacementDictionary(chanceDropReplace);
+        // logItem(">> Item Replacements - all instances of item on left will be replaced with item on right");
+        // logItem("## Guaranteed Weapons");
+        // logReplacementDictionary(guaranteedDropReplace);
+        // logItem("\n## Chance Weapons");
+        // logReplacementDictionary(chanceDropReplace);
         logItem("");
 
         foreach (Param.Row row in _itemLotParam_enemy.Rows.Concat(_itemLotParam_map.Rows))
@@ -246,11 +244,11 @@ public partial class Randomizer
         shopLineupParamList.Shuffle(_random); // TODO investigate if thise matters
         shopLineupParamRemembranceList.Shuffle(_random); // TODO investigate if thise matters
 
-        logItem("<> Shop Replacements - Random item selected from pool of all weapons (not including infused weapons). Remembrances are randomized amongst each-other.");
+        // logItem("<> Shop Replacements - Random item selected from pool of all weapons (not including infused weapons). Remembrances are randomized amongst each-other.");
 
         foreach (Param.Row row in _shopLineupParam.Rows)
         {
-            logShopId(row.ID);
+            // logShopId(row.ID);
             if ((byte)row["equipType"]!.Value.Value != Const.ShopLineupWeaponCategory || row.ID > 101980) // TODO find out what this row.ID is
             { continue; }
 
@@ -323,13 +321,13 @@ public partial class Randomizer
         Dictionary<int, int> magicShopReplacement = getShopReplacementHashmap(magicCategoryDictMap);
         shopLineupParamRemembranceList.Shuffle(_random); // TODO investigate if thise matters
         shopLineupParamDragonList.Shuffle(_random); // TODO investigate if thise matters
-        logItem("\n## All Magic Replacement.");
-        logReplacementDictionaryMagic(magicShopReplacement);
+        // logItem("\n## All Magic Replacement.");
+        // logReplacementDictionaryMagic(magicShopReplacement);
 
-        logItem("\n~* Shop Magic Replacement.");
+        // logItem("\n~* Shop Magic Replacement.");
         foreach (Param.Row row in _shopLineupParam.Rows)
         {
-            logShopIdMagic(row.ID);
+            // logShopIdMagic(row.ID);
             if ((byte)row["equipType"]!.Value.Value != Const.ShopLineupGoodsCategory || row.ID > 101980)
             { continue; }
 
@@ -344,7 +342,7 @@ public partial class Randomizer
             else
             {
                 ShopLineupParam newDragonIncant = getNewId(lot.equipId, shopLineupParamDragonList);
-                logItem($"{_goodsFmg[lot.equipId]} -> {_goodsFmg[newDragonIncant.equipId]}");
+                // logItem($"{_goodsFmg[lot.equipId]} -> {_goodsFmg[newDragonIncant.equipId]}");
                 copyShopLineupParam(lot, newDragonIncant);
             }
         }
