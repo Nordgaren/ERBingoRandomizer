@@ -175,6 +175,7 @@ public partial class Randomizer
 
         while (!chrCanUseWeapon(entry, chr))
         {
+            _cancellationToken.ThrowIfCancellationRequested();
             i = _random.Next(limit);
             entry = _weaponDictionary[table[i].ID];
         }

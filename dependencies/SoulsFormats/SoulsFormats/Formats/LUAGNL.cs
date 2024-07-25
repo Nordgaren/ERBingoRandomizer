@@ -52,8 +52,7 @@ namespace SoulsFormats
             do
             {
                 offset = LongFormat ? br.ReadInt64() : br.ReadUInt32();
-                if (offset != 0)
-                    Globals.Add(LongFormat ? br.GetUTF16(offset) : br.GetShiftJIS(offset));
+                if (offset != 0) Globals.Add(LongFormat ? br.GetUTF16(offset) : br.GetShiftJIS(offset));
             }
             while (offset != 0);
         }

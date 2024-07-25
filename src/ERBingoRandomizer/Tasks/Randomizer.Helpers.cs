@@ -19,7 +19,16 @@ public partial class Randomizer
     private BND4 _regulationBnd;
     private string createSeed()
     {
-        return "s" + Random.Shared.NextInt64().ToString() + "d";
+        long number = Random.Shared.NextInt64();
+        int ascii = Random.Shared.Next(0, 26);
+        int alphaStart = 65;
+
+        if (0 == (number % 2))
+        { alphaStart = 97; }
+
+        char glyph = Convert.ToChar(ascii + alphaStart);
+
+        return char.ToString(glyph) + number.ToString();
     }
     private static int hashStringToInteger(string input)
     {
@@ -244,7 +253,7 @@ public partial class Randomizer
 
     private string getRequiredLevelsWeapon(CharaInitParam chr, int id)
     {   // TODO reimplement to account for DLC gear
-        return " []";
+        return "";
 
         EquipParamWeapon wep = _weaponDictionary[id]; // TODO dlc weapons not included
         int reqLevels = 0;
