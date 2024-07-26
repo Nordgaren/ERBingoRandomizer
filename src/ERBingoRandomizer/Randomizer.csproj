@@ -52,6 +52,7 @@
         <ProjectReference Include="..\..\dependencies\SoulsFormats\SoulsFormats\SoulsFormats.csproj" />
     </ItemGroup>
     <ItemGroup>
+        <None Remove="Images\LittlePot.gif" />
         <None Remove="Resources\Params\Defs\CharaInitParam.xml" />
         <EmbeddedResource Include="Resources\Params\Defs\CharaInitParam.xml" />
         <None Remove="Resources\Params\Defs\EquipParamAccessory.xml" />
@@ -72,6 +73,7 @@
     <ItemGroup>
         <PackageReference Include="BouncyCastle.Cryptography" Version="2.3.1" />
         <PackageReference Include="SharpZipLib" Version="1.4.2" />
+        <PackageReference Include="WpfAnimatedGif" Version="2.0.2" />
         <PackageReference Include="ZstdNet" Version="1.4.5" />
         <PackageReference Include="System.Drawing.Common" Version="8.0.0-preview.5.23280.5" />
     </ItemGroup>
@@ -85,6 +87,11 @@
         <Reference Include="System.Windows.Forms">
             <HintPath>..\..\..\..\..\..\..\..\Windows\Microsoft.NET\Framework64\v4.0.30319\System.Windows.Forms.dll</HintPath>
         </Reference>
+    </ItemGroup>
+    <ItemGroup>
+      <Resource Include="Images\LittlePot.gif">
+        <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+      </Resource>
     </ItemGroup>
 
 </Project>
