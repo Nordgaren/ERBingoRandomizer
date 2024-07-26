@@ -4,9 +4,14 @@
         xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:viewModels="clr-namespace:Project.ViewModels"
+        xmlns:localConverter="clr-namespace:Randomizer.Converter"
         mc:Ignorable="d"
-        Title="Equipment Randomizer" Height="600" Width="1000" ResizeMode="CanResizeWithGrip" MaxWidth="1000" MinWidth="1000" MinHeight="600"
-        Background="#40434C">
+        xmlns:gif="http://wpfanimatedgif.codeplex.com"
+        Title="Bingo Randomizer" Height="600" Width="1000" ResizeMode="CanResizeWithGrip" MaxWidth="1000" MinWidth="1000" MinHeight="600"
+        Background="DimGray">
+    <Window.Resources>
+        <localConverter:IsLastItemGIFConverter x:Key="IsLastItemGIFConverter"/>
+    </Window.Resources>
     <Window.DataContext>
         <viewModels:MainWindowViewModel x:Name="MainWindowViewModel" />
     </Window.DataContext>
@@ -56,11 +61,20 @@
             </StackPanel>
             
         </StackPanel>
-        <ListBox Grid.Row="1" Name="LogListBox" ItemsSource="{Binding MessageDisplayView}" Background="#C0C0C0">
+
+        <ListBox Grid.Row="1" Name="LogListBox" ItemsSource="{Binding MessageDisplayView}" Background="Gray" AlternationCount="1">
             <ListBox.ItemTemplate>
                 <DataTemplate>
                     <StackPanel Orientation="Horizontal">
-                        <TextBlock Text="{Binding}" FontWeight="Bold" Foreground="#40434C"/>
+                        <TextBlock Text="{Binding}" FontWeight="Bold" Foreground="LightGray"/>
+                        <Image x:Name="LittlePot" gif:ImageBehavior.RepeatBehavior="Forever" gif:ImageBehavior.AnimatedSource="Images/LittlePot.gif" Source="Images/LittlePot.gif" Width="20" Height="20">
+                            <Image.Visibility>
+                                <MultiBinding Converter="{StaticResource IsLastItemGIFConverter}">
+                                    <Binding RelativeSource="{RelativeSource AncestorType=ListBoxItem}" Path="(ItemsControl.AlternationIndex)"/>
+                                    <Binding RelativeSource="{RelativeSource AncestorType=ListBox}" Path="Items.Count" />
+                                </MultiBinding>
+                            </Image.Visibility>
+                        </Image>
                     </StackPanel>
                 </DataTemplate>
             </ListBox.ItemTemplate>
