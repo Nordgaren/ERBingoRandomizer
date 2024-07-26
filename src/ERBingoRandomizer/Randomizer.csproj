@@ -16,6 +16,7 @@
     </ItemGroup>
     <PropertyGroup>
         <SolutionDir>$(MSBuildThisFileDirectory)..\</SolutionDir>
+        <ApplicationIcon>radahns-great-rune.ico</ApplicationIcon>
     </PropertyGroup>
     <PropertyGroup Condition=" '$(Configuration)' == 'Release' ">
       <PlatformTarget>x64</PlatformTarget>
@@ -67,6 +68,7 @@
         <None Remove="Resources\Params\Defs\MagicParam.xml" />
         <EmbeddedResource Include="Resources\Params\Defs\MagicParam.xml" />
         <None Remove="Resources\Params\Defs\ShopLineupParam.xml" />
+        <Content Include="radahns-great-rune.ico" />
         <EmbeddedResource Include="Resources\Params\Defs\ShopLineupParam.xml" />
     </ItemGroup>
     <ItemGroup>
