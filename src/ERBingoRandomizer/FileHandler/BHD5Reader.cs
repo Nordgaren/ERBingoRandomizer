@@ -62,7 +62,6 @@ public class BHD5Reader
         BHD5 dlc00 = readBHD5(msbBytes[1]);
         _data0 = new BHDInfo(data0, $"{path}/{Data0}");
         _dataDLC = new BHDInfo(dlc00, $"{path}/{DataDLC}");
-        // cancellationToken.ThrowIfCancellationRequested();
 
         if (cache && !cacheExists)
         {
