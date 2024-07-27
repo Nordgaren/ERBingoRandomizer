@@ -18,20 +18,7 @@ public partial class Randomizer
 {
     private BND4 _regulationBnd;
 
-    private string createSeed()
-    {
-        Random random = new();
-        long number = random.NextInt64();
-        int id = random.Next(0, 26);
-        int start = 65;
-
-        if (0 == (number & 1))
-        { start = 97; }
-
-        char rune = Convert.ToChar(id + start);
-
-        return char.ToString(rune) + number.ToString();
-    }
+    private string createSeed() { return RandomNumberGenerator.GetHexString(18, true); }
     private static int hashStringToInteger(string input)
     {
         byte[] array = Encoding.UTF8.GetBytes(input);
