@@ -3082,7 +3082,7 @@ namespace SoulsFormats
                     bw.WriteInt32(UnkT30);
                     bw.WriteInt32(UnkT34);
                     bw.WriteInt32s(UnkPartIndices);
-                    bw.WriteBoolean(UnkT50);                
+                    bw.WriteBoolean(UnkT50);
                     bw.WriteByte(UnkT51);
                     bw.WriteByte(0);
                     bw.WriteByte(UnkT53);

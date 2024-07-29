@@ -422,7 +422,6 @@ namespace SoulsFormats
             expression.AssertASCII("ZSTD");
             expression.AssertInt32(0x20);
             expression.AssertByte(0x15);
-            //expression.ReadByte(); // compression level
             expression.AssertByte(0);
             expression.AssertByte(0);
             expression.AssertByte(0);
@@ -438,7 +437,6 @@ namespace SoulsFormats
             expression.AssertInt32(8);
 
             byte[] decompressed = SFUtil.ReadZstd(expression, compressedSize); // TODO verify method
-
             return decompressed;
         }
 
@@ -482,8 +480,9 @@ namespace SoulsFormats
                 //     CompressDCPDFLT(data, writer);
                 //     return;
                 case Type.DCX_ZSTD:
-                    CompressDCXKRAK(data, writer); // workaround TODO add longterm implementation
                     // CompressDCXZSTD(data, writer); // TODO does not work
+                    // CompressDCXKRAK(data, writer); // workaround TODO add longterm implementation
+                    CompressDCPDFLT(data, writer);
                     return;
                 case Type.DCX_KRAK:
                     CompressDCXKRAK(data, writer);
@@ -504,27 +503,27 @@ namespace SoulsFormats
             }
         }
 
-        // private static void CompressDCPDFLT(byte[] data, BinaryWriterEx writer)
-        // {
-        //     writer.WriteASCII("DCP\0");
-        //     writer.WriteASCII("DFLT");
-        //     writer.WriteInt32(0x20);
-        //     writer.WriteInt32(0x9000000);
-        //     writer.WriteInt32(0);
-        //     writer.WriteInt32(0);
-        //     writer.WriteInt32(0);
-        //     writer.WriteInt32(0x00010100);
+        private static void CompressDCPDFLT(byte[] data, BinaryWriterEx writer)
+        {
+            writer.WriteASCII("DCP\0");
+            writer.WriteASCII("DFLT");
+            writer.WriteInt32(0x20);
+            writer.WriteInt32(0x9000000);
+            writer.WriteInt32(0);
+            writer.WriteInt32(0);
+            writer.WriteInt32(0);
+            writer.WriteInt32(0x00010100);
 
-        //     writer.WriteASCII("DCS\0");
-        //     writer.WriteInt32(data.Length);
-        //     writer.ReserveInt32("CompressedSize");
+            writer.WriteASCII("DCS\0");
+            writer.WriteInt32(data.Length);
+            writer.ReserveInt32("CompressedSize");
 
-        //     int compressedSize = SFUtil.WriteZlib(writer, 0xDA, data);
-        //     writer.FillInt32("CompressedSize", compressedSize);
+            int compressedSize = SFUtil.WriteZlib(writer, 0xDA, data);
+            writer.FillInt32("CompressedSize", compressedSize);
 
-        //     writer.WriteASCII("DCA\0");
-        //     writer.WriteInt32(8);
-        // }
+            writer.WriteASCII("DCA\0");
+            writer.WriteInt32(8);
+        }
 
         private static void CompressDCXEDGE(byte[] data, BinaryWriterEx bw)
         {
@@ -749,6 +748,7 @@ namespace SoulsFormats
             bw.WriteASCII("DCS\0");
             bw.WriteUInt32((uint)data.Length);
             bw.WriteUInt32((uint)compressed.Length);
+
             bw.WriteASCII("DCP\0");
             bw.WriteASCII("ZSTD");
             bw.WriteInt32(0x20);

@@ -379,7 +379,7 @@ namespace SoulsFormats
 
                     case RegionType.Connection:
                         return Connections.EchoAdd(new Region.Connection(br));
-                        
+
                     case RegionType.PatrolRoute22:
                         return PatrolRoute22s.EchoAdd(new Region.PatrolRoute22(br));
 

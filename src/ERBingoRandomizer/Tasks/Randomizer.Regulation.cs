@@ -57,6 +57,8 @@ public partial class Randomizer
     private void randomizeStartingClassParams()
     {
         logItem("Starting Class Randomization");
+        logItem("Strength less than 10, shows one-handed levels required.");
+        logItem("Strength 10 or higher, shows two-handed levels required.");
 
         List<Param.Row> staves = _weaponTypeDictionary[Const.StaffType];
         List<Param.Row> seals = _weaponTypeDictionary[Const.SealType];
@@ -246,6 +248,16 @@ public partial class Randomizer
 
         // logItem("<> Shop Replacements - Random item selected from pool of all weapons (not including infused weapons). Remembrances are randomized amongst each-other.");
 
+        List<int> RemembranceWeaponIDs = new List<int>()
+        {
+            // 33510000, 4530000, 4550000,  // staff of the great beyond, Radahn's DLC swords
+            3100000, 3140000, 4020000, 4050000, 6040000, 8100000, 9020000, 11150000,
+            13030000, 15040000, 15110000, 17010000,  20060000, 21060000, 23050000,
+            42000000,
+            // DLC
+            3500000, 3510000, 8500000, 17500000, 18510000, 23510000, 23520000, 67520000,
+        };
+
         foreach (Param.Row row in _shopLineupParam.Rows)
         {
             // logShopId(row.ID);
@@ -253,12 +265,14 @@ public partial class Randomizer
             { continue; }
 
             ShopLineupParam lot = new(row);
+
             if (!_weaponDictionary.TryGetValue(washWeaponLevels(lot.equipId), out EquipParamWeapon? wep))
             { continue; }
             if (wep.wepType is Const.StaffType or Const.SealType)
             { continue; }
 
-            replaceShopLineupParam(lot, shopLineupParamList, shopLineupParamRemembranceList);
+            replaceShopLineupParam(lot, shopLineupParamList, RemembranceWeaponIDs);
+            // replaceShopLineupParam(lot, shopLineupParamList, shopLineupParamRemembranceList);
         }
     }
     private void randomizeShopLineupParamMagic()
@@ -321,8 +335,8 @@ public partial class Randomizer
         Dictionary<int, int> magicShopReplacement = getShopReplacementHashmap(magicCategoryDictMap);
         shopLineupParamRemembranceList.Shuffle(_random); // TODO investigate if thise matters
         shopLineupParamDragonList.Shuffle(_random); // TODO investigate if thise matters
-        // logItem("\n## All Magic Replacement.");
-        // logReplacementDictionaryMagic(magicShopReplacement);
+                                                    // logItem("\n## All Magic Replacement.");
+                                                    // logReplacementDictionaryMagic(magicShopReplacement);
 
         // logItem("\n~* Shop Magic Replacement.");
         foreach (Param.Row row in _shopLineupParam.Rows)
