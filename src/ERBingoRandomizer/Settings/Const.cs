@@ -10,8 +10,8 @@ public static class Const
     public const string BingoRegulationPath = $"{BingoPath}/{RegulationName}";
     public const string ExeName = "eldenring.exe";
     public const string RegulationName = "regulation.bin";
-    public const string ItemMsgBNDPath = "/msg/engus/item.msgbnd.dcx";
-    public const string MenuMsgBNDPath = "/msg/engus/menu.msgbnd.dcx";
+    public const string ItemMsgBNDPath = "/msg/engus/item.msgbnd.dcx"; // TODO confirm no needed extension for DLC inclusion
+    public const string MenuMsgBNDPath = "/msg/engus/menu.msgbnd.dcx"; // TODO confirm no needed extension for DLC inclusion
     // Params  
     public const string EquipParamWeaponName = "EquipParamWeapon.param";
     public const string EquipParamCustomWeaponName = "EquipParamCustomWeapon.param";
@@ -99,6 +99,25 @@ public static class Const
     public static readonly int[] ChrInfoMapping = {
         297130, 297131, 297132, 297133, 297134, 297135, 297138, 297136, 297137, 297139,
     };
+    // weapons
+    public enum WeaponType
+    {
+        Dagger = 1, StraightSword = 3, Greatsword = 5, ColossalSword = 7,
+        CurvedSword = 9, CurvedGreatsword = 11, Katana = 13, Twinblade = 14,
+        ThrustingSword = 15, HeavyThrustingSword = 16, Axe = 17, Greataxe = 19,
+        Hammer = 21, GreatHammer = 23, Flail = 24, Spear = 25,
+        SpearLarge = 26, // UNUSED
+        GreatSpear = 28, Halberd = 29, Reaper = 31, Fist = 35,
+        Claws = 37, Whip = 39, ColossalWeapon = 41, LightBow = 50,
+        Bow = 51, Greatbow = 53, Crossbow = 55, Ballista = 56,
+        GlintstoneStaff = 57,
+        Sorcery = 58, //UNUSED
+        FingerSeal = 61,
+        SmallShield = 65, MediumShield = 67, Greatshield = 69, Torch = 87,
+        // DLC
+        HandToHand = 88, PerfumeBottles = 89, ThrustingShield = 90, ThowingBlades = 91,
+        BackhandBlade = 92, LightGreatsword = 93, GreatKatana = 94, BeastClaws = 95,
+    }
     // BHD5  
     public static class ArchiveKeys
     {
@@ -138,7 +157,7 @@ PHDZn03q6QDvZd23UW2d9J+/HeBt52j08+qoBXPwhndZsmPMWngQDaik6FM7EVRQ
 etKPi6h5uprVmMAS5wR/jQIVTMpTj/zJdwIEXszeQw==
 -----END RSA PUBLIC KEY-----";
 
-        public const string SD = @"-----BEGIN RSA PUBLIC KEY-----
+        public const string DLC = @"-----BEGIN RSA PUBLIC KEY-----
 MIIBCwKCAQEAmYJ/5GJU4boJSvZ81BFOHYTGdBWPHnWYly3yWo01BYjGRnz8NTkz
 DHUxsbjIgtG5XqsQfZstZILQ97hgSI5AaAoCGrT8sn0PeXg2i0mKwL21gRjRUdvP
 Dp1Y+7hgrGwuTkjycqqsQ/qILm4NvJHvGRd7xLOJ9rs2zwYhceRVrq9XU2AXbdY4
@@ -146,5 +165,5 @@ pdCQ3+HuoaFiJ0dW0ly5qdEXjbSv2QEYe36nWCtsd6hEY9LjbBX8D1fK3D2c6C0g
 NdHJGH2iEONUN6DMK9t0v2JBnwCOZQ7W+Gt7SpNNrkx8xKEM8gH9na10g9ne11Mi
 O1FnLm8i4zOxVdPHQBKICkKcGS1o3C2dfwIEXw/f3w==
 -----END RSA PUBLIC KEY-----";
-    } // TODO revisit if this is correct for the DLC
+    }
 }

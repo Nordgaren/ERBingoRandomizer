@@ -13,9 +13,7 @@ public partial class Randomizer
 {
     List<string> _randomizerLog;
     void logItem(string item)
-    {
-        _randomizerLog.Add(item);
-    }
+    { _randomizerLog.Add(item); }
     void writeLog()
     {
         Directory.CreateDirectory(Config.SpoilerPath);
@@ -24,53 +22,78 @@ public partial class Randomizer
     void logReplacementDictionary(Dictionary<int, ItemLotEntry> dict)
     {
         foreach (KeyValuePair<int, ItemLotEntry> pair in dict)
-        {
-            logItem($"* {_weaponNameDictionary[pair.Key]} -> {_weaponNameDictionary[pair.Value.Id]} : {pair.Value.Id}");
-        }
+        { logItem($"* {_weaponNameDictionary[pair.Key]} -> {_weaponNameDictionary[pair.Value.Id]}"); }
     }
     void logReplacementDictionaryMagic(Dictionary<int, int> dict)
     {
         foreach (KeyValuePair<int, int> pair in dict)
-        {
-            logItem($"*~ {_goodsFmg[pair.Key]} -> {_goodsFmg[pair.Value]}");
-        }
+        { logItem($"*~ {_goodsFmg[pair.Key]} -> {_goodsFmg[pair.Value]}"); }
     }
     void logCharaInitEntry(CharaInitParam chr, int i)
     {
         logItem($"\n## {_menuTextFmg[i]}");
-        logItem("__ Weapons");
-        if (chr.wepleft != -1)
-        {
-            logItem($"Left: {_weaponFmg[chr.wepleft]}{getRequiredLevelsWeapon(chr, chr.wepleft)} : {chr.wepleft}");
-        }
-        if (chr.wepRight != -1)
-        {
-            logItem($"Right: {_weaponFmg[chr.wepRight]}{getRequiredLevelsWeapon(chr, chr.wepRight)} : {chr.wepRight}");
-        }
+        List<string> str = new() {
+            $"{Equipment.EquipmentNameList[chr.wepleft]}{getRequiredLevelsWeapon(chr, chr.wepleft)}",
+            $"{Equipment.EquipmentNameList[chr.wepRight]}{getRequiredLevelsWeapon(chr, chr.wepRight)}",
+        };
         if (chr.subWepLeft != -1)
-        {
-            logItem($"Left 2: {_weaponFmg[chr.subWepLeft]}{getRequiredLevelsWeapon(chr, chr.subWepLeft)}");
-        }
+        { str.Add($"{Equipment.EquipmentNameList[chr.subWepLeft]}{getRequiredLevelsWeapon(chr, chr.subWepLeft)}"); }
+
         if (chr.subWepRight != -1)
-        {
-            logItem($"Right 2: {_weaponFmg[chr.subWepRight]}{getRequiredLevelsWeapon(chr, chr.subWepRight)}");
-        }
+        { str.Add($"{Equipment.EquipmentNameList[chr.subWepRight]}{getRequiredLevelsWeapon(chr, chr.subWepRight)}"); }
+
         if (chr.subWepLeft3 != -1)
-        {
-            logItem($"Left 3: {_weaponFmg[chr.subWepLeft3]}{getRequiredLevelsWeapon(chr, chr.subWepLeft3)}");
-        }
+        { str.Add($"{Equipment.EquipmentNameList[chr.subWepLeft3]}{getRequiredLevelsWeapon(chr, chr.subWepLeft3)}"); }
+
         if (chr.subWepRight3 != -1)
-        {
-            logItem($"Right 3: {_weaponFmg[chr.subWepRight3]}{getRequiredLevelsWeapon(chr, chr.subWepRight3)}");
-        }
+        { str.Add($"{Equipment.EquipmentNameList[chr.subWepRight3]}{getRequiredLevelsWeapon(chr, chr.subWepRight3)}"); }
 
-        logItem("\n__ Armor");
-        logItem($"Head: {_protectorFmg[chr.equipHelm]} : {chr.equipHelm}");
-        logItem($"Body: {_protectorFmg[chr.equipArmer]} : {chr.equipArmer}");
-        logItem($"Arms: {_protectorFmg[chr.equipGaunt]} : {chr.equipGaunt}");
-        logItem($"Legs: {_protectorFmg[chr.equipLeg]} : {chr.equipLeg}");
+        if (chr.equipArrow != -1)
+        { str.Add($"{_weaponNameDictionary[chr.equipArrow]}[{chr.arrowNum}]"); }
 
-        logItem("\n__ Starting Stats");
+        if (chr.equipSubArrow != -1)
+        { str.Add($"{_weaponNameDictionary[chr.equipSubArrow]}[{chr.subArrowNum}]"); }
+
+        if (chr.equipBolt != -1)
+        { str.Add($"{_weaponNameDictionary[chr.equipBolt]}[{chr.boltNum}]"); }
+
+        if (chr.equipSubBolt != -1)
+        { str.Add($"{_weaponNameDictionary[chr.equipSubBolt]}[{chr.subBoltNum}]"); }
+
+        if (chr.equipSpell01 != -1)
+        { str.Add($"{_goodsFmg[chr.equipSpell01]}"); }
+
+        if (chr.equipSpell02 != -1)
+        { str.Add($"{_goodsFmg[chr.equipSpell02]}"); }
+
+        logItem(string.Join(", ", str));
+        // logItem("__ Weapons");
+
+        // if (chr.wepleft != -1)
+        // { logItem($"Left: {Equipment.EquipmentNameList[chr.wepleft]}{getRequiredLevelsWeapon(chr, chr.wepleft)}"); }
+
+        // if (chr.wepRight != -1)
+        // { logItem($"Right: {Equipment.EquipmentNameList[chr.wepRight]}{getRequiredLevelsWeapon(chr, chr.wepRight)}"); }
+
+        // if (chr.subWepLeft != -1)
+        // { logItem($"Left 2: {Equipment.EquipmentNameList[chr.subWepLeft]}{getRequiredLevelsWeapon(chr, chr.subWepLeft)}"); }
+
+        // if (chr.subWepRight != -1)
+        // { logItem($"Right 2: {Equipment.EquipmentNameList[chr.subWepRight]}{getRequiredLevelsWeapon(chr, chr.subWepRight)}"); }
+
+        // if (chr.subWepLeft3 != -1)
+        // { logItem($"Left 3: {Equipment.EquipmentNameList[chr.subWepLeft3]}{getRequiredLevelsWeapon(chr, chr.subWepLeft3)}"); }
+
+        // if (chr.subWepRight3 != -1)
+        // { logItem($"Right 3: {Equipment.EquipmentNameList[chr.subWepRight3]}{getRequiredLevelsWeapon(chr, chr.subWepRight3)}"); }
+
+        // logItem("\n__ Armor");
+        // logItem($"Head: {_protectorFmg[chr.equipHelm]} : {chr.equipHelm}");
+        // logItem($"Body: {_protectorFmg[chr.equipArmer]} : {chr.equipArmer}");
+        // logItem($"Arms: {_protectorFmg[chr.equipGaunt]} : {chr.equipGaunt}");
+        // logItem($"Legs: {_protectorFmg[chr.equipLeg]} : {chr.equipLeg}");
+
+        // logItem("\n__ Starting Stats");
         logItem($"Vigor: {chr.baseVit}");
         logItem($"Mind: {chr.baseWil}");
         logItem($"Endurance: {chr.baseEnd}");
@@ -80,40 +103,34 @@ public partial class Randomizer
         logItem($"Faith: {chr.baseFai}");
         logItem($"Arcane: {chr.baseLuc}");
 
-        if (chr.equipArrow != -1 || chr.equipSubArrow != -1 || chr.equipBolt != -1 || chr.equipSubBolt != -1)
-        {
-            logItem("\n__ Ammo");
-            if (chr.equipArrow != -1)
-            {
-                logItem($"{_weaponFmg[chr.equipArrow]}[{chr.arrowNum}]");
-            }
-            if (chr.equipSubArrow != -1)
-            {
-                logItem($"{_weaponFmg[chr.equipSubArrow]}[{chr.subArrowNum}]");
-            }
-            if (chr.equipBolt != -1)
-            {
-                logItem($"{_weaponFmg[chr.equipBolt]}[{chr.boltNum}]");
-            }
-            if (chr.equipSubBolt != -1)
-            {
-                logItem($"{_weaponFmg[chr.equipSubBolt]}[{chr.subBoltNum}]");
-            }
-        }
+        // if (chr.equipArrow != -1 || chr.equipSubArrow != -1 || chr.equipBolt != -1 || chr.equipSubBolt != -1)
+        // {
+        //     logItem("\n__ Ammo");
 
-        if (chr.equipSpell01 != -1 || chr.equipSpell02 != -1)
-        {
-            logItem("\n__ Spells");
-            if (chr.equipSpell01 != -1)
-            {
-                logItem($"{_goodsFmg[chr.equipSpell01]}{getRequiredLevelsSpell(chr, chr.equipSpell01)}");
-            }
-            if (chr.equipSpell02 != -1)
-            {
-                logItem($"{_goodsFmg[chr.equipSpell02]}{getRequiredLevelsSpell(chr, chr.equipSpell02)}");
-            }
-        }
-        logItem("");
+        //     if (chr.equipArrow != -1)
+        //     { logItem($"{_weaponFmg[chr.equipArrow]}[{chr.arrowNum}]"); }
+
+        //     if (chr.equipSubArrow != -1)
+        //     { logItem($"{_weaponFmg[chr.equipSubArrow]}[{chr.subArrowNum}]"); }
+
+        //     if (chr.equipBolt != -1)
+        //     { logItem($"{_weaponFmg[chr.equipBolt]}[{chr.boltNum}]"); }
+
+        //     if (chr.equipSubBolt != -1)
+        //     { logItem($"{_weaponFmg[chr.equipSubBolt]}[{chr.subBoltNum}]"); }
+        // }
+
+        // if (chr.equipSpell01 != -1 || chr.equipSpell02 != -1)
+        // {
+        //     logItem("\n__ Spells");
+
+        //     if (chr.equipSpell01 != -1)
+        //     { logItem($"{_goodsFmg[chr.equipSpell01]}{getRequiredLevelsSpell(chr, chr.equipSpell01)}"); }
+
+        //     if (chr.equipSpell02 != -1)
+        //     { logItem($"{_goodsFmg[chr.equipSpell02]}{getRequiredLevelsSpell(chr, chr.equipSpell02)}"); }
+        // }
+        // logItem("");
     }
     void logShopId(int rowId)
     {

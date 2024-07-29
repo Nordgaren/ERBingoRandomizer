@@ -4,9 +4,8 @@ namespace Project.Settings;
 // Anything configurable will be in this class.
 public static class Config
 {
-    public const int ArmorChance = 5;
-    public const int SpellChance = 20;
     public const int Target = 1;
+    public const float StatRollChance = 0.001f;
     public const int Helmet = 660000;
     public const int Armor = 661100;
     public const int Gauntlet = 660200;
@@ -26,7 +25,6 @@ public static class Config
     public const byte MinStat = 5;
     public const byte SoulLevel = 9;
     public const byte PoolSize = 88;
-    public const float StatRollChance = 0.001f;
     // Paths
     public const string ResourcesPath = "./Resources";
     public static readonly string CachePath = $"{Const.ExeDir}\\Cache";

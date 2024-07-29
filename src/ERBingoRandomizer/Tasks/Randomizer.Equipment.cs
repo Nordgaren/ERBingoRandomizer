@@ -11,33 +11,48 @@ namespace Project.Tasks;
 
 public partial class Randomizer
 {
+    HashSet<int> allocatedIDs = new HashSet<int>();
     private int randomizeStartingWeapon(int id, List<int> weapons)
     { // TODO Rely on weapons table
         int limit = weapons.Count;
-        int newID = weapons[_random.Next(limit)];
+        int newID = 0;
+        int index = 0;
+        do
+        {
+            _cancellationToken.ThrowIfCancellationRequested();
+            index = _random.Next(limit);
+            newID = weapons[index];
+        } while (allocatedIDs.Contains(newID));
         // while (!_weaponDictionary.ContainsKey(newID))
         // { // TODO update _weaponDictionary for DLC weapons
         //     newID = weapons[_random.Next(limit)];
         // }
+        allocatedIDs.Add(newID);
         return washWeaponMetadata(newID);
-    }
-    private int exchangeArmorPiece(int id, byte type)
-    {
-        return getRandomArmor(id, type, Equipment.ArmorLists);
     }
     private int getRandomArmor(int id, byte type, IReadOnlyDictionary<byte, List<int>> gearLists)
     {
         List<int> armors = gearLists[type];
-        return armors[_random.Next(armors.Count)];
+        int limit = armors.Count;
+        int newID = 0;
+        int index = 0;
+        do
+        {
+            _cancellationToken.ThrowIfCancellationRequested();
+            index = _random.Next(limit);
+            newID = armors[index];
+        } while (allocatedIDs.Contains(newID));
+        allocatedIDs.Add(newID);
+        return newID;
     }
+    private int exchangeArmorPiece(int id, byte type) { return getRandomArmor(id, type, Equipment.ArmorLists); }
     private bool validateNoItem(int id, int chance)
     {   // currently never used, but could be handy in a chaos mode where classes start with potentially nothing
         int randomChance = _random.Next(chance);
 
         if (id == Const.NoItem)
-        {
-            return Config.Target < randomChance;
-        }
+        { return Config.Target < randomChance; }
+
         return false;
     }
     private bool hasWeaponOfType(CharaInitParam chr, params ushort[] types)
@@ -109,20 +124,6 @@ public partial class Randomizer
     }
     private int assignStartingSpell(CharaInitParam chr, byte type, IReadOnlyList<int> spells)
     {
-        //   if cannot be equipped pop spell off of list(make stack instead)
-        //   TODO use while to debugging cancel button
-
-        // IReadOnlyList<Param.Row> table = _magicTypeDictionary[type];
-        // int index = _random.Next(table.Count);
-        // Magic entry = _magicDictionary[table[index].ID];
-
-        // while (!chrCanUseSpell(entry, chr))
-        // {
-        //     index = _random.Next(table.Count);
-        //     entry = _magicDictionary[table[index].ID];
-        //     _cancellationToken.ThrowIfCancellationRequested();
-        // }
-        // return table[index].ID;
         int index = _random.Next(spells.Count);
         return spells[index];
     }
@@ -175,6 +176,7 @@ public partial class Randomizer
 
         while (!chrCanUseWeapon(entry, chr))
         {
+            _cancellationToken.ThrowIfCancellationRequested();
             i = _random.Next(limit);
             entry = _weaponDictionary[table[i].ID];
         }
@@ -202,27 +204,23 @@ public partial class Randomizer
         chr.equipArrow = Const.NoItem;
         chr.arrowNum = ushort.MaxValue;
         if (hasWeaponOfType(chr, Const.BowType, Const.LightBowType))
-        {
-            giveArrows(chr);
-        }
+        { giveArrows(chr); }
+
         chr.equipSubArrow = Const.NoItem;
         chr.subArrowNum = ushort.MaxValue;
         if (hasWeaponOfType(chr, Const.GreatbowType))
-        {
-            giveGreatArrows(chr);
-        }
+        { giveGreatArrows(chr); }
+
         chr.equipBolt = Const.NoItem;
         chr.boltNum = ushort.MaxValue;
         if (hasWeaponOfType(chr, Const.CrossbowType))
-        {
-            giveBolts(chr);
-        }
+        { giveBolts(chr); }
+
         chr.equipSubBolt = Const.NoItem;
         chr.subBoltNum = ushort.MaxValue;
         if (hasWeaponOfType(chr, Const.BallistaType))
-        {
-            giveBallistaBolts(chr);
-        }
+        { giveBallistaBolts(chr); }
+
         chr.equipSpell01 = -1;
         chr.equipSpell02 = -1;
     }

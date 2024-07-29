@@ -63,7 +63,8 @@ namespace SoulsFormats
                 if (!empty)
                 {
                     while (reader.IsStartElement(nameof(Param)))
-                        Params.Add((Param)ParamSerializer.Deserialize(reader));
+                    { Params.Add((Param)ParamSerializer.Deserialize(reader)); }
+
                     reader.ReadEndElement();
                 }
             }
