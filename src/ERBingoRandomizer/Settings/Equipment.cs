@@ -279,8 +279,8 @@ public class Equipment
         MediumShieldIDs, ColossalSwordIDs, ColossalWeaponIDs,
         // BallistaOrGreatBowIDs, GreatShieldIDs, 
         /* weapons needed for fun */
-        CurvedGreatSwordIDs, HammerIDs, StraightSwordIDs, CurvedSwordIDs, ReaperIDs, 
-        TwinbladeIDs,
+        CurvedGreatSwordIDs, HammerIDs, StraightSwordIDs, CurvedSwordIDs,
+        ReaperIDs, TwinbladeIDs,
 
         /* DLC Upside */
         DlcHeavyShopIDs, DlcLightShopIDs,
