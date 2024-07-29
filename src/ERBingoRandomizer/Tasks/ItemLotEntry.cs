@@ -1,9 +1,8 @@
 ﻿using System;
 
-namespace Project.Tasks; 
+namespace Project.Tasks;
 
-public readonly record struct ItemLotEntry(int Id, int Category) : IEquatable<int> {
-    public bool Equals(int other) {
-        return other == Id;
-    }
+public readonly record struct ItemLotEntry(int Id, int Category) : IEquatable<int>
+{
+    public bool Equals(int other) { return other == Id; }
 }

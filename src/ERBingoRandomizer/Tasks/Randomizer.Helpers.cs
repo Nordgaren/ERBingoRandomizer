@@ -122,9 +122,7 @@ public partial class Randomizer
             List<int> itemLotEntries = new(value);
             itemLotEntries.Shuffle(_random); // TODO investigate if thise matters
             foreach (int entry in itemLotEntries)
-            {
-                output.Add(entry, getNewId(entry, value));
-            }
+            { output.Add(entry, getNewId(entry, value)); }
         }
         return output;
     }
@@ -149,25 +147,30 @@ public partial class Randomizer
         }
     }
 
-    private void replaceShopLineupParam(ShopLineupParam lot, IList<int> shopLineupParamDictionary, IList<ShopLineupParam> shopLineupParamRemembranceList)
+    private void replaceShopLineupParam(ShopLineupParam lot, IList<int> shopLineupParamDictionary, IList<int> remembranceList)
     {
+        int newId = 0;
         if (lot.mtrlId == -1)
         {
-            // int newId = getNewId(lot.equipId, shopLineupParamDictionary);
-            // TODO: currently has DLC weapons available, longterm will want DLC items read as params 
-            List<int> weapons = Equipment.WeaponShopLists[
-                _random.Next(Equipment.WeaponShopLists.Count)
-            ];
+            List<int> weapons = Equipment.WeaponShopLists[_random.Next(Equipment.WeaponShopLists.Count)];
             int index = _random.Next(weapons.Count);
-            int newId = weapons[index];
-
-            // logItem($"{_weaponNameDictionary[lot.equipId]} --> {Equipment.EquipmentNameList[newId]}");
-            lot.equipId = newId;
-            return;
+            newId = weapons[index];
         }
-        ShopLineupParam newRemembrance = getNewId(lot.equipId, shopLineupParamRemembranceList);
+        else
+        {
+            int limit = remembranceList.Count;
+            int index = _random.Next(limit);
+            newId = remembranceList[index];
+            remembranceList.Remove(newId);
+        }
+        lot.equipId = newId;
+        // int newId = getNewId(lot.equipId, shopLineupParamDictionary);
+        // TODO: currently has DLC weapons available, longterm will want DLC items read as params 
+        // logItem($"{_weaponNameDictionary[lot.equipId]} --> {Equipment.EquipmentNameList[newId]}");
+
+        // ShopLineupParam newRemembrance = getNewId(lot.equipId, shopLineupParamRemembranceList);
         // logItem($"{_weaponNameDictionary[lot.equipId]} --> {_weaponNameDictionary[newRemembrance.equipId]}");
-        copyShopLineupParam(lot, newRemembrance);
+        // copyShopLineupParam(lot, newRemembrance);
     }
     private void replaceShopLineupParamMagic(ShopLineupParam lot, IReadOnlyDictionary<int, int> shopLineupParamDictionary, IList<ShopLineupParam> shopLineupParamRemembranceList)
     {
@@ -240,13 +243,23 @@ public partial class Randomizer
 
     private string getRequiredLevelsWeapon(CharaInitParam chr, int id)
     {   // TODO reimplement to account for DLC gear
-        return "";
 
         EquipParamWeapon wep = _weaponDictionary[id]; // TODO dlc weapons not included
         int reqLevels = 0;
 
-        if (wep.properStrength > (chr.baseStr * 3 / 2))
-        { reqLevels += wep.properStrength - (chr.baseStr * 3 / 2); }
+        // add to log (calcs two handed if strength is 10 or higher)
+        // if strength < 10 use strength, else strength * 3/2
+
+        if (chr.baseStr < 10)
+        {
+            if (wep.properStrength > (chr.baseStr))
+            { reqLevels += wep.properStrength - (chr.baseStr); }
+        }
+        else
+        {
+            if (wep.properStrength > (chr.baseStr * 3 / 2))
+            { reqLevels += wep.properStrength - (chr.baseStr * 3 / 2); }
+        }
 
         if (wep.properAgility > chr.baseDex)
         { reqLevels += wep.properAgility - chr.baseDex; }
@@ -346,12 +359,6 @@ public partial class Randomizer
         lot.menuIconId = shopLineupParam.menuIconId;
         lot.menuTitleMsgId = shopLineupParam.menuTitleMsgId;
     }
-    private static int washWeaponMetadata(int id)
-    {
-        return id / 10000 * 10000;
-    }
-    private static int washWeaponLevels(int id)
-    {
-        return id / 100 * 100;
-    }
+    private static int washWeaponMetadata(int id) { return id / 10000 * 10000; }
+    private static int washWeaponLevels(int id) { return id / 100 * 100; }
 }
