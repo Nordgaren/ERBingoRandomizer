@@ -31,7 +31,7 @@ public class RandomizeBingoCommand : AsyncCommandBase {
             await Task.Run(() => randomizer.RandomizeRegulation());
             _mwViewModel.LastSeed = randomizer.SeedInfo;
             _mwViewModel.FilesReady = true;
-            _mwViewModel.DisplayMessage($"Randomization Finished. Seed: {randomizer.SeedInfo.Seed}");
+            _mwViewModel.DisplayMessage($"Randomization Finished.");
         }
         catch (OperationCanceledException) {
             _mwViewModel.DisplayMessage("Randomization Canceled");
