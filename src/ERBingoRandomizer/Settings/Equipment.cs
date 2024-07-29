@@ -100,7 +100,7 @@ public class Equipment
     {
         11000000, 11010000, 11030000, 11040000, 11050000, 11060000, 11070000,
         11080000, 11090000, 11100000, 11110000, 11120000, 11130000, 11140000,
-        11500000, // (DLC but desired)
+        // 11500000, // (DLC but desired)
     };
     public static List<int> ReaperIDs = new List<int>
     {
@@ -138,10 +138,6 @@ public class Equipment
     public static List<int> BackhandBladeIDs = new List<int>() {
         // 64500000, 64510000, // smithing 
         64520000,              // somber
-        15500000,
-        7510000,
-        66500000, 66510000, 66520000,
-        14510000,
     };
     public static List<int> PerfumeBottleIDs = new List<int>
     {
@@ -196,29 +192,23 @@ public class Equipment
     };
     public static List<int> DlcHeavyShopIDs = new List<int>
     { // added for fun
-        66500000, 66510000, 66520000, 14510000, 15500000, 3550000,
+        66510000, // Dragon-Hunter's
+        66520000, // Rakshasa's
+        14510000, // Death Knight's Twin Axes
+        15500000, // Death Knight's Longhaft Axe
+        3550000,  // Greatsword of Solitude
+        4520000,  // Fire Knight's Greatsword
     };
     public static List<int> DlcLightShopIDs = new List<int>
     {  // added for fun
-        64500000, 64520000, 7510000, 22500000, 62510000, 4520000,
+        64500000, // Backhand Blade
+        64520000, // Curseblade's Cirque
+        7510000,  // Falx
+        22500000, // Claws of Night
+        62510000, // Carian Thrusting Shield
+        11500000, // Flowerstone Gavel
     };
-    public static IReadOnlyList<List<int>> WeaponShopLists = new List<List<int>>()
-    {
-        /* weapons needed for squares */
-        ClawIDs, DaggerIDs, FistIDs, LightBowAndBowIDs, BallistaOrGreatBowIDs,
-        GreatShieldIDs, MediumShieldIDs, SmallShieldIDs, ColossalSwordIDs, ColossalWeaponIDs,
-        /* weapons needed for fun */
-        CurvedGreatSwordIDs, GreataxeIDs, GreatHammerIDs, HammerIDs, StraightSwordIDs,
-        CurvedSwordIDs, ReaperIDs, TwinbladeIDs,
 
-        /* DLC Upside */
-        DlcHeavyShopIDs, DlcLightShopIDs,
-
-        // KatanaIDs, AxeIDs, GreatswordIDs, HalberdIDs,
-        // ThrustingSwordIDs,
-        // SpearIDs, 
-        // FlailIDs, 
-    };
     // INCANTATIONS
 
     // SORCERIES
@@ -250,30 +240,52 @@ public class Equipment
     };
     public static List<int> StartingWeaponIDs = new List<int>()
     {   // TODO non-exhaustive list of weapons. Until level calc is working again a smaller list of weapons that are more likely to be equippable
-        // DLC (preferable to not have them at this time)
-        // 19500000, 6500000, 9500000, 2520000, 2540000, 2550000, 2560000, 4520000, 14540000, 14520000,
-        // 14510000, 64500000, 64510000, 64520000, 7530000, 7520000, 7510000, 7500000, 16540000, 16520000,
-        // 66500000, 66510000, 66520000, 3520000, 3550000, 12500000, 12520000, 16550000, 17520000, 15500000,
-        // 67500000, 67510000,  8520000, 8510000, 4540000, 4500000, 10510000, 22500000,  68500000, 68510000,
-        // Base Game
-        23130000, 15050000, 15020000, 15060000, 12000000, 12020000, 12180000, 12010000, 4040000, 4000000, // troll's hammer, longhaft axe
+
         14000000, 14020000, 14030000, 14040000, 14060000, 14080000, 14100000, 14110000, 14120000, 14140000, // axes
         18000000, 18010000, 18020000, 18030000, 18040000, 18050000, 18070000, 18080000, 18110000, 18140000, // Halberds 
-        2060000, 2000000, 2010000, 2020000, 2040000, 2050000, 2200000, 2210000, 2230000, 2260000, // straight swords
-        7000000, 7010000, 7030000, 7040000, 7050000, 7080000, 7110000, 7120000, 7140000, 7150000, // curved swords
+
+        2000000, 2010000, 2020000, 2040000, 2050000, 2060000, 2070000, 2110000, 2140000, 2150000,
+        2180000, 2190000, 2200000, 2210000, 2220000, 2230000, 2240000, 2250000, 2260000, // straight swords
+
+        2080000, 7050000, 7060000, 7070000, 7080000, 7120000, 7140000, 7000000, 7010000, 7020000,
+        7030000, 7040000, 7100000, 7110000,                                              // curved swords
+        11000000, 11010000, 11030000, 11040000, 11050000, 11060000, 11070000, 11080000, 11090000, 11100000, // hammers
+        
+        16000000, 16010000, 16020000, 16030000, 16040000, 16050000, 16060000, 16070000, 16080000, 16090000,
+        16110000, 16120000, 16130000, 16140000, 16150000, 16160000,                             // spears
+
         3070000, 3180000, 3020000, 3030000, 3040000, 3050000, 3010000, 3190000, 3160000, 3200000, // great swords
         8010000, 8020000, 8030000, 8050000, 8060000, 19000000, 19010000, 19020000, 19060000, 6000000, // CGS / Scythe
         10000000, 10010000, 10030000, 10080000, 9000000, 9030000, 9040000, 9060000, 9070000, 9080000, // twin blades / katana
-        16000000, 16010000, 16030000, 16050000, 16060000, 16080000, 16140000, 11110000, 11120000, 11130000, // spears
-        11000000, 11010000, 11030000, 11040000, 11050000, 11060000, 11070000, 11080000, 11090000, 11100000, // hammers
+        23130000, 15050000, 15020000, 15060000, 12000000, 12020000, 12180000, 12010000, 4040000, 4000000, // troll's hammer, longhaft axe
+    };
+    public static IReadOnlyList<List<int>> MainWeaponLists = new List<List<int>>()
+    {
+        StraightSwordIDs, CurvedSwordIDs, AxeIDs, HalberdIDs, HammerIDs, KatanaIDs,
+        GreataxeIDs, GreatHammerIDs, GreatSpearIDs, GreatswordIDs, CurvedGreatSwordIDs,
+        TwinbladeIDs, ReaperIDs, HeavyThrustingIDs,
+        // SpearIDs, 
     };
     public static IReadOnlyList<List<int>> SideWeaponLists = new List<List<int>>()
     {
         // TorchIDs, 
-        ClawIDs, DaggerIDs, FistIDs,
-        GreatShieldIDs, MediumShieldIDs, SmallShieldIDs,
-        LightBowAndBowIDs, BallistaOrGreatBowIDs,
-        ThrustingSwordIDs, WhipIDs,
+        ClawIDs, DaggerIDs, FistIDs, ThrustingSwordIDs, WhipIDs, FlailIDs,
+        GreatShieldIDs, MediumShieldIDs, SmallShieldIDs, LightBowAndBowIDs, BallistaOrGreatBowIDs,
+    };
+    public static IReadOnlyList<List<int>> WeaponShopLists = new List<List<int>>()
+    {
+        /* weapons needed for squares */
+        ClawIDs, DaggerIDs, FistIDs, LightBowAndBowIDs, SmallShieldIDs,
+        MediumShieldIDs, ColossalSwordIDs, ColossalWeaponIDs,
+        // BallistaOrGreatBowIDs, GreatShieldIDs, 
+        /* weapons needed for fun */
+        CurvedGreatSwordIDs, HammerIDs, StraightSwordIDs, CurvedSwordIDs, ReaperIDs, 
+        TwinbladeIDs,
+
+        /* DLC Upside */
+        DlcHeavyShopIDs, DlcLightShopIDs,
+
+        // KatanaIDs, AxeIDs, GreatswordIDs, HalberdIDs, ThrustingSwordIDs, SpearIDs, FlailIDs, GreatHammerIDs, GreataxeIDs, 
     };
 
     // ARMOR

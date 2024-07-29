@@ -17,8 +17,7 @@ namespace Project.Tasks;
 public partial class Randomizer
 {
     private BND4 _regulationBnd;
-
-    private string createSeed() { return RandomNumberGenerator.GetHexString(18, true); }
+    private string createSeed() { return Guid.NewGuid().ToString(); }
     private static int hashStringToInteger(string input)
     {
         byte[] array = Encoding.UTF8.GetBytes(input);

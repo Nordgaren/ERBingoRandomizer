@@ -79,7 +79,9 @@ public partial class Randomizer
 
             int index = _random.Next(Equipment.SideWeaponLists.Count);
             List<int> sideArms = Equipment.SideWeaponLists[index];
-            List<int> main = Equipment.StartingWeaponIDs;
+            index = _random.Next(Equipment.MainWeaponLists.Count);
+            List<int> main = Equipment.MainWeaponLists[index];
+            // List<int> main = Equipment.StartingWeaponIDs;
 
             CharaInitParam startingClass = new(row);
             randomizeEquipment(startingClass, main, sideArms);
