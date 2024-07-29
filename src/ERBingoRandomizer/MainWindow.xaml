@@ -7,7 +7,7 @@
         xmlns:localConverter="clr-namespace:Randomizer.Converter"
         mc:Ignorable="d"
         xmlns:gif="http://wpfanimatedgif.codeplex.com"
-        Title="Equipment Randomizer" Height="600" Width="1000" ResizeMode="CanResizeWithGrip" MaxWidth="1000" MinWidth="1000" MinHeight="600"
+        Title="Equipment Randomizer" Height="500" Width="800" ResizeMode="CanResizeWithGrip" MaxWidth="800" MinWidth="800" MinHeight="400"
         Background="#40434C">
     <Window.Resources>
         <localConverter:IsLastItemGIFConverter x:Key="IsLastItemGIFConverter"/>
@@ -24,14 +24,14 @@
             <Label Margin="0,25" Content="Path to Elden Ring exe" HorizontalAlignment="Center" FontWeight="DemiBold" Foreground="WhiteSmoke" FontSize="24"/>
             <TextBox Margin="100,0,100,0" Text="{Binding Path, UpdateSourceTrigger=PropertyChanged}" 
                      FontSize="13" FontWeight="Bold"/>
-            <Label Margin="0,25" Content="Seed" HorizontalAlignment="Center" FontWeight="DemiBold" Foreground="WhiteSmoke" FontSize="24"/>
+            <Label Margin="0,25" Content="Seed Name" HorizontalAlignment="Center" FontWeight="DemiBold" Foreground="WhiteSmoke" FontSize="24"/>
             <TextBox Margin="100,0,100,0" Text="{Binding Seed, UpdateSourceTrigger=PropertyChanged}"
                      FontSize="13" FontWeight="Bold"/>
             <Separator Margin="0,25,0,0" />
             
             <StackPanel Orientation="Horizontal" HorizontalAlignment="Center">
                 <Label Content="Current Seed:" FontWeight="Medium" Foreground="WhiteSmoke" />
-                <Label Content="{Binding LastSeedText}" FontWeight="Black" Foreground="#FF906E4E" />
+                <Label Content="{Binding LastSeedText}" FontWeight="Black" Foreground="#FFDF00" />
             </StackPanel>
             
             <StackPanel Orientation="Horizontal" HorizontalAlignment="Center">
@@ -66,7 +66,7 @@
             <ListBox.ItemTemplate>
                 <DataTemplate>
                     <StackPanel Orientation="Horizontal">
-                        <TextBlock Text="{Binding}" FontWeight="Bold" Foreground="LightGray"/>
+                        <TextBlock Text="{Binding}" FontWeight="Bold"/>
                         <Image x:Name="LittlePot" gif:ImageBehavior.RepeatBehavior="Forever" gif:ImageBehavior.AnimatedSource="Images/LittlePot.gif" Source="Images/LittlePot.gif" Width="20" Height="20">
                             <Image.Visibility>
                                 <MultiBinding Converter="{StaticResource IsLastItemGIFConverter}">
