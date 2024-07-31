@@ -36,7 +36,6 @@ public class ShopLineupParam : IEquatable<int>, IEquatable<ShopLineupParam>
         _nameMsgId = lot["nameMsgId"]!.Value;
         _menuIconId = lot["menuIconId"]!.Value;
         _menuTitleMsgId = lot["menuTitleMsgId"]!.Value;
-
     }
     public int equipId { get => (int)_equipId.Value; set => _equipId.Value = value; }
     public byte costType { get => (byte)_costType.Value; set => _costType.Value = value; }

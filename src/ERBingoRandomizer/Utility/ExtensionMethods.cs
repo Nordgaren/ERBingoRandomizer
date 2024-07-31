@@ -13,13 +13,11 @@ public static class ExtensionMethods
         foreach (PARAMDEF def in defs)
         {
             if (param.ParamType != def.ParamType)
-            {
-                continue;
-            }
+            { continue; }
+
             param.ApplyParamdef(def);
             return true;
         }
-
         return false;
     }
     // This is a pop method for IList<T>, because I can't shuffle Queues.
