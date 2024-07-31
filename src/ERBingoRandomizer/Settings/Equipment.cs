@@ -4,16 +4,24 @@ namespace Project.Settings;
 
 public class Equipment
 {
-    public static List<int> ClawIDs = new List<int>()
-    { // includes Beast Claws
-        22000000, 22010000, 22020000, 22030000,
-        // 68500000, 68510000, 22500000, (DLC not desired at this time)
-    };
     public static List<int> CurvedSwordIDs = new List<int>()
     { // includes backhand blades
         2080000, 7050000, 7060000, 7070000, 7080000, 7120000, 7140000,
         7000000, 7010000, 7020000, 7030000, 7040000, 7100000, 7110000,   
         // 7150000, 7500000, 7510000, 7520000, 7530000, (DLC not wanted at this time)
+    };
+    public static List<int> DaggerClawFistIDs = new List<int>() {
+        1020000, 1000000, 1010000, 1030000, 1040000, 1050000,
+        1070000, 1080000, 1090000, 1100000, 1110000, 1140000, 1150000,
+
+        22000000, 22010000, 22020000, 22030000,
+
+        21000000, 21010000, 21070000, 21080000, 21100000, 21110000, 21120000, 21130000,
+    };
+    public static List<int> ClawIDs = new List<int>()
+    { // includes Beast Claws
+        22000000, 22010000, 22020000, 22030000,
+        // 68500000, 68510000, 22500000, (DLC not desired at this time)
     };
     public static List<int> DaggerIDs = new List<int>()
     {
@@ -191,22 +199,25 @@ public class Equipment
         // 42500000, 63500000, 44500000, (DLC)
     };
     public static List<int> DlcHeavyShopIDs = new List<int>
-    { // added for fun
+    { // added for fun (somber only)
         66510000, // Dragon-Hunter's
         66520000, // Rakshasa's
         14510000, // Death Knight's Twin Axes
         15500000, // Death Knight's Longhaft Axe
-        3550000,  // Greatsword of Solitude
-        4520000,  // Fire Knight's Greatsword
+        // 3550000,  // Greatsword of Solitude
+        19500000, // Obsidian Lamina
+        4500000,  // Ancient Meteoric Ore Greatsword
     };
     public static List<int> DlcLightShopIDs = new List<int>
-    {  // added for fun
-        64500000, // Backhand Blade
+    {  // added for fun (somber only)
+        9500000,  // Sword of Night
+        10500000, // Euporia
         64520000, // Curseblade's Cirque
         7510000,  // Falx
         22500000, // Claws of Night
-        62510000, // Carian Thrusting Shield
         11500000, // Flowerstone Gavel
+        2540000,  // Stone-Sheathed Sword
+        2550000,  // Sword of Light
     };
 
     // INCANTATIONS
@@ -275,17 +286,18 @@ public class Equipment
     public static IReadOnlyList<List<int>> WeaponShopLists = new List<List<int>>()
     {
         /* weapons needed for squares */
-        ClawIDs, DaggerIDs, FistIDs, LightBowAndBowIDs, SmallShieldIDs,
+        // ClawIDs, DaggerIDs, FistIDs, 
+        DaggerClawFistIDs, LightBowAndBowIDs, SmallShieldIDs,
         MediumShieldIDs, ColossalSwordIDs, ColossalWeaponIDs,
         // BallistaOrGreatBowIDs, GreatShieldIDs, 
         /* weapons needed for fun */
         CurvedGreatSwordIDs, HammerIDs, StraightSwordIDs, CurvedSwordIDs,
-        ReaperIDs, TwinbladeIDs,
+        ReaperIDs, TwinbladeIDs, GreatswordIDs,
 
         /* DLC Upside */
         DlcHeavyShopIDs, DlcLightShopIDs,
 
-        // KatanaIDs, AxeIDs, GreatswordIDs, HalberdIDs, ThrustingSwordIDs, SpearIDs, FlailIDs, GreatHammerIDs, GreataxeIDs, 
+        // KatanaIDs, AxeIDs, HalberdIDs, ThrustingSwordIDs, SpearIDs, FlailIDs, GreatHammerIDs, GreataxeIDs, 
     };
 
     // ARMOR
