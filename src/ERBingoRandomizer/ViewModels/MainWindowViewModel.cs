@@ -11,11 +11,13 @@ using System.Text.Json;
 using System.Threading;
 using System.Windows.Data;
 using System.Windows.Input;
+using System.Linq;
 
 namespace Project.ViewModels;
 
 public class MainWindowViewModel : ViewModelBase, IDisposable {
     private readonly FileSystemWatcher _watcher;
+    
     public MainWindowViewModel() {
         RandomizeBingo = new RandomizeBingoCommand(this);
         LaunchEldenRing = new LaunchEldenRingCommand(this);
@@ -86,10 +88,18 @@ public class MainWindowViewModel : ViewModelBase, IDisposable {
         set => SetField(ref _filesReady, value);
     }
 
+    private bool _isGifVisible;
+    public bool IsGifVisible
+    {
+        get => _isGifVisible;
+        set => SetField(ref _isGifVisible, value);
+    }
+
     public ICommand RandomizeBingo { get; }
     public ICommand LaunchEldenRing { get; }
     public ICommand PackageFiles { get; }
     public ICommand Cancel { get; }
+
     private readonly ObservableCollection<string> _listBoxDisplay;
     public ObservableCollection<string> ListBoxDisplay {
         get => _listBoxDisplay;
@@ -107,6 +117,7 @@ public class MainWindowViewModel : ViewModelBase, IDisposable {
     public CancellationTokenSource CancellationTokenSource { get; private set; }
     public CancellationToken CancellationToken { get; private set; }
     public string LastSeedText => string.IsNullOrWhiteSpace(Seed) ? "Unknown Seed" : Seed;
+    
     private SeedInfo? _lastSeed;
     public SeedInfo? LastSeed {
         get => _lastSeed;

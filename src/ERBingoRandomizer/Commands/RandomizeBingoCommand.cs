@@ -21,8 +21,9 @@ public class RandomizeBingoCommand : AsyncCommandBase {
             && File.Exists(_mwViewModel.Path);
     }
     protected override async Task ExecuteAsync(object? parameter) {
+        _mwViewModel.IsGifVisible = true;
         _mwViewModel.ListBoxDisplay.Clear();;
-        _mwViewModel.DisplayMessage("Randomizing Elden Ring Regulation");
+        //_mwViewModel.DisplayMessage("Randomizing Elden Ring Regulation");
         _mwViewModel.InProgress = true;
         _mwViewModel.RandoButtonText = "Cancel";
         // _mwViewModel.Path is not null, and is a valid path to eldenring.exe, because of the conditions in CanExecute.
@@ -32,6 +33,7 @@ public class RandomizeBingoCommand : AsyncCommandBase {
             _mwViewModel.LastSeed = randomizer.SeedInfo;
             _mwViewModel.FilesReady = true;
             _mwViewModel.DisplayMessage($"Randomization Finished.");
+            //_mwViewModel.InProgress = false;
         }
         catch (OperationCanceledException) {
             _mwViewModel.DisplayMessage("Randomization Canceled");
@@ -39,6 +41,7 @@ public class RandomizeBingoCommand : AsyncCommandBase {
         finally {
             _mwViewModel.RandoButtonText = "Randomize!";
             _mwViewModel.InProgress = false;
+            _mwViewModel.IsGifVisible = false;
         }
     }
     private void ViewModel_PropertyChanged(object? sender, PropertyChangedEventArgs e) {

@@ -10,7 +10,7 @@
         Title="Equipment Randomizer" Height="500" Width="800" ResizeMode="CanResizeWithGrip" MaxWidth="800" MinWidth="800" MinHeight="400"
         Background="#40434C">
     <Window.Resources>
-        <localConverter:IsLastItemGIFConverter x:Key="IsLastItemGIFConverter"/>
+        <BooleanToVisibilityConverter x:Key="BoolToVisibilityConverter"/>
     </Window.Resources>
     <Window.DataContext>
         <viewModels:MainWindowViewModel x:Name="MainWindowViewModel" />
@@ -27,13 +27,13 @@
             <Label Margin="0,25" Content="Seed Name" HorizontalAlignment="Center" FontWeight="DemiBold" Foreground="WhiteSmoke" FontSize="24"/>
             <TextBox Margin="100,0,100,0" Text="{Binding Seed, UpdateSourceTrigger=PropertyChanged}"
                      FontSize="13" FontWeight="Bold"/>
-            <Separator Margin="0,25,0,0" />
-            
+            <!--<Separator Margin="0,25,0,0" />-->
+
             <StackPanel Orientation="Horizontal" HorizontalAlignment="Center">
                 <Label Content="Current Seed:" FontWeight="Medium" Foreground="WhiteSmoke" />
                 <Label Content="{Binding LastSeedText}" FontWeight="Black" Foreground="#FFDF00" />
             </StackPanel>
-            
+
             <StackPanel Orientation="Horizontal" HorizontalAlignment="Center">
                 <Grid>
                     <Button Width="150" Height="50" Content="Cancel" Command="{Binding Cancel}"
@@ -59,25 +59,21 @@
                             />
                 </Grid>
             </StackPanel>
-            
+
         </StackPanel>
 
-        <ListBox Grid.Row="1" Name="LogListBox" ItemsSource="{Binding MessageDisplayView}" Background="#C0C0C0" AlternationCount="1">
-            <ListBox.ItemTemplate>
-                <DataTemplate>
-                    <StackPanel Orientation="Horizontal">
-                        <TextBlock Text="{Binding}" FontWeight="Bold"/>
-                        <Image x:Name="LittlePot" gif:ImageBehavior.RepeatBehavior="Forever" gif:ImageBehavior.AnimatedSource="Images/LittlePot.gif" Source="Images/LittlePot.gif" Width="20" Height="20">
-                            <Image.Visibility>
-                                <MultiBinding Converter="{StaticResource IsLastItemGIFConverter}">
-                                    <Binding RelativeSource="{RelativeSource AncestorType=ListBoxItem}" Path="(ItemsControl.AlternationIndex)"/>
-                                    <Binding RelativeSource="{RelativeSource AncestorType=ListBox}" Path="Items.Count" />
-                                </MultiBinding>
-                            </Image.Visibility>
-                        </Image>
-                    </StackPanel>
-                </DataTemplate>
-            </ListBox.ItemTemplate>
-        </ListBox>
+        <Grid Grid.Row="1">
+            <ListBox Name="LogListBox" ItemsSource="{Binding MessageDisplayView}" Background="#C0C0C0" AlternationCount="1">
+                <ListBox.ItemTemplate>
+                    <DataTemplate>
+                        <StackPanel Orientation="Horizontal">
+                            <TextBlock Text="{Binding}" FontWeight="Bold"/>
+                        </StackPanel>
+                    </DataTemplate>
+                </ListBox.ItemTemplate>
+            </ListBox>
+            <Image gif:ImageBehavior.RepeatBehavior="Forever" gif:ImageBehavior.AnimatedSource="Images/LittlePot.gif" Source="Images/LittlePot.gif" Width="120" Height="120"
+                   Visibility="{Binding IsGifVisible, Converter={StaticResource BoolToVisibilityConverter}}" HorizontalAlignment="Center" VerticalAlignment="Center"/>
+        </Grid>
     </Grid>
 </Window>
