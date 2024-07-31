@@ -32,7 +32,9 @@ public class EquipParamWeapon
     public ushort wepType { get => (ushort)_wepType.Value; set => _wepType.Value = value; }
     public int materialSetId { get => (int)_materialSetId.Value; set => _materialSetId.Value = value; }
     public short reinforceTypeId { get => (short)_reinforceTypeId.Value; set => _reinforceTypeId.Value = value; }
+    //^ somber or smithing (0 is smithing, 2200 is somber)
     public byte reinforceShopCategory { get => (byte)_reinforceShopCategory.Value; set => _reinforceShopCategory.Value = value; }
+    //^ 1 is upgradeable
     public byte properStrength { get => (byte)_properStrength.Value; set => _properStrength.Value = value; }
     public byte properAgility { get => (byte)_properAgility.Value; set => _properAgility.Value = value; }
     public byte properMagic { get => (byte)_properMagic.Value; set => _properMagic.Value = value; }

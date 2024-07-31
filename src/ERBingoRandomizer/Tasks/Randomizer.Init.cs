@@ -133,9 +133,6 @@ public partial class Randomizer
         foreach (Param.Row row in _equipParamWeapon.Rows)
         {
             string rowString = _weaponFmg[row.ID];
-            // string docPath = Environment.GetFolderPath(Environment.SpecialFolder.MyDocuments);
-            // using (StreamWriter outputFile = new StreamWriter(Path.Combine(docPath, "WriteLines.txt"), true))
-            // { outputFile.WriteLine($"{row.ID}: {rowString}"); }
 
             if ((int)row["sortId"]!.Value.Value == 9999999
                 || string.IsNullOrWhiteSpace(rowString)         // TODO weapon IDs are tossed
@@ -152,6 +149,12 @@ public partial class Randomizer
                 wep.reinforceShopCategory = 0;
                 continue;
             }
+            // materialSetId 0 is smithing, reinforce type is cold etc.
+            string docPath = Environment.GetFolderPath(Environment.SpecialFolder.MyDocuments);
+            using (StreamWriter outputFile = new StreamWriter(Path.Combine(docPath, "WriteLines.txt"), true))
+            { outputFile.WriteLine($"{row.ID}: {rowString}, material set: {wep.materialSetId}, reinforce type: {wep.reinforceShopCategory} <>"); }
+
+            // if (wep.materialSetId == Const.SmithingMaterialSet) { wep.materialSetId = 2200; } changes smithing to somber, caps at lvl 10
 
             _weaponNameDictionary[row.ID] = rowString;
             if (!Enumerable.Range(81, 86).Contains(wep.wepType)) // TODO missing rows for DLC weapons
