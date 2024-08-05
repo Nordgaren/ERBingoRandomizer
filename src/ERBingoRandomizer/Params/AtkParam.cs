@@ -1,13 +1,15 @@
 ﻿using FSParam;
 
-namespace Project.Params; 
+namespace Project.Params;
 
-public class AtkParam {
+public class AtkParam
+{
     private Param.Cell _spEffectAtkPowerCorrectRate_byPoint;
     private Param.Cell _spEffectAtkPowerCorrectRate_byRate;
     private Param.Cell _spEffectAtkPowerCorrectRate_byDmg;
 
-    public AtkParam(Param.Row atk) {
+    public AtkParam(Param.Row atk)
+    {
         _spEffectAtkPowerCorrectRate_byPoint = atk["spEffectAtkPowerCorrectRate_byPoint"]!.Value;
         _spEffectAtkPowerCorrectRate_byRate = atk["spEffectAtkPowerCorrectRate_byRate"]!.Value;
         _spEffectAtkPowerCorrectRate_byDmg = atk["spEffectAtkPowerCorrectRate_byDmg"]!.Value;

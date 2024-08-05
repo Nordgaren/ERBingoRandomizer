@@ -25,6 +25,7 @@ public partial class Randomizer
     private Param _itemLotParam_enemy;
     private Param _shopLineupParam;
     private Param _atkParam_Pc;
+    private Param _equipMtrlSetParam;
     // Dictionaries
     private Dictionary<int, EquipParamWeapon> _weaponDictionary;
     private Dictionary<int, EquipParamWeapon> _customWeaponDictionary;
@@ -46,6 +47,8 @@ public partial class Randomizer
         randomizeShopLineupParamMagic();
         _cancellationToken.ThrowIfCancellationRequested();
         patchAtkParam();
+        _cancellationToken.ThrowIfCancellationRequested();
+        patchSmithingStones();
         _cancellationToken.ThrowIfCancellationRequested();
         writeFiles();
         writeLog();
@@ -393,5 +396,42 @@ public partial class Randomizer
         AtkParam swarmAtkParam2 = new(swarmOfFlies2);
         patchSpEffectAtkPowerCorrectRate(swarmAtkParam1);
         patchSpEffectAtkPowerCorrectRate(swarmAtkParam2);
+    }
+
+    private void patchSmithingStones()
+    {
+        string docPath = Environment.GetFolderPath(Environment.SpecialFolder.MyDocuments);
+
+        IEnumerable<int> remembranceItems = _shopLineupParam.Rows.Where(r => r.ID is >= 101900 and <= 101929)
+            .Select(r => new ShopLineupParam(r).equipId);
+
+
+        foreach (Param.Row row in _equipMtrlSetParam.Rows)
+        {
+           // int id = row.GetValue("materialId01");
+            using (StreamWriter outputFile = new StreamWriter(Path.Combine(docPath, "WriteLines.txt"), true))
+            {
+                outputFile.WriteLine($"materialID {row.ID}, def {row.Def} <>"); 
+                foreach(Param.Cell cell in row.CellHandles)
+                {
+                    outputFile.WriteLine($"call value: {cell.Value}");
+                }
+            }
+
+        }
+
+        /* foreach (PARAM.Row row in game.Params["EquipMtrlSetParam"].Rows)
+         {
+             int id = (int)row["materialId01"].Value;
+             int category = (byte)row["materialCate01"].Value;
+             int numberRequired = (sbyte)row["itemNum01"].Value;
+             if (category == 4 && id >= 10100 && id < 10110 && numberRequired > 1)
+             {
+                 row["itemNum01"].Value = (byte)1;
+             }
+         }*/
+        // materialSetId 0 is smithing, reinforce type is cold etc.
+        // if (wep.materialSetId == Const.SmithingMaterialSet) { wep.materialSetId = 2200; } changes smithing to somber, caps at lvl 10
+
     }
 }

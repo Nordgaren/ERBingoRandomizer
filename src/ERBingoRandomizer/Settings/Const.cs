@@ -13,6 +13,7 @@ public static class Const
     public const string ItemMsgBNDPath = "/msg/engus/item.msgbnd.dcx"; // TODO confirm no needed extension for DLC inclusion
     public const string MenuMsgBNDPath = "/msg/engus/menu.msgbnd.dcx"; // TODO confirm no needed extension for DLC inclusion
     // Params  
+    public const string EquipMtrlSetParam = "EquipMtrlSetParam.param";
     public const string EquipParamWeaponName = "EquipParamWeapon.param";
     public const string EquipParamCustomWeaponName = "EquipParamCustomWeapon.param";
     public const string EquipParamGoodsName = "EquipParamGoods.param";

@@ -84,7 +84,7 @@ public partial class Randomizer
     private void getDefs()
     {
         _paramDefs = new List<PARAMDEF>();
-        string[] defs = Util.GetResourcesInFolder("Params/Defs");
+        string[] defs = Util.GetResourcesInFolder("Params/Defs"); // TODO
         foreach (string def in defs)
         { _paramDefs.Add(Util.XmlDeserialize(def)); }
     }
@@ -149,12 +149,6 @@ public partial class Randomizer
                 wep.reinforceShopCategory = 0;
                 continue;
             }
-            // materialSetId 0 is smithing, reinforce type is cold etc.
-            string docPath = Environment.GetFolderPath(Environment.SpecialFolder.MyDocuments);
-            using (StreamWriter outputFile = new StreamWriter(Path.Combine(docPath, "WriteLines.txt"), true))
-            { outputFile.WriteLine($"{row.ID}: {rowString}, material set: {wep.materialSetId}, reinforce type: {wep.reinforceShopCategory} <>"); }
-
-            // if (wep.materialSetId == Const.SmithingMaterialSet) { wep.materialSetId = 2200; } changes smithing to somber, caps at lvl 10
 
             _weaponNameDictionary[row.ID] = rowString;
             if (!Enumerable.Range(81, 86).Contains(wep.wepType)) // TODO missing rows for DLC weapons
@@ -320,6 +314,13 @@ public partial class Randomizer
                     _atkParam_Pc = Param.Read(file.Bytes);
                     if (!_atkParam_Pc.ApplyParamDefsCarefully(_paramDefs))
                     { throw new InvalidParamDefException(_atkParam_Pc.ParamType); }
+                    break;
+                }
+            case Const.EquipMtrlSetParam:
+                {
+                    _equipMtrlSetParam = Param.Read(file.Bytes);
+                    if (!_equipMtrlSetParam.ApplyParamDefsCarefully(_paramDefs))
+                    { throw new InvalidParamDefException(_equipMtrlSetParam.ParamType); }
                     break;
                 }
         }
