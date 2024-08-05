@@ -96,6 +96,7 @@ public static class Const
     public const int ItemLotCustomWeaponCategory = 6;
     // Shop Lineup constants
     public const byte ShopLineupWeaponCategory = 0;
+    public const byte ShopLineupArmorCategory = 1;
     public const byte ShopLineupGoodsCategory = 3;
     //CharaInitParam Msg Bnd Entries  
     public static readonly int[] ChrInfoMapping = {

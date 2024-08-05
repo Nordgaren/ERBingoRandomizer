@@ -222,11 +222,23 @@ public partial class Randomizer
             }
         }
     }
-    private void randomizeShopLineupParam()
+    private void randomizeShopLineupParam() //TODO add armor randomization
     {
         List<ShopLineupParam> shopLineupParamRemembranceList = new();
         foreach (Param.Row row in _shopLineupParam.Rows)
         {
+            string docPath = Environment.GetFolderPath(Environment.SpecialFolder.MyDocuments);
+            using (StreamWriter outputFile = new StreamWriter(Path.Combine(docPath, "WriteLines.txt"), true))
+            {
+                foreach (Param.Column col in row.Cells)
+                {
+                    if ((byte)row["equipType"]!.Value.Value == Const.ShopLineupArmorCategory) { 
+
+                       outputFile.WriteLine($" id {row.ID}, value: {col.GetValue(row)} <>");
+                    }
+                }
+            }
+
             if ((byte)row["equipType"]!.Value.Value != Const.ShopLineupWeaponCategory || (row.ID < 101900 || row.ID > 101980))
             { continue; } // assures only weapons are randomized TODO update for armor
 
@@ -235,10 +247,6 @@ public partial class Randomizer
             if (!_weaponDictionary.TryGetValue(sanitizedId, out _))
             { continue; }
 
-            // string docPath = Environment.GetFolderPath(Environment.SpecialFolder.MyDocuments);
-            // outputFile.WriteLine($"materialID {id}, def {row.Def}, category {category}, number-required {numberRequired} <>");
-            // using (StreamWriter outputFile = new StreamWriter(Path.Combine(docPath, "WriteLines.txt"), true))
-            // {            }
 
             if (lot.equipId != sanitizedId)
             {
@@ -278,8 +286,7 @@ public partial class Randomizer
 
             if (!_weaponDictionary.TryGetValue(washWeaponLevels(lot.equipId), out EquipParamWeapon? wep))
             { continue; }
-            if (wep.wepType is Const.StaffType or Const.SealType)
-            { continue; }
+            if (wep.wepType is Const.StaffType or Const.SealType) { continue; }
 
             replaceShopLineupParam(lot, shopLineupParamList, RemembranceWeaponIDs);
             // replaceShopLineupParam(lot, shopLineupParamList, shopLineupParamRemembranceList);
@@ -296,8 +303,7 @@ public partial class Randomizer
             { continue; }
 
             ShopLineupParam lot = new(new Param.Row(row));
-            if (!_magicDictionary.TryGetValue(lot.equipId, out Magic? magic))
-            { continue; }
+            if (!_magicDictionary.TryGetValue(lot.equipId, out Magic? magic)) { continue; }
 
             if (row.ID < 101950)
             {
@@ -323,12 +329,10 @@ public partial class Randomizer
             for (int i = 0; i < Const.ItemLots; i++)
             {
                 int category = (int)categories[i].GetValue(row);
-                if (category != Const.ItemLotGoodsCategory)
-                { continue; }
+                if (category != Const.ItemLotGoodsCategory) { continue; }
 
                 int id = (int)itemIds[i].GetValue(row);
-                if (!_magicDictionary.TryGetValue(id, out Magic? magic))
-                { continue; }
+                if (!_magicDictionary.TryGetValue(id, out Magic? magic)) { continue; }
 
                 ushort chance = (ushort)chances[i].GetValue(row);
                 if (chance == totalWeight)
@@ -356,13 +360,11 @@ public partial class Randomizer
             { continue; }
 
             ShopLineupParam lot = new(row);
-            if (!_magicDictionary.TryGetValue(lot.equipId, out _))
-            { continue; }
+            if (!_magicDictionary.TryGetValue(lot.equipId, out _)) { continue; }
 
             if (row.ID < 101950)
-            {
-                replaceShopLineupParamMagic(lot, magicShopReplacement, shopLineupParamRemembranceList);
-            }
+            { replaceShopLineupParamMagic(lot, magicShopReplacement, shopLineupParamRemembranceList); }
+
             else
             {
                 ShopLineupParam newDragonIncant = getNewId(lot.equipId, shopLineupParamDragonList);
@@ -378,15 +380,12 @@ public partial class Randomizer
             for (int i = 0; i < Const.ItemLots; i++)
             {
                 int category = (int)categories[i].GetValue(row);
-                if (category != Const.ItemLotGoodsCategory)
-                { continue; }
+                if (category != Const.ItemLotGoodsCategory) { continue; }
 
                 int id = (int)itemIds[i].GetValue(row);
-                if (!_magicDictionary.TryGetValue(id, out Magic _))
-                { continue; }
+                if (!_magicDictionary.TryGetValue(id, out Magic _)) { continue; }
 
-                if (!magicShopReplacement.TryGetValue(id, out int entry))
-                { continue; }
+                if (!magicShopReplacement.TryGetValue(id, out int entry)) { continue; }
 
                 itemIds[i].SetValue(row, entry);
             }

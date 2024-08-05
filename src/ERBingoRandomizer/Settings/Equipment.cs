@@ -200,29 +200,43 @@ public class Equipment
     };
     public static List<int> DlcHeavyShopIDs = new List<int>
     { // added for fun
+        4500000,  // Ancient Meteoric Ore Greatsword
         66510000, // Dragon-Hunter's
         66520000, // Rakshasa's
         14510000, // Death Knight's Twin Axes
         15500000, // Death Knight's Longhaft Axe
         3550000,  // Greatsword of Solitude
-        4520000,  // Fire Knight's Greatsword
+        19500000, // Obsidian Lomina
+        43500000, // Repeating Crossbow
+        43510000, // Spread Crossbow
+        41510000, // Ansbach's Bow
     };
     public static List<int> DlcLightShopIDs = new List<int> {  // added for fun
-        64500000, // Backhand Blade
+        7500000,  // Spirit Sword
+        2550000,  // Sword of Light
+        9500000,  // Sword of Night
         64520000, // Curseblade's Cirque
         7510000,  // Falx
         22500000, // Claws of Night
         62510000, // Carian Thrusting Shield
         11500000, // Flowerstone Gavel
+        7530000,  // Horned Warrior's Sword
+        68510000, // Red Bear Claws
     };
 
     public static List<int> DlcSmithingIDs = new List<int> {
+        6500000,    //    Queelign's Greatsword
+        3520000,    //    Lizard's Greatsword
         8510000,    //    Freyja's Greatsword
         4520000,    //    Fire Knight's Greatsword
         64500000,   //    Backhand Blade
         10510000,   //    Blacksteel Twinblade
         67500000,   //    Milady
         62510000,   //    Carian Thrusting Shield
+        10500000,   //    Euporia
+        10510000,   //    Black Steel Twin Blade
+        4520000,    //    Fire Knight's Greatsword
+        40500000,   //    Bone Bow
     };
 
     // INCANTATIONS
