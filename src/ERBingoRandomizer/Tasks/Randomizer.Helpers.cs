@@ -234,7 +234,7 @@ public partial class Randomizer
         setBndFile(_regulationBnd, Const.ShopLineupParamName, _shopLineupParam.Write());
         setBndFile(_regulationBnd, Const.EquipParamWeaponName, _equipParamWeapon.Write());
         setBndFile(_regulationBnd, Const.AtkParamPcName, _atkParam_Pc.Write());
-        setBndFile(_regulationBnd, Const.AtkParamPcName, _equipMtrlSetParam.Write());
+        setBndFile(_regulationBnd, Const.EquipMtrlSetParam, _equipMtrlSetParam.Write());
         SFUtil.EncryptERRegulation($"{Const.BingoPath}/{Const.RegulationName}", _regulationBnd);
         Directory.CreateDirectory(Path.GetDirectoryName($"{Const.BingoPath}/{Const.MenuMsgBNDPath}") ?? throw new InvalidOperationException());
         setBndFile(_menuMsgBND, Const.GR_LineHelpName, _lineHelpFmg.Write()); // TODO why isn't this updating starting classes ?

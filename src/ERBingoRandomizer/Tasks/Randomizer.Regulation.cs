@@ -228,12 +228,17 @@ public partial class Randomizer
         foreach (Param.Row row in _shopLineupParam.Rows)
         {
             if ((byte)row["equipType"]!.Value.Value != Const.ShopLineupWeaponCategory || (row.ID < 101900 || row.ID > 101980))
-            { continue; }
+            { continue; } // assures only weapons are randomized TODO update for armor
 
             ShopLineupParam lot = new(new Param.Row(row));
             int sanitizedId = washWeaponLevels(lot.equipId);
             if (!_weaponDictionary.TryGetValue(sanitizedId, out _))
             { continue; }
+
+            // string docPath = Environment.GetFolderPath(Environment.SpecialFolder.MyDocuments);
+            // outputFile.WriteLine($"materialID {id}, def {row.Def}, category {category}, number-required {numberRequired} <>");
+            // using (StreamWriter outputFile = new StreamWriter(Path.Combine(docPath, "WriteLines.txt"), true))
+            // {            }
 
             if (lot.equipId != sanitizedId)
             {
@@ -400,38 +405,21 @@ public partial class Randomizer
 
     private void patchSmithingStones()
     {
-        string docPath = Environment.GetFolderPath(Environment.SpecialFolder.MyDocuments);
-
-        IEnumerable<int> remembranceItems = _shopLineupParam.Rows.Where(r => r.ID is >= 101900 and <= 101929)
-            .Select(r => new ShopLineupParam(r).equipId);
-
-
         foreach (Param.Row row in _equipMtrlSetParam.Rows)
         {
-           // int id = row.GetValue("materialId01");
-            using (StreamWriter outputFile = new StreamWriter(Path.Combine(docPath, "WriteLines.txt"), true))
+            int id = (int)row["materialId01"]!.Value.Value;
+            int category = (byte)row["materialCate01"]!.Value.Value;
+            int numberRequired = (sbyte)row["itemNum01"]!.Value.Value;
+
+            if (category == 4 && numberRequired > 1 && id >= 10100 && id < 10110)
             {
-                outputFile.WriteLine($"materialID {row.ID}, def {row.Def} <>"); 
-                foreach(Param.Cell cell in row.CellHandles)
-                {
-                    outputFile.WriteLine($"call value: {cell.Value}");
-                }
+                //  EquipMtrlSetParam param = new(row);
+                //  param.itemNum01 = (sbyte)3;
+                row["itemNum01"].Value.SetValue((sbyte)3);
+
+                // if (numberRequired == 4) { row["itemNum01"].Value.SetValue((sbyte)3); }
+                // if (numberRequired == 6) { row["itemNum01"].Value.SetValue((sbyte)4); }
             }
-
         }
-
-        /* foreach (PARAM.Row row in game.Params["EquipMtrlSetParam"].Rows)
-         {
-             int id = (int)row["materialId01"].Value;
-             int category = (byte)row["materialCate01"].Value;
-             int numberRequired = (sbyte)row["itemNum01"].Value;
-             if (category == 4 && id >= 10100 && id < 10110 && numberRequired > 1)
-             {
-                 row["itemNum01"].Value = (byte)1;
-             }
-         }*/
-        // materialSetId 0 is smithing, reinforce type is cold etc.
-        // if (wep.materialSetId == Const.SmithingMaterialSet) { wep.materialSetId = 2200; } changes smithing to somber, caps at lvl 10
-
     }
 }

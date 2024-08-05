@@ -48,5 +48,7 @@ public class EquipMtrlSetParam
         _materialCate05 = material["materialCate05"]!.Value;
         _materialCate06 = material["materialCate06"]!.Value;
     }
-
+    public int materialId01 { get => (int)_materialId01.Value; }
+    public byte materialCate01 { get => (byte)_materialCate01.Value; }
+    public sbyte itemNum01 { get => (sbyte)_itemNum01.Value; set => _itemNum01.Value = value; }
 }
