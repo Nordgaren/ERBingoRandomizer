@@ -60,7 +60,7 @@ public partial class Randomizer
     private void randomizeStartingClassParams()
     {
         logItem("Starting Class Randomization");
-        logItem("Str-X ... lvls in strength required, Lvl-Y ... lvls in all other stats required.");
+        logItem("Level estimate (x) appears if you cannot wield the weapon, assumes you are benefiting from two-handing.");
 
         List<Param.Row> staves = _weaponTypeDictionary[Const.StaffType];
         List<Param.Row> seals = _weaponTypeDictionary[Const.SealType];
@@ -223,10 +223,12 @@ public partial class Randomizer
     }
     private void randomizeShopLineupParam() //TODO add armor randomization, TODO randomize away from Carian Regal Scepter
     {
+        string docPath = Environment.GetFolderPath(Environment.SpecialFolder.MyDocuments);
+
         List<ShopLineupParam> shopLineupParamRemembranceList = new();
         foreach (Param.Row row in _shopLineupParam.Rows)
         {
-            /*  string docPath = Environment.GetFolderPath(Environment.SpecialFolder.MyDocuments);
+            /*  
                 using (StreamWriter outputFile = new StreamWriter(Path.Combine(docPath, "WriteLines.txt"), true))
                 {
                     foreach (Param.Column col in row.Cells)
@@ -268,8 +270,8 @@ public partial class Randomizer
             3500000, 3510000, 8500000, 17500000, 18510000, 23510000, 23520000, 67520000,
         };
 
-        IReadOnlyList<List<int>> WeaponShopLists = new List<List<int>>() {
-            Equipment.LightBowAndBowIDs, Equipment.SmallShieldIDs, Equipment.MediumShieldIDs, Equipment.TorchIDs, 
+        List<List<int>> WeaponShopLists = new List<List<int>>() {
+            Equipment.LightBowAndBowIDs, Equipment.SmallShieldIDs, Equipment.MediumShieldIDs, Equipment.TorchIDs,
             Equipment.ColossalWeaponIDs, Equipment.CurvedGreatSwordIDs, Equipment.HammerIDs, Equipment.StraightSwordIDs,
             Equipment.CurvedSwordIDs, Equipment.ReaperIDs, Equipment.TwinbladeIDs, Equipment.DaggerIDs, Equipment.FistIDs,
             Equipment.DlcHeavyShopIDs, Equipment.DlcLightShopIDs, Equipment.DlcSmithingIDs, // Equipment.GreatswordIDs, 
@@ -277,22 +279,73 @@ public partial class Randomizer
 
         foreach (Param.Row row in _shopLineupParam.Rows)
         {
-            // logShopId(row.ID);
-            if ((byte)row["equipType"]!.Value.Value != Const.ShopLineupWeaponCategory || row.ID > 101980 ) // TODO find out what this row.ID is
+            if ((byte)row["equipType"]!.Value.Value != Const.ShopLineupWeaponCategory
+                || row.ID > 101980
+            ) // TODO find out what this row.ID is removes 20 lots
             { continue; }
 
             ShopLineupParam lot = new(row);
 
             if (!_weaponDictionary.TryGetValue(washWeaponLevels(lot.equipId), out EquipParamWeapon? wep))
             { continue; }
-            // if (wep.wepType is Const.StaffType or Const.SealType) // TODO excludes Carian Regal Scepter
-            // { continue; }
 
             if (lot.equipId == Const.CarianRegalScepter || !(wep.wepType is Const.StaffType or Const.SealType))
-            {
+            {   // about 60 item shop allocations
                 int index = _random.Next(WeaponShopLists.Count);
-                List<int> weaponList = WeaponShopLists[index];
-                replaceShopLineupParam(lot, weaponList, RemembranceWeaponIDs);
+                List<int> weaponIndex = WeaponShopLists[index];
+
+                replaceShopLineupParam(lot, weaponIndex, RemembranceWeaponIDs);
+            }
+        }
+        List<int> baseHeadProtectors = new List<int>()
+        {
+            40000, 160000, 210000, 280000, 620000, 630000, 660000, 670000, 730000, 870000,
+            880000, 890000, 1401000, 1500000, 1100000,
+        };
+        List<int> baseArmProtectors = new List<int>() // arm protectors found in shops
+        {
+            40200, 210200, 280200, 630200, 660200, 670200, 730200, 870200, 880200, 930200, 1500200,
+        };
+        List<int> baseBodyProtectors = new List<int>()
+        {
+            40100, 210100, 280100, 622100, 630100, 660100, 670100, 730100, 870100, 880100, 890100, 931100,
+            962100, 1500100, 1102100, 1100100,
+        };
+        List<int> baseLegProtectors = new List<int>()
+        {
+            40300, 210300, 280300, 620300, 630300, 660300, 670300, 730300, 870300, 880300, 890300, 930300,
+            960300, 1500300,
+        };
+
+        foreach (Param.Row row in _shopLineupParam.Rows)
+        {
+            if ((byte)row["equipType"]!.Value.Value == Const.ShopLineupArmorCategory)
+            {
+                if (row.ID > 101980) { continue; }
+
+                ShopLineupParam lot = new(row);
+
+                if (baseHeadProtectors.Contains(lot.equipId)) // chain coif (helmet)
+                {
+                    int index = _random.Next(Equipment.HeadArmorIDs.Count);
+                    lot.equipId = Equipment.HeadArmorIDs[index];
+                }
+                if (baseBodyProtectors.Contains(lot.equipId)) // Chain armor
+                {
+                    int index = _random.Next(Equipment.BodyArmorIDs.Count);
+                    lot.equipId = Equipment.BodyArmorIDs[index];
+                }
+                if (baseArmProtectors.Contains(lot.equipId))
+                {
+                    int index = _random.Next(Equipment.ArmsArmorIDs.Count);
+                    lot.equipId = Equipment.ArmsArmorIDs[index];
+                }
+                if (lot.equipId == 1100300) // Chain Leggings
+                {
+                    int index = _random.Next(Equipment.LegsArmorIDs.Count);
+                    lot.equipId = Equipment.LegsArmorIDs[index];
+                }
+
             }
         }
     }

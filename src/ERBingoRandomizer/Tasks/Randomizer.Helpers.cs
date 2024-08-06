@@ -22,7 +22,7 @@ public partial class Randomizer
     {
         byte[] array = Encoding.UTF8.GetBytes(input);
         byte[] hashData = SHA256.HashData(array);
-        IEnumerable<byte[]> chunks = hashData.Chunk(4);
+        IEnumerable<byte[]> chunks = hashData.Chunk(4); // if we have a toggle for smithing cost, could choose different range of chunks, however what would the step be if there are more toggles?
         return chunks.Aggregate(0, (current, chunk) => current ^ BitConverter.ToInt32(chunk));
     }
     private void allocateStatsAndSpells(int rowId, CharaInitParam startingClass, IReadOnlyList<int> spells)
@@ -244,19 +244,11 @@ public partial class Randomizer
     private string getRequiredLevelsWeapon(CharaInitParam chr, int id)
     {   // TODO reimplement to account for DLC gear
         string response = "";
-        EquipParamWeapon wep = _weaponDictionary[id]; 
+        EquipParamWeapon wep = _weaponDictionary[id];
         int reqLevels = 0;
 
-/*
-            if (wep.properStrength > (chr.baseStr * 3 / 2))
-            { reqLevels += wep.properStrength - (chr.baseStr * 3 / 2); }
-
-*/
-        if (wep.properStrength > chr.baseStr)
-        { 
-          //  reqLevels += wep.properStrength - (chr.baseStr); 
-            response += $" Str-{wep.properStrength - chr.baseStr}";
-        }
+        if (wep.properStrength > (chr.baseStr * 3 / 2))
+        { reqLevels += wep.properStrength - (chr.baseStr * 3 / 2); }
 
         if (wep.properAgility > chr.baseDex)
         { reqLevels += wep.properAgility - chr.baseDex; }
@@ -270,7 +262,7 @@ public partial class Randomizer
         if (wep.properLuck > chr.baseLuc)
         { reqLevels += wep.properLuck - chr.baseLuc; }
 
-        return reqLevels > 0 ? response + $" Lvl-{reqLevels}" : response;
+        return reqLevels > 0 ? $"({reqLevels})" : response;
     }
     private string getRequiredLevelsSpell(CharaInitParam chr, int id)
     {

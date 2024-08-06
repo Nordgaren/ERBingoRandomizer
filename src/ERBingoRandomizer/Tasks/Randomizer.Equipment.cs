@@ -11,7 +11,7 @@ public partial class Randomizer
 {
     HashSet<int> allocatedIDs = new HashSet<int>();
     private int randomizeStartingWeapon(int id, List<int> weapons)
-    { // TODO Rely on weapons table
+    {
         int limit = weapons.Count;
         int newID = 0;
         int index = 0;
@@ -21,10 +21,7 @@ public partial class Randomizer
             index = _random.Next(limit);
             newID = weapons[index];
         } while (allocatedIDs.Contains(newID));
-        // while (!_weaponDictionary.ContainsKey(newID))
-        // { // TODO update _weaponDictionary for DLC weapons
-        //     newID = weapons[_random.Next(limit)];
-        // }
+
         allocatedIDs.Add(newID);
         return washWeaponMetadata(newID);
     }
@@ -65,8 +62,7 @@ public partial class Randomizer
     }
     private bool checkWeaponType(int id, params ushort[] types)
     {
-        if (id == Const.NoItem)
-        { return false; }
+        if (id == Const.NoItem) { return false; }
 
         return _weaponDictionary.TryGetValue(id, out EquipParamWeapon? wep) && types.Contains(wep.wepType);
     }
@@ -80,8 +76,7 @@ public partial class Randomizer
     }
     private bool checkSpellType(int id, params byte[] types)
     {
-        if (id == Const.NoItem)
-        { return false; }
+        if (id == Const.NoItem) { return false; }
 
         return _magicDictionary.TryGetValue(id, out Magic? magic) && types.Contains(magic.ezStateBehaviorType);
     }
@@ -162,11 +157,16 @@ public partial class Randomizer
             chr.subWepLeft3 = getUsableWeapon(chr, type);
             return;
         }
-
         chr.subWepRight3 = getUsableWeapon(chr, type);
     }
     private int getUsableWeapon(CharaInitParam chr, ushort type)
     { // currently only used for starting classes (staves and seals)
+        if (type == Const.StaffType)
+        { return 33000000; } // Glintstone Staff
+
+        if (type == Const.SealType)
+        { return 34000000; } // Finger Seal
+
         IReadOnlyList<Param.Row> table = _weaponTypeDictionary[type];
         int limit = table.Count;
         int i = _random.Next(limit);
