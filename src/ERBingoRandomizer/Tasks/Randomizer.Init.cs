@@ -132,10 +132,10 @@ public partial class Randomizer
 
         foreach (Param.Row row in _equipParamWeapon.Rows)
         {
-            string rowString = _weaponFmg[row.ID];
+            string rowString = _weaponFmg[row.ID];              // TODO DLC not included in _weaponFmg
 
             if ((int)row["sortId"]!.Value.Value == 9999999
-                || string.IsNullOrWhiteSpace(rowString)         // TODO weapon IDs are tossed
+                || string.IsNullOrWhiteSpace(rowString)         // TODO DLC weapons have whitespace here
                 || rowString.ToLower().Contains("[error]")
             )
             { continue; }

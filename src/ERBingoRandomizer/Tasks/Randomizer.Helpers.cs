@@ -146,14 +146,14 @@ public partial class Randomizer
         }
     }
 
-    private void replaceShopLineupParam(ShopLineupParam lot, IList<int> shopLineupParamDictionary, IList<int> remembranceList)
+    private void replaceShopLineupParam(ShopLineupParam lot, IList<int> shopLineupList, IList<int> remembranceList)
     {
         int newId = 0;
         if (lot.mtrlId == -1)
         {
-            List<int> weapons = Equipment.WeaponShopLists[_random.Next(Equipment.WeaponShopLists.Count)];
-            int index = _random.Next(weapons.Count);
-            newId = weapons[index];
+            int limit = shopLineupList.Count;
+            int index = _random.Next(limit);
+            newId = shopLineupList[index];
         }
         else
         {
@@ -243,22 +243,19 @@ public partial class Randomizer
 
     private string getRequiredLevelsWeapon(CharaInitParam chr, int id)
     {   // TODO reimplement to account for DLC gear
-
-        EquipParamWeapon wep = _weaponDictionary[id]; // TODO dlc weapons not included
+        string response = "";
+        EquipParamWeapon wep = _weaponDictionary[id]; 
         int reqLevels = 0;
 
-        // add to log (calcs two handed if strength is 10 or higher)
-        // if strength < 10 use strength, else strength * 3/2
-
-        if (chr.baseStr < 10)
-        {
-            if (wep.properStrength > (chr.baseStr))
-            { reqLevels += wep.properStrength - (chr.baseStr); }
-        }
-        else
-        {
+/*
             if (wep.properStrength > (chr.baseStr * 3 / 2))
             { reqLevels += wep.properStrength - (chr.baseStr * 3 / 2); }
+
+*/
+        if (wep.properStrength > chr.baseStr)
+        { 
+          //  reqLevels += wep.properStrength - (chr.baseStr); 
+            response += $" Str-{wep.properStrength - chr.baseStr}";
         }
 
         if (wep.properAgility > chr.baseDex)
@@ -273,7 +270,7 @@ public partial class Randomizer
         if (wep.properLuck > chr.baseLuc)
         { reqLevels += wep.properLuck - chr.baseLuc; }
 
-        return reqLevels > 0 ? $" (-{reqLevels})" : "";
+        return reqLevels > 0 ? response + $" Lvl-{reqLevels}" : response;
     }
     private string getRequiredLevelsSpell(CharaInitParam chr, int id)
     {

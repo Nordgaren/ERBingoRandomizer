@@ -60,8 +60,7 @@ public partial class Randomizer
     private void randomizeStartingClassParams()
     {
         logItem("Starting Class Randomization");
-        logItem("Strength less than 10, shows one-handed levels required.");
-        logItem("Strength 10 or higher, shows two-handed levels required.");
+        logItem("Str-X ... lvls in strength required, Lvl-Y ... lvls in all other stats required.");
 
         List<Param.Row> staves = _weaponTypeDictionary[Const.StaffType];
         List<Param.Row> seals = _weaponTypeDictionary[Const.SealType];
@@ -122,7 +121,7 @@ public partial class Randomizer
                 {
                     if (!_weaponDictionary.TryGetValue(sanitizedId, out EquipParamWeapon? wep))
                     { continue; }
-                    if (wep.wepType is Const.StaffType or Const.SealType)
+                    if ((wep.wepType is Const.StaffType or Const.SealType)) // TODO update to allow Carian Regal Scepter
                     { continue; }
 
                     if (id != sanitizedId)
@@ -222,31 +221,33 @@ public partial class Randomizer
             }
         }
     }
-    private void randomizeShopLineupParam() //TODO add armor randomization
+    private void randomizeShopLineupParam() //TODO add armor randomization, TODO randomize away from Carian Regal Scepter
     {
         List<ShopLineupParam> shopLineupParamRemembranceList = new();
         foreach (Param.Row row in _shopLineupParam.Rows)
         {
-            string docPath = Environment.GetFolderPath(Environment.SpecialFolder.MyDocuments);
-            using (StreamWriter outputFile = new StreamWriter(Path.Combine(docPath, "WriteLines.txt"), true))
-            {
-                foreach (Param.Column col in row.Cells)
+            /*  string docPath = Environment.GetFolderPath(Environment.SpecialFolder.MyDocuments);
+                using (StreamWriter outputFile = new StreamWriter(Path.Combine(docPath, "WriteLines.txt"), true))
                 {
-                    if ((byte)row["equipType"]!.Value.Value == Const.ShopLineupArmorCategory) { 
+                    foreach (Param.Column col in row.Cells)
+                    {
+                        if ((byte)row["equipType"]!.Value.Value == Const.ShopLineupArmorCategory)
+                        {
 
-                       outputFile.WriteLine($" id {row.ID}, value: {col.GetValue(row)} <>");
+                            outputFile.WriteLine($" id {row.ID}, value: {col.GetValue(row)} <>");
+                        }
                     }
                 }
-            }
+            */
 
             if ((byte)row["equipType"]!.Value.Value != Const.ShopLineupWeaponCategory || (row.ID < 101900 || row.ID > 101980))
             { continue; } // assures only weapons are randomized TODO update for armor
 
             ShopLineupParam lot = new(new Param.Row(row));
             int sanitizedId = washWeaponLevels(lot.equipId);
+
             if (!_weaponDictionary.TryGetValue(sanitizedId, out _))
             { continue; }
-
 
             if (lot.equipId != sanitizedId)
             {
@@ -255,41 +256,44 @@ public partial class Randomizer
             shopLineupParamRemembranceList.Add(lot);
         }
 
-        List<Param.Row> staves = _weaponTypeDictionary[Const.StaffType];
-        List<Param.Row> seals = _weaponTypeDictionary[Const.SealType];
-        List<int> shopLineupParamList = _weaponDictionary.Keys.Select(washWeaponMetadata).Distinct()
-            .Where(i => shopLineupParamRemembranceList.All(s => s.equipId != i))
-            .Where(id => staves.All(s => s.ID != id) && seals.All(s => s.ID != id))
-            .ToList();
-        shopLineupParamList.Shuffle(_random); // TODO investigate if thise matters
-        shopLineupParamRemembranceList.Shuffle(_random); // TODO investigate if thise matters
-
         // logItem("<> Shop Replacements - Random item selected from pool of all weapons (not including infused weapons). Remembrances are randomized amongst each-other.");
 
         List<int> RemembranceWeaponIDs = new List<int>()
         {
-            // 33510000, 4530000, 4550000,  // staff of the great beyond, Radahn's DLC swords
             3100000, 3140000, 4020000, 4050000, 6040000, 8100000, 9020000, 11150000,
             13030000, 15040000, 15110000, 17010000,  20060000, 21060000, 23050000,
             42000000,
+            // 4530000, 4550000,  // Radahn's DLC swords
             // DLC
             3500000, 3510000, 8500000, 17500000, 18510000, 23510000, 23520000, 67520000,
+        };
+
+        IReadOnlyList<List<int>> WeaponShopLists = new List<List<int>>() {
+            Equipment.LightBowAndBowIDs, Equipment.SmallShieldIDs, Equipment.MediumShieldIDs, Equipment.TorchIDs, 
+            Equipment.ColossalWeaponIDs, Equipment.CurvedGreatSwordIDs, Equipment.HammerIDs, Equipment.StraightSwordIDs,
+            Equipment.CurvedSwordIDs, Equipment.ReaperIDs, Equipment.TwinbladeIDs, Equipment.DaggerIDs, Equipment.FistIDs,
+            Equipment.DlcHeavyShopIDs, Equipment.DlcLightShopIDs, Equipment.DlcSmithingIDs, // Equipment.GreatswordIDs, 
         };
 
         foreach (Param.Row row in _shopLineupParam.Rows)
         {
             // logShopId(row.ID);
-            if ((byte)row["equipType"]!.Value.Value != Const.ShopLineupWeaponCategory || row.ID > 101980) // TODO find out what this row.ID is
+            if ((byte)row["equipType"]!.Value.Value != Const.ShopLineupWeaponCategory || row.ID > 101980 ) // TODO find out what this row.ID is
             { continue; }
 
             ShopLineupParam lot = new(row);
 
             if (!_weaponDictionary.TryGetValue(washWeaponLevels(lot.equipId), out EquipParamWeapon? wep))
             { continue; }
-            if (wep.wepType is Const.StaffType or Const.SealType) { continue; }
+            // if (wep.wepType is Const.StaffType or Const.SealType) // TODO excludes Carian Regal Scepter
+            // { continue; }
 
-            replaceShopLineupParam(lot, shopLineupParamList, RemembranceWeaponIDs);
-            // replaceShopLineupParam(lot, shopLineupParamList, shopLineupParamRemembranceList);
+            if (lot.equipId == Const.CarianRegalScepter || !(wep.wepType is Const.StaffType or Const.SealType))
+            {
+                int index = _random.Next(WeaponShopLists.Count);
+                List<int> weaponList = WeaponShopLists[index];
+                replaceShopLineupParam(lot, weaponList, RemembranceWeaponIDs);
+            }
         }
     }
     private void randomizeShopLineupParamMagic()
@@ -412,8 +416,7 @@ public partial class Randomizer
 
             if (category == 4 && numberRequired > 1 && id >= 10100 && id < 10110)
             {
-                //  EquipMtrlSetParam param = new(row);
-                //  param.itemNum01 = (sbyte)3;
+                //  EquipMtrlSetParam param = new(row); //  param.itemNum01 = (sbyte)3;
                 row["itemNum01"].Value.SetValue((sbyte)3);
 
                 // if (numberRequired == 4) { row["itemNum01"].Value.SetValue((sbyte)3); }

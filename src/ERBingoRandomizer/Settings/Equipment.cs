@@ -298,16 +298,11 @@ public class Equipment
         ClawIDs, DaggerIDs, FistIDs, ThrustingSwordIDs, WhipIDs, FlailIDs,
         GreatShieldIDs, MediumShieldIDs, SmallShieldIDs, LightBowAndBowIDs, BallistaOrGreatBowIDs,
     };
-    public static IReadOnlyList<List<int>> WeaponShopLists = new List<List<int>>() {
-        /* weapons needed for squares */
-        DaggerIDs, FistIDs, LightBowAndBowIDs, SmallShieldIDs, MediumShieldIDs, TorchIDs, ColossalWeaponIDs,
-        /* weapons needed for fun */
-        CurvedGreatSwordIDs, HammerIDs, StraightSwordIDs, CurvedSwordIDs, ReaperIDs, TwinbladeIDs,
-        /* DLC Upside */
-        DlcHeavyShopIDs, DlcLightShopIDs, DlcSmithingIDs,
-
-        // GreatswordIDs, ThrustingSwordIDs, SpearIDs, GreatHammerIDs, GreataxeIDs, 
-    };
+    // public static IReadOnlyList<List<int>> WeaponShopLists = new List<List<int>>() {
+    //     DaggerIDs, FistIDs, LightBowAndBowIDs, SmallShieldIDs, MediumShieldIDs, TorchIDs, ColossalWeaponIDs,
+    //     CurvedGreatSwordIDs, HammerIDs, StraightSwordIDs, CurvedSwordIDs, ReaperIDs, TwinbladeIDs,
+    //     DlcHeavyShopIDs, DlcLightShopIDs, DlcSmithingIDs, // GreatswordIDs, GreataxeIDs, 
+    // };
 
     // ARMOR
     public static List<int> HeadArmorIDs = new List<int>()
