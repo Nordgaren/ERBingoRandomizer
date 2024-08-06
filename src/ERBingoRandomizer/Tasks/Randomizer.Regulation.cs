@@ -60,6 +60,7 @@ public partial class Randomizer
     private void randomizeStartingClassParams()
     {
         logItem("Starting Class Randomization");
+        logItem($"Seed: {_seed}");
         logItem("Level estimate (x) appears if you cannot wield the weapon, assumes you are benefiting from two-handing.");
 
         List<Param.Row> staves = _weaponTypeDictionary[Const.StaffType];
@@ -273,8 +274,9 @@ public partial class Randomizer
         List<List<int>> WeaponShopLists = new List<List<int>>() {
             Equipment.LightBowAndBowIDs, Equipment.SmallShieldIDs, Equipment.MediumShieldIDs, Equipment.TorchIDs,
             Equipment.ColossalWeaponIDs, Equipment.CurvedGreatSwordIDs, Equipment.HammerIDs, Equipment.StraightSwordIDs,
-            Equipment.CurvedSwordIDs, Equipment.ReaperIDs, Equipment.TwinbladeIDs, Equipment.DaggerIDs, Equipment.FistIDs,
-            Equipment.DlcHeavyShopIDs, Equipment.DlcLightShopIDs, Equipment.DlcSmithingIDs, // Equipment.GreatswordIDs, 
+            Equipment.CurvedSwordIDs, Equipment.ReaperIDs, Equipment.TwinbladeIDs, Equipment.DaggerIDs,
+            Equipment.FistIDs, Equipment.GreatswordIDs, Equipment.DlcGreatswordIDs, Equipment.DlcSideIDs,
+            Equipment.DlcHeavyShopIDs, Equipment.DlcLightShopIDs, Equipment.DlcSmithingIDs, Equipment.DlcRangedIds,
         };
 
         foreach (Param.Row row in _shopLineupParam.Rows)
@@ -469,11 +471,8 @@ public partial class Randomizer
 
             if (category == 4 && numberRequired > 1 && id >= 10100 && id < 10110)
             {
-                //  EquipMtrlSetParam param = new(row); //  param.itemNum01 = (sbyte)3;
-                row["itemNum01"].Value.SetValue((sbyte)3);
-
-                // if (numberRequired == 4) { row["itemNum01"].Value.SetValue((sbyte)3); }
-                // if (numberRequired == 6) { row["itemNum01"].Value.SetValue((sbyte)4); }
+                row["itemNum01"].Value.SetValue(Const.SmithingCost);
+                // if (numberRequired == 4) { } // if (numberRequired == 6) { } //  EquipMtrlSetParam param = new(row); //  param.itemNum01 = (sbyte)3;
             }
         }
     }

@@ -15,9 +15,7 @@ namespace SoulsFormats
             { return false; }
 
             string ascii = expression.GetASCII(0, 4);
-            // byte b0 = expression.GetByte(0); // potentially not needed for ER
-            // byte b1 = expression.GetByte(1); // potentially not needed for ER
-            return ascii == "DCP\0" || ascii == "DCX\0"; // || b0 == 0x78 && (b1 == 0x01 || b1 == 0x5E || b1 == 0x9C || b1 == 0xDA);
+            return ascii == "DCP\0" || ascii == "DCX\0";
         }
 
         /// <summary>
@@ -155,10 +153,6 @@ namespace SoulsFormats
 
             switch (type)
             {
-                // case Type.Zlib:
-                //     return SFUtil.ReadZlib(expression, (int)expression.Length);
-                // case Type.DCP_EDGE:
-                //     return DecompressDCPEDGE(expression);
                 case Type.DCX_ZSTD:
                     return DecompressDCXZSTD(expression);
                 case Type.DCX_KRAK:
@@ -167,6 +161,10 @@ namespace SoulsFormats
                     return DecompressDCPDFLT(expression);
                 case Type.DCX_EDGE:
                     return DecompressDCXEDGE(expression);
+                case Type.DCP_EDGE:
+                    return DecompressDCPEDGE(expression);
+                case Type.Zlib:
+                    return SFUtil.ReadZlib(expression, (int)expression.Length);
                 // case Type.DCX_DFLT_10000_24_9:
                 //     return DecompressDCXDFLT(expression, type);
                 // case Type.DCX_DFLT_10000_44_9:
@@ -205,66 +203,66 @@ namespace SoulsFormats
             return decompressed;
         }
 
-        // private static byte[] DecompressDCPEDGE(BinaryReaderEx expression)
-        // {
-        //     expression.AssertASCII("DCP\0");
-        //     expression.AssertASCII("EDGE");
-        //     expression.AssertInt32(0x20);
-        //     expression.AssertInt32(0x9000000);
-        //     expression.AssertInt32(0x10000);
-        //     expression.AssertInt32(0x0);
-        //     expression.AssertInt32(0x0);
-        //     expression.AssertInt32(0x00100100);
+        private static byte[] DecompressDCPEDGE(BinaryReaderEx expression)
+        {
+            expression.AssertASCII("DCP\0");
+            expression.AssertASCII("EDGE");
+            expression.AssertInt32(0x20);
+            expression.AssertInt32(0x9000000);
+            expression.AssertInt32(0x10000);
+            expression.AssertInt32(0x0);
+            expression.AssertInt32(0x0);
+            expression.AssertInt32(0x00100100);
 
-        //     expression.AssertASCII("DCS\0");
-        //     int uncompressedSize = expression.ReadInt32();
-        //     int compressedSize = expression.ReadInt32();
-        //     expression.AssertInt32(0);
-        //     long dataStart = expression.Position;
-        //     expression.Skip(compressedSize);
+            expression.AssertASCII("DCS\0");
+            int uncompressedSize = expression.ReadInt32();
+            int compressedSize = expression.ReadInt32();
+            expression.AssertInt32(0);
+            long dataStart = expression.Position;
+            expression.Skip(compressedSize);
 
-        //     expression.AssertASCII("DCA\0");
-        //     int dcaSize = expression.ReadInt32();
-        //     // ???
-        //     expression.AssertASCII("EgdT");
-        //     expression.AssertInt32(0x00010000);
-        //     expression.AssertInt32(0x20);
-        //     expression.AssertInt32(0x10);
-        //     expression.AssertInt32(0x10000);
-        //     int egdtSize = expression.ReadInt32();
-        //     int chunkCount = expression.ReadInt32();
-        //     expression.AssertInt32(0x100000);
+            expression.AssertASCII("DCA\0");
+            int dcaSize = expression.ReadInt32();
+            // ???
+            expression.AssertASCII("EgdT");
+            expression.AssertInt32(0x00010000);
+            expression.AssertInt32(0x20);
+            expression.AssertInt32(0x10);
+            expression.AssertInt32(0x10000);
+            int egdtSize = expression.ReadInt32();
+            int chunkCount = expression.ReadInt32();
+            expression.AssertInt32(0x100000);
 
-        //     if (egdtSize != 0x20 + chunkCount * 0x10)
-        //         throw new InvalidDataException("Unexpected EgdT size in EDGE DCX.");
+            if (egdtSize != 0x20 + chunkCount * 0x10)
+                throw new InvalidDataException("Unexpected EgdT size in EDGE DCX.");
 
-        //     byte[] decompressed = new byte[uncompressedSize];
-        //     using (MemoryStream dcmpStream = new MemoryStream(decompressed))
-        //     {
-        //         for (int i = 0; i < chunkCount; i++)
-        //         {
-        //             expression.AssertInt32(0);
-        //             int offset = expression.ReadInt32();
-        //             int size = expression.ReadInt32();
-        //             bool compressed = expression.AssertInt32(0, 1) == 1;
+            byte[] decompressed = new byte[uncompressedSize];
+            using (MemoryStream dcmpStream = new MemoryStream(decompressed))
+            {
+                for (int i = 0; i < chunkCount; i++)
+                {
+                    expression.AssertInt32(0);
+                    int offset = expression.ReadInt32();
+                    int size = expression.ReadInt32();
+                    bool compressed = expression.AssertInt32(0, 1) == 1;
 
-        //             byte[] chunk = expression.GetBytes(dataStart + offset, size);
+                    byte[] chunk = expression.GetBytes(dataStart + offset, size);
 
-        //             if (compressed)
-        //             {
-        //                 using (MemoryStream cmpStream = new MemoryStream(chunk))
-        //                 using (DeflateStream dfltStream = new DeflateStream(cmpStream, CompressionMode.Decompress))
-        //                     dfltStream.CopyTo(dcmpStream);
-        //             }
-        //             else
-        //             {
-        //                 dcmpStream.Write(chunk, 0, chunk.Length);
-        //             }
-        //         }
-        //     }
+                    if (compressed)
+                    {
+                        using (MemoryStream cmpStream = new MemoryStream(chunk))
+                        using (DeflateStream dfltStream = new DeflateStream(cmpStream, CompressionMode.Decompress))
+                            dfltStream.CopyTo(dcmpStream);
+                    }
+                    else
+                    {
+                        dcmpStream.Write(chunk, 0, chunk.Length);
+                    }
+                }
+            }
 
-        //     return decompressed;
-        // }
+            return decompressed;
+        }
 
         private static byte[] DecompressDCXEDGE(BinaryReaderEx expression)
         {
@@ -471,24 +469,25 @@ namespace SoulsFormats
 
             switch (type)
             {
-                // case Type.Zlib:
-                //     SFUtil.WriteZlib(writer, 0xDA, data);
-                //     return;
-                // case Type.DCP_EDGE:
-                //     return;
-                // case Type.DCP_DFLT:
-                //     CompressDCPDFLT(data, writer);
-                //     return;
                 case Type.DCX_ZSTD:
-                    // CompressDCXZSTD(data, writer); // TODO does not work
-                    // CompressDCXKRAK(data, writer); // workaround TODO add longterm implementation
-                    CompressDCPDFLT(data, writer); // faster workaround
+                    // CompressDCXKRAK(data, writer); // workaround TODO add longterm implementation // CompressDCXZSTD(data, writer); // TODO does not work
+                    // CompressDCPDFLT(data, writer); // faster workaround
+                    CompressDCXEDGE(data, writer);
                     return;
                 case Type.DCX_KRAK:
                     CompressDCXKRAK(data, writer);
                     return;
                 case Type.DCX_EDGE:
                     CompressDCXEDGE(data, writer);
+                    return;
+                case Type.Zlib:
+                    SFUtil.WriteZlib(writer, 0xDA, data);
+                    return;
+                case Type.DCP_EDGE:
+                    CompressDCXEDGE(data, writer);
+                    return;
+                case Type.DCP_DFLT:
+                    CompressDCPDFLT(data, writer);
                     return;
                 case Type.Unknown:
                     throw new ArgumentException("You cannot compress a DCX with an unknown type.");
@@ -497,7 +496,7 @@ namespace SoulsFormats
                     //  || type == Type.DCX_DFLT_11000_44_8 || type == Type.DCX_DFLT_11000_44_9
                     //  || type == Type.DCX_DFLT_11000_44_9_15)
                     //     CompressDCXDFLT(data, writer, type);
-                    // else
+                    // else 
                     throw new NotImplementedException("Compression for the given type is not implemented.");
                     break;
             }

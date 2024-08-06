@@ -10,7 +10,7 @@ public static class Const
     public const string BingoRegulationPath = $"{BingoPath}/{RegulationName}";
     public const string ExeName = "eldenring.exe";
     public const string RegulationName = "regulation.bin";
-    public const string ItemMsgBNDPath = "/msg/engus/item.msgbnd.dcx"; // TODO confirm no needed extension for DLC inclusion
+    public const string ItemMsgBNDPath = "/msg/engus/item.msgbnd.dcx";
     public const string MenuMsgBNDPath = "/msg/engus/menu.msgbnd.dcx"; // TODO confirm no needed extension for DLC inclusion
     // Params  
     public const string EquipMtrlSetParam = "EquipMtrlSetParam.param";
@@ -38,6 +38,7 @@ public static class Const
     public const byte BodyType = 1;
     public const byte ArmType = 2;
     public const byte LegType = 3;
+    public const sbyte SmithingCost = 3;
     public const ushort SmithingMaterialSet = 0;
     public const ushort DaggerType = 1;
     public const ushort StraightSwordType = 3;

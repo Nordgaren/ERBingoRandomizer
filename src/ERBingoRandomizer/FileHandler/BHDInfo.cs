@@ -25,8 +25,7 @@ public class BHDInfo
 
         foreach (BHD5.FileHeader header in bucket)
         {
-            if (header.FileNameHash != hash)
-            { continue; }
+            if (header.FileNameHash != hash) { continue; }
 
             using FileStream fs = new(_bdtPath, FileMode.Open);
             return header.ReadFile(fs);

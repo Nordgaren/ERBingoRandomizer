@@ -6,24 +6,24 @@ Put the seed in that you want to use for randomization, and then hit the Randomi
 # Equipment Randomizer
 This application has a simple UI to ensure that all players use the same randomized seed without worry about having the same settings.
 * Weapons in general are categorized by type. For example Greatswords are their own pool as are Halberds.
-* Exceptions are staves and seals, they are not randomized and removed from the Remembrance pool.
+* Exceptions are staves and seals, they are not randomized. This includes the Confessor and Prisoner starting classes, merchant shops, etc.
 * Ranged weapons are in grouped categories (bows & light bows, greatbows & ballistas are all in the same pool). 
 * General Sorceries are randomized with sorceries and Incantations are randomized with incantations (Dragon Communion is seperated).
 * As a reminder, shields are treated as weapons by the game. 
 
 # Starting Classes
 Starting classes are randomized: weapons, armor, stats, and spells. Class levels are fixed to 9, with stats totalling 88.
-The Prisoner starts with a staff and one or two spells, and the Confessor starts with a seal and one or two spells.
+The Prisoner starts with its unrandomized staff and one sorcery. 
+The Confessor starts with its unrandomized seal and one incantation.
 
 # Powers of Remembrance
-Powers of Remembrance are randomized within the remembrance shop. Staves are removed from the pool of eligible weapons to allow for more bingo square engagement.
-This means that Rennala's Remembrance gifts a non-stave weapon.
+Powers of Remembrance are randomized within the remembrance shop. Staves are removed from the pool of eligible weapons to allow for more bingo square engagement. This means that Rennala's Remembrance gifts a non-stave weapon.
 
 # Dragon Communion
 Dragon communion incantations are only randomized within dragon communion locations.
 
-# Note
-This mod also patches the AtkParamPC params to fix a bug with SpEffectAtkPowerCorrectRate that caused swarm of flies damage to be incorrectly calculated in some circumstances.
+# Note on Smithing Stones and Swarm of Flies
+This mod also patches the AtkParamPC to fix a bug with SpEffectAtkPowerCorrectRate that caused swarm of flies damage to be incorrectly calculated in some circumstances. Smithing stone cost is also patched to be 3x stones per level creating more parity between Smithing and Somber weapons.
 
 # Libraries
 * [Andre](https://github.com/soulsmods/DSMapStudio/blob/master/src/Andre/Andre.Formats/Param.cs) Formerly FSParam and StudioUtils, a library for parsing FromSoft param formats. These libraries are under the MIT license.  

@@ -78,8 +78,7 @@ public partial class Randomizer
     }
     private static bool allCacheFilesExist()
     {
-        return File.Exists(Const.ItemMsgBNDPath)
-        && File.Exists(Const.MenuMsgBNDPath);
+        return File.Exists(Const.ItemMsgBNDPath) && File.Exists(Const.MenuMsgBNDPath);
     }
     private void getDefs()
     {
@@ -97,22 +96,18 @@ public partial class Randomizer
     private void getFmgs()
     {   // TODO BND4 ?
         byte[] itemMsgBndBytes = getOrOpenFile(Const.ItemMsgBNDPath);
-        if (itemMsgBndBytes == null)
-        { throw new InvalidFileException(Const.ItemMsgBNDPath); }
+
+        if (itemMsgBndBytes == null) { throw new InvalidFileException(Const.ItemMsgBNDPath); }
 
         BND4 itemBnd = BND4.Read(itemMsgBndBytes);
-        foreach (BinderFile file in itemBnd.Files)
-        { getFmgs(file); }
-
-        _cancellationToken.ThrowIfCancellationRequested();
+        foreach (BinderFile file in itemBnd.Files) { getFmgs(file); }
 
         byte[] menuMsgBndBytes = getOrOpenFile(Const.MenuMsgBNDPath);
-        if (itemMsgBndBytes == null)
-        { throw new InvalidFileException(Const.MenuMsgBNDPath); }
+
+        if (itemMsgBndBytes == null) { throw new InvalidFileException(Const.MenuMsgBNDPath); }
 
         _menuMsgBND = BND4.Read(menuMsgBndBytes);
-        foreach (BinderFile file in _menuMsgBND.Files)
-        { getFmgs(file); }
+        foreach (BinderFile file in _menuMsgBND.Files) { getFmgs(file); }
     }
     private byte[] getOrOpenFile(string path)
     {
