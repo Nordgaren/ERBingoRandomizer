@@ -1,5 +1,4 @@
-﻿using Project.FileHandler;
-using Project.Params;
+﻿using Project.Params;
 using Project.Settings;
 using Project.Utility;
 using FSParam;
@@ -64,6 +63,17 @@ public partial class Randomizer
 
         List<Param.Row> staves = _weaponTypeDictionary[Const.StaffType];
         List<Param.Row> seals = _weaponTypeDictionary[Const.SealType];
+        List<Param.Row> bows = _weaponTypeDictionary[Const.BowType];
+        List<Param.Row> lightbows = _weaponTypeDictionary[Const.LightBowType];
+        List<Param.Row> greatbows = _weaponTypeDictionary[Const.GreatbowType];
+        List<Param.Row> ballistae = _weaponTypeDictionary[Const.BallistaType];
+        List<Param.Row> crossbows = _weaponTypeDictionary[Const.CrossbowType];
+        List<Param.Row> smallShields = _weaponTypeDictionary[Const.SmallShieldType];
+        List<Param.Row> mediumShields = _weaponTypeDictionary[Const.MediumShieldType];
+        List<Param.Row> greatShields = _weaponTypeDictionary[Const.GreatShieldType];
+        List<Param.Row> claws = _weaponTypeDictionary[Const.ClawType];
+        List<Param.Row> fists = _weaponTypeDictionary[Const.FistType];
+
         IEnumerable<int> remembranceItems = _shopLineupParam.Rows.Where(r => r.ID is >= 101900 and <= 101929)
             .Select(r => new ShopLineupParam(r).equipId);
 
@@ -71,13 +81,28 @@ public partial class Randomizer
             .Where(id => remembranceItems.All(r => r != id))
             .Where(id => staves.All(s => s.ID != id) && seals.All(s => s.ID != id))
             .ToList();
-        spells.Shuffle(_random); // TODO investigate if thise matters
+        spells.Shuffle(_random);
+
+        List<int> weapons = _weaponDictionary.Keys.Select(washWeaponLevels).Distinct()
+            .Where(id => remembranceItems.All(i => i != id))
+            .Where(id => staves.All(s => s.ID != id)
+                && seals.All(s => s.ID != id)
+                && bows.All(s => s.ID != id)
+                && lightbows.All(s => s.ID != id)
+                && greatbows.All(s => s.ID != id)
+                && ballistae.All(s => s.ID != id)
+                && smallShields.All(s => s.ID != id)
+                && mediumShields.All(s => s.ID != id)
+                && greatShields.All(s => s.ID != id)
+                && claws.All(s => s.ID != id)
+                && fists.All(s => s.ID != id)
+            ).ToList();
+        weapons.Shuffle(_random);
 
         for (int i = 0; i < Config.NumberOfClasses; i++)
         {
             Param.Row? row = _charaInitParam[Config.FirstClassId + i];
-            if (row == null)
-            { continue; }
+            if (row == null) { continue; }
 
             int index = _random.Next(Equipment.SideWeaponLists.Count);
             List<int> sideArms = Equipment.SideWeaponLists[index];
@@ -86,9 +111,9 @@ public partial class Randomizer
             // List<int> main = Equipment.StartingWeaponIDs;
 
             CharaInitParam startingClass = new(row);
-            randomizeEquipment(startingClass, main, sideArms);
+            randomizeEquipment(startingClass, weapons, sideArms);
             allocateStatsAndSpells(row.ID, startingClass, spells);
-            logCharaInitEntry(startingClass, i + 288100); // TODO update config
+            logCharaInitEntry(startingClass, i + 288100);
             addDescriptionString(startingClass, Const.ChrInfoMapping[i]);
         }
     }
@@ -152,49 +177,11 @@ public partial class Randomizer
             }
         }
 
-        // TODO potential to inject here
-        addToOrderedDict(categoryDictMap, Const.AxeType, new ItemLotEntry(14510000, 2)); // Death Knight's Twin Axes
-        addToOrderedDict(categoryDictMap, Const.AxeType, new ItemLotEntry(14540000, 2)); // Forked Tongue Hatchet
-        addToOrderedDict(categoryDictMap, Const.FistType, new ItemLotEntry(21510000, 2)); // Pata
-        addToOrderedDict(categoryDictMap, Const.FistType, new ItemLotEntry(21520000, 2)); // Poisoned Hand
-        addToOrderedDict(categoryDictMap, Const.ClawType, new ItemLotEntry(22500000, 2)); // Claws of Night
-        addToOrderedDict(categoryDictMap, Const.ColossalSwordType, new ItemLotEntry(4500000, 2)); // Ancient Meteoric Ore
-        addToOrderedDict(categoryDictMap, Const.ColossalWeaponType, new ItemLotEntry(12530000, 2)); // Bloodfiend's Arm
-        addToOrderedDict(categoryDictMap, Const.ColossalWeaponType, new ItemLotEntry(23500000, 2)); // Devonia's Hammer
-        addToOrderedDict(categoryDictMap, Const.CurvedSwordType, new ItemLotEntry(7510000, 2)); // Falx
-        addToOrderedDict(categoryDictMap, Const.KatanaType, new ItemLotEntry(9500000, 2)); // Sword of Night
-        addToOrderedDict(categoryDictMap, Const.KatanaType, new ItemLotEntry(2520000, 2)); // Star Lined Sword
-        addToOrderedDict(categoryDictMap, Const.GreatswordType, new ItemLotEntry(3520000, 2)); // Lizard Greatsword
-        addToOrderedDict(categoryDictMap, Const.GreatswordType, new ItemLotEntry(3550000, 2)); // Greatsword of Solitude
-        addToOrderedDict(categoryDictMap, Const.HalberdType, new ItemLotEntry(18500000, 2)); // Spirit Glaive
-        addToOrderedDict(categoryDictEnemy, Const.HalberdType, new ItemLotEntry(18500000, 2)); // Spirit Glaive
-        addToOrderedDict(categoryDictMap, Const.HammerType, new ItemLotEntry(11500000, 2)); // Flowerstone Gavel
-        addToOrderedDict(categoryDictMap, Const.ReaperType, new ItemLotEntry(19500000, 2)); // Obsidian Lamina
-        addToOrderedDict(categoryDictMap, Const.GreatHammerType, new ItemLotEntry(12520000, 2)); // Blacksteel Greathammer
-        addToOrderedDict(categoryDictMap, Const.GreataxeType, new ItemLotEntry(15500000, 2)); // Death Knight's Longhaft Axe
-        addToOrderedDict(categoryDictMap, Const.GreatSpearType, new ItemLotEntry(17520000, 2)); // Barbed Staff-Spear
-        addToOrderedDict(categoryDictMap, Const.StraightSwordType, new ItemLotEntry(2550000, 2)); // Sword of Light
-        addToOrderedDict(categoryDictMap, Const.StraightSwordType, new ItemLotEntry(2560000, 2)); // Sword of Darkness
-        addToOrderedDict(categoryDictMap, Const.TwinbladeType, new ItemLotEntry(10510000, 2)); // Blacksteel Twinblade
-        addToOrderedDict(categoryDictMap, Const.LightBowType, new ItemLotEntry(40500000, 2)); // Bone Bow
-        addToOrderedDict(categoryDictMap, Const.BowType, new ItemLotEntry(41510000, 2)); // Ansbach's Bow
-        addToOrderedDict(categoryDictMap, Const.BowType, new ItemLotEntry(43500000, 2)); // Repeating Crossbow
-        addToOrderedDict(categoryDictMap, Const.BowType, new ItemLotEntry(43510000, 2)); // Spread Crossbow
-        addToOrderedDict(categoryDictEnemy, Const.ColossalSwordType, new ItemLotEntry(4520000, 2)); // Fire Knight's Greatsword
-        addToOrderedDict(categoryDictEnemy, Const.ColossalSwordType, new ItemLotEntry(4500000, 2)); // Ancient Meteoric Ore
-        addToOrderedDict(categoryDictMap, Const.HeavyThrustingType, new ItemLotEntry(6500000, 2));  // Queelign's
-
-        addToOrderedDict(categoryDictMap, Const.HeavyThrustingType, new ItemLotEntry(62510000, 2)); // Carian Thrusting Shield
-        addToOrderedDict(categoryDictMap, Const.GreatswordType, new ItemLotEntry(67500000, 2)); // Milady
-        addToOrderedDict(categoryDictMap, Const.GreatswordType, new ItemLotEntry(67510000, 2)); // Leda's Sword
-        addToOrderedDict(categoryDictMap, Const.CurvedGreatswordType, new ItemLotEntry(64520000, 2)); // Curseblade's Cirque
-        addToOrderedDict(categoryDictMap, Const.CurvedGreatswordType, new ItemLotEntry(64500000, 2)); // Backhand Blade
-
-        addToOrderedDict(categoryDictEnemy, Const.CurvedGreatswordType, new ItemLotEntry(64520000, 2)); // Curseblade's Cirque
-        addToOrderedDict(categoryDictEnemy, Const.CurvedGreatswordType, new ItemLotEntry(64500000, 2)); // Backhand Blade
-        addToOrderedDict(categoryDictEnemy, Const.KatanaType, new ItemLotEntry(66510000, 2)); // Dragon-Hunters
-        addToOrderedDict(categoryDictEnemy, Const.KatanaType, new ItemLotEntry(66500000, 2)); // Great Katana
-        addToOrderedDict(categoryDictEnemy, Const.KatanaType, new ItemLotEntry(66520000, 2)); // Rakshasa's
+        foreach (ItemLotWrapper item in Equipment.DlcWeaponItemLots)
+        {
+            addToOrderedDict(categoryDictMap, item.Type, item.Entry);
+            addToOrderedDict(categoryDictEnemy, item.Type, item.Entry);
+        }
 
         dedupeAndRandomizeVectors(categoryDictMap);
         dedupeAndRandomizeVectors(categoryDictEnemy);
@@ -267,14 +254,7 @@ public partial class Randomizer
             /*  
                 using (StreamWriter outputFile = new StreamWriter(Path.Combine(docPath, "WriteLines.txt"), true))
                 {
-                    foreach (Param.Column col in row.Cells)
-                    {
-                        if ((byte)row["equipType"]!.Value.Value == Const.ShopLineupArmorCategory)
-                        {
-
                             outputFile.WriteLine($" id {row.ID}, value: {col.GetValue(row)} <>");
-                        }
-                    }
                 }
             */
 
@@ -309,9 +289,9 @@ public partial class Randomizer
         List<List<int>> WeaponShopLists = new List<List<int>>() {
             Equipment.LightBowAndBowIDs, Equipment.SmallShieldIDs, Equipment.MediumShieldIDs, Equipment.TorchIDs,
             Equipment.ColossalWeaponIDs, Equipment.CurvedGreatSwordIDs, Equipment.HammerIDs, Equipment.StraightSwordIDs,
-            Equipment.CurvedSwordIDs, Equipment.ReaperIDs, Equipment.TwinbladeIDs, Equipment.DaggerIDs,
-            Equipment.FistIDs, Equipment.GreatswordIDs, Equipment.DlcGreatswordIDs, Equipment.DlcSideIDs,
-            Equipment.DlcHeavyShopIDs, Equipment.DlcLightShopIDs, Equipment.DlcSmithingIDs, Equipment.DlcRangedIds,
+            Equipment.CurvedSwordIDs, Equipment.ReaperIDs, Equipment.TwinbladeIDs, Equipment.DaggerClawFistIDs,
+            Equipment.GreatswordIDs, Equipment.KatanaIDs, Equipment.HeavyThrustingIDs, Equipment.AxeIDs,
+            Equipment.DlcSideIDs,
         };
 
         foreach (Param.Row row in _shopLineupParam.Rows)

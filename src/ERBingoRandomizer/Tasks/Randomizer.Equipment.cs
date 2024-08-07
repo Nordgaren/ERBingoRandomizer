@@ -9,21 +9,25 @@ namespace Project.Tasks;
 
 public partial class Randomizer
 {
-    HashSet<int> allocatedIDs = new HashSet<int>();
+    HashSet<int> allocatedIDs = new HashSet<int>()
+    {
+        14050000, 7040000, 7020000, 7100000, 15120000, 18060000,
+        16010000, 16070000, 16020000, 16160000, 16150000,
+        2150000, 5020000, 20000000,
+    };
     private int randomizeStartingWeapon(int id, List<int> weapons)
     {
         int limit = weapons.Count;
         int newID = 0;
-        int index = 0;
         do
         {
             _cancellationToken.ThrowIfCancellationRequested();
-            index = _random.Next(limit);
-            newID = weapons[index];
+            int index = _random.Next(limit);
+            newID = washWeaponMetadata(weapons[index]);
         } while (allocatedIDs.Contains(newID));
 
-        allocatedIDs.Add(newID);
-        return washWeaponMetadata(newID);
+        allocatedIDs.Add(newID);  //  allocatedIDs.Add(washWeaponMetadata(newID));
+        return newID;
     }
     private int getRandomArmor(int id, byte type, IReadOnlyDictionary<byte, List<int>> gearLists)
     {

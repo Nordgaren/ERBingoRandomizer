@@ -1,22 +1,72 @@
 using System.Collections.Generic;
+using Project.Tasks;
 
 namespace Project.Settings;
 
 public class Equipment
 {
+    public static List<ItemLotWrapper> DlcWeaponItemLots = new List<ItemLotWrapper>()
+    {
+        new ItemLotWrapper(new ItemLotEntry(6500000, 2), Const.HeavyThrustingType),  // Queelign's
+        new ItemLotWrapper(new ItemLotEntry(62510000, 2), Const.HeavyThrustingType), // Carian Thrusting Shield
+        new ItemLotWrapper(new ItemLotEntry(62500000, 2), Const.HeavyThrustingType), // Thrusting Shield
+        new ItemLotWrapper(new ItemLotEntry(14510000, 2), Const.AxeType), // Death Knight's Twin Axes
+        new ItemLotWrapper(new ItemLotEntry(14540000, 2), Const.AxeType), // Forked Tongue Hatchet
+        new ItemLotWrapper(new ItemLotEntry(21510000, 2), Const.FistType), // Pata
+        new ItemLotWrapper(new ItemLotEntry(21520000, 2), Const.FistType), // Poisoned Hand
+        new ItemLotWrapper(new ItemLotEntry(21540000, 2), Const.FistType), // Golem Fist
+        new ItemLotWrapper(new ItemLotEntry(22500000, 2), Const.ClawType), // Claws of Night
+        new ItemLotWrapper(new ItemLotEntry(4500000, 2), Const.ColossalSwordType), // Ancient Meteoric Ore
+        new ItemLotWrapper(new ItemLotEntry(4520000, 2), Const.ColossalSwordType), // Fire Knight's Greatsword
+        new ItemLotWrapper(new ItemLotEntry(12530000, 2), Const.ColossalWeaponType), // Bloodfiend's Arm
+        new ItemLotWrapper(new ItemLotEntry(23500000, 2), Const.ColossalWeaponType), // Devonia's Hammer
+        new ItemLotWrapper(new ItemLotEntry(66510000, 2), Const.KatanaType),  // Dragon-Hunters
+        new ItemLotWrapper(new ItemLotEntry(66500000, 2), Const.KatanaType),  // Great Katana
+        new ItemLotWrapper(new ItemLotEntry(66520000, 2), Const.KatanaType),  // Rakshasa's
+        new ItemLotWrapper(new ItemLotEntry(9500000, 2), Const.KatanaType),   // Sword of Night
+        new ItemLotWrapper(new ItemLotEntry(2520000, 2), Const.KatanaType),   // Star Lined Sword
+        new ItemLotWrapper(new ItemLotEntry(67500000, 2), Const.GreatswordType), // Milady
+        new ItemLotWrapper(new ItemLotEntry(67510000, 2), Const.GreatswordType), // Leda's Sword
+        new ItemLotWrapper(new ItemLotEntry(3520000, 2), Const.GreatswordType),  // Lizard Greatsword
+        new ItemLotWrapper(new ItemLotEntry(3550000, 2), Const.GreatswordType),  // Greatsword of Solitude
+        new ItemLotWrapper(new ItemLotEntry(7500000, 2), Const.CurvedSwordType), // Spirit Sword
+        new ItemLotWrapper(new ItemLotEntry(7510000, 2), Const.CurvedSwordType), // Falx
+        new ItemLotWrapper(new ItemLotEntry(7520000, 2), Const.CurvedSwordType), // Dancing Blade of Ranah
+        new ItemLotWrapper(new ItemLotEntry(7530000, 2), Const.CurvedSwordType), // Horned Warrior's Sword
+        new ItemLotWrapper(new ItemLotEntry(41510000, 2), Const.BowType),        // Ansbach's Bow
+        new ItemLotWrapper(new ItemLotEntry(40500000, 2), Const.LightBowType),   // Bone Bow
+        new ItemLotWrapper(new ItemLotEntry(43500000, 2), Const.BowType),        // repeating crossbow
+        new ItemLotWrapper(new ItemLotEntry(43510000, 2), Const.BowType),        // spread crossbow
+        new ItemLotWrapper(new ItemLotEntry(2550000, 2), Const.StraightSwordType), // Sword of Light
+        new ItemLotWrapper(new ItemLotEntry(2560000, 2), Const.StraightSwordType), // Sword of Darkness
+        new ItemLotWrapper(new ItemLotEntry(2540000, 2), Const.StraightSwordType), // stone sheathed
+        new ItemLotWrapper(new ItemLotEntry(64520000, 2), Const.CurvedGreatswordType), // Curseblade's Cirque
+        new ItemLotWrapper(new ItemLotEntry(64500000, 2), Const.CurvedGreatswordType), // backhand blade
+        new ItemLotWrapper(new ItemLotEntry(8510000, 2), Const.CurvedGreatswordType), // Freyja's Greatsword
+        new ItemLotWrapper(new ItemLotEntry(8520000, 2), Const.CurvedGreatswordType), // Horned Warrior's Greatsword
+        new ItemLotWrapper(new ItemLotEntry(18500000, 2), Const.HalberdType), // Spirit Glaive
+        new ItemLotWrapper(new ItemLotEntry(11500000, 2), Const.HammerType),  // Flowerstone Gavel
+        new ItemLotWrapper(new ItemLotEntry(19500000, 2), Const.ReaperType), // Obsidian Lamina
+        new ItemLotWrapper(new ItemLotEntry(12520000, 2), Const.GreatHammerType), // Blacksteel Greathammer
+        new ItemLotWrapper(new ItemLotEntry(15500000, 2), Const.GreataxeType), //  Death Knight's Longhaft Axe
+        new ItemLotWrapper(new ItemLotEntry(17520000, 2), Const.GreatSpearType), // Barbed Staff-Spear
+        new ItemLotWrapper(new ItemLotEntry(10510000, 2), Const.TwinbladeType), //  Blacksteel Twinblade
+    };
+
     public static List<int> CurvedSwordIDs = new List<int>()
     { // includes backhand blades
         2080000, 7050000, 7060000, 7070000, 7080000, 7120000, 7140000,
-        7000000, 7010000, 7020000, 7030000, 7040000, 7100000, 7110000,   
-        // 7150000, 7500000, 7510000, 7520000, 7530000, (DLC not wanted at this time)
+        7000000, 7010000, 7020000, 7030000, 7040000, 7100000, 7110000,
+        7150000, 7500000, 7510000, 7520000, 7530000, // DLC
+        64500000,   //    Backhand Blade
     };
     public static List<int> DaggerClawFistIDs = new List<int>() {
         1020000, 1000000, 1010000, 1030000, 1040000, 1050000,
         1070000, 1080000, 1090000, 1100000, 1110000, 1140000, 1150000,
-
         22000000, 22010000, 22020000, 22030000,
-
         21000000, 21010000, 21070000, 21080000, 21100000, 21110000, 21120000, 21130000,
+        22500000, // Claws of Night
+        21540000, 21520000, 21510000 // DLC
     };
     public static List<int> ClawIDs = new List<int>()
     { // includes Beast Claws
@@ -36,97 +86,106 @@ public class Equipment
     };
     public static List<int> HeavyThrustingIDs = new List<int>()
     {   // includes Light Greatswords
-        6000000, 6010000, 6020000, 
-        // 6500000, 67500000, 67510000, // (DLC not wanted at this time)
+        6000000, 6010000, 6020000,
+        6500000, 67500000, 67510000, // (DLC not wanted at this time)
+        62500000, 62510000, // dueling shields
     };
     public static List<int> KatanaIDs = new List<int>()
     {   // includes Great Katanas
         9000000, 9010000, 9030000, 9040000, 9060000, 9070000, 9080000,
+        66510000, // Dragon-Hunter's
+        66520000, // Rakshasa's
+        66500000, // Great Katana
+        9500000, // Sword of Night
+        2520000, // star-lined sword
     };
 
     public static List<int> AxeIDs = new List<int>()
     {
         14000000, 14010000, 14020000, 14030000, 14040000, 14050000,
         14060000, 14080000, 14100000, 14110000, 14120000, 14140000,
-        // 14500000, 14520000, 14540000, // (DLC not wanted at this time)
+        14540000, // (DLC not wanted at this time) 14520000, 14500000
+        14510000, // Death Knight's Twin Axes
     };
     public static List<int> CurvedGreatSwordIDs = new List<int>()
     {
         8010000, 8020000, 8030000, 8040000, 8050000,
-        8060000, 8070000, 8080000, 
-        // 8510000, 8520000, // (DLC not wanted at this time)
+        8060000, 8070000, 8080000,
+        8510000, 8520000, // DLC
+        64520000,   // curseblade's cirque
     };
     public static List<int> ColossalSwordIDs = new List<int>()
     {
         4000000, 4010000, 4030000, 4040000, 4060000, 4070000,
-        4080000, 4100000, 4110000, 
-        // 4500000, 4520000, 4540000, // (DLC not wanted at this time)
+        4080000, 4100000, 4110000,
+        4500000, 4520000, 4540000, // DLC
     };
     public static List<int> ColossalWeaponIDs = new List<int>()
     {
         23000000, 23010000, 23020000, 23030000, 23040000, 23140000, 23150000,
         23060000, 23070000, 23080000, 23100000, 23110000, 23120000, 23130000,
-        // 12510000, 12530000, 23500000, // (DLC not wanted at this time)
+        12510000, 12530000, 23500000, // (DLC not wanted at this time)
     };
     public static List<int> FlailIDs = new List<int>()
     {
         13000000, 13010000, 13020000, 13040000,
-        //  13500000, (DLC)
+        // 13500000, // DLC
     };
     public static List<int> GreatSpearIDs = new List<int>
     {   // serpent hunter is deliberately excluded 17030000
         17020000, 17050000, 17060000, 17070000,
-        // 16550000, 17510000, 17520000 (DLC)
+        16550000, 17510000, 17520000 // (DLC)
     };
     public static List<int> GreataxeIDs = new List<int>
     {
         15000000, 15010000, 15020000, 15030000, 15050000, 15060000,
         15080000, 15120000, 15130000, 15140000,
-        //  15500000, 15510000, // (DLC not wanted at this time)
+        15500000, 15510000, // DLC
     };
     public static List<int> GreatHammerIDs = new List<int>
     {
         12000000, 12010000, 12020000, 12060000, 12080000, 12130000, 12140000,
         12150000, 12160000, 12170000, 12180000, 12190000, 12200000, 12210000,
-        // 12500000, 12520000, // (DLC not wanted at this time)
+        12500000, 12520000, // DLC
     };
     public static List<int> GreatswordIDs = new List<int>
-    { // TODO testing
+    {
         2090000, 3000000, 3010000, 3020000, 3030000, 3040000, 3050000,
         3060000, 3070000, 3080000, 3090000, 3130000, 3150000, 3160000,
         3170000, 3180000, 3190000, 3200000, 3210000,
-        //  3520000, 3550000, (DLC)
+        3520000, 3550000, // (DLC)
+        67500000, 67510000
     };
     public static List<int> HalberdIDs = new List<int>
     {
         18000000, 18010000, 18020000, 18030000, 18040000, 18050000, 18060000,
         18070000, 18080000, 18090000, 18100000, 18110000, 18130000, 18140000,
-        18150000, 18160000, 
-        // 18500000, (DLC)
+        18150000, 18160000,
+        18500000, // (DLC)
     };
     public static List<int> HammerIDs = new List<int>
     {
         11000000, 11010000, 11030000, 11040000, 11050000, 11060000, 11070000,
         11080000, 11090000, 11100000, 11110000, 11120000, 11130000, 11140000,
-        // 11500000, // (DLC but desired)
+        11500000, // (DLC)
     };
     public static List<int> ReaperIDs = new List<int>
     {
         19000000, 19060000, 19010000, 19020000,
-       // 19500000, // (DLC)
+        19500000, // (DLC)
     };
     public static List<int> SpearIDs = new List<int>
     {
         16000000, 16010000, 16020000, 16030000, 16040000, 16050000, 16060000, 16070000,
         16080000, 16090000, 16110000, 16120000, 16130000, 16140000, 16150000, 16160000,
-       // 16500000, 16520000, 16540000, (DLC)
+        16500000, 16520000, 16540000, // (DLC)
     };
     public static List<int> StraightSwordIDs = new List<int>
     {
         2000000, 2010000, 2020000, 2040000, 2050000, 2060000, 2070000, 2110000, 2140000,
         2150000, 2180000, 2190000, 2200000, 2210000, 2220000, 2230000, 2240000, 2250000,
         2260000, 
-        // 2510000, 2540000, 2550000, 2560000,
+//        2510000, 2540000, 2550000, 2560000, (DLC)
     };
     public static List<int> ThrustingSwordIDs = new List<int>
     {
@@ -135,17 +194,13 @@ public class Equipment
     };
     public static List<int> TwinbladeIDs = new List<int>
     {
-        10000000, 10010000, 10030000, 10050000, 10080000, 10090000, 
-        // 10500000, 10510000, (DLC)
+        10000000, 10010000, 10030000, 10050000, 10080000, 10090000,
+        10500000, 10510000, // (DLC)
     };
     public static List<int> WhipIDs = new List<int>
     {
         20000000, 20020000, 20030000, 20050000, 20070000, 
         // 20500000, (DLC)
-    };
-    public static List<int> BackhandBladeIDs = new List<int>() {
-        // 64500000, 64510000, // smithing 
-        64520000,              // somber
     };
     public static List<int> PerfumeBottleIDs = new List<int>
     {
@@ -157,7 +212,6 @@ public class Equipment
         32130000, 32140000, 32150000, 32160000, 32170000, 32190000, 32200000, 32210000,
         32220000, 32230000, 32240000, 32250000, 32260000, 32270000, 32280000, 32290000,
         // 32300000, 32500000, 32520000, (DLC)
-        // 62500000, 62510000, // dueling shields
     };
     public static List<int> MediumShieldIDs = new List<int>
     {
@@ -198,55 +252,16 @@ public class Equipment
         44000000, 44010000, 42010000, 42030000, 42040000, 
         // 42500000, 63500000, 44500000, (DLC)
     };
-    public static List<int> DlcHeavyShopIDs = new List<int>
-    { // added for fun
-        4500000,  // Ancient Meteoric Ore Greatsword
-        66510000, // Dragon-Hunter's
-        66520000, // Rakshasa's
-        14510000, // Death Knight's Twin Axes
-        15500000, // Death Knight's Longhaft Axe
-        19500000, // Obsidian Lomina
-        17520000, // Barbed Staff Spear
-    };
-    public static List<int> DlcLightShopIDs = new List<int> {  // added for fun
-        2550000,  // Sword of Light
-        9500000,  // Sword of Night
-        62510000, // Carian Thrusting Shield
-        11500000, // Flowerstone Gavel
-        7530000,  // Horned Warrior's Sword
-    };
     public static List<int> DlcSideIDs = new List<int>
     {
-        7500000,  // Spirit Sword
         64520000, // Curseblade's Cirque
         7510000,  // Falx
         22500000, // Claws of Night
-        68510000, // Red Bear Claws
-    };
-    public static List<int> DlcSmithingIDs = new List<int> {
-        64500000,   //    Backhand Blade
-        10510000,   //    Blacksteel Twinblade
-        67500000,   //    Milady
-        62510000,   //    Carian Thrusting Shield
-        10500000,   //    Euporia
-        10510000,   //    Black Steel Twin Blade
-    };
-    public static List<int> DlcGreatswordIDs = new List<int>
-    {
-        4520000,    //    Fire Knight's Greatsword
-        8510000,    //    Freyja's Greatsword
-        6500000,    //    Queelign's Greatsword
-        3520000,    //    Lizard's Greatsword
-        3550000,    //    Greatsword of Solitude
-    };
-    public static List<int> DlcRangedIds = new List<int> {
         40500000, // Bone Bow
         43500000, // Repeating Crossbow
         43510000, // Spread Crossbow
         41510000, // Ansbach's Bow
     };
-
-    // INCANTATIONS
 
     // SORCERIES
     static List<int> SorceryIDs = new List<int>()

@@ -22,6 +22,12 @@ Powers of Remembrance are randomized within the remembrance shop. Staves are rem
 # Dragon Communion
 Dragon communion incantations are only randomized within dragon communion locations.
 
+# Weapon Pickups and Boss Drops
+* Thrusting Shields are pooled with Heavy Thrusting Swords
+* Great Katanas are pooled with Katanas
+* Light Greatswords are pooled with Greatswords
+* Backhand Blades are pooled with Curved Greatswords
+
 # Note on Smithing Stones and Swarm of Flies
 This mod also patches the AtkParamPC to fix a bug with SpEffectAtkPowerCorrectRate that caused swarm of flies damage to be incorrectly calculated in some circumstances. Smithing stone cost is also patched to be 3x stones per level creating more parity between Smithing and Somber weapons.
 
