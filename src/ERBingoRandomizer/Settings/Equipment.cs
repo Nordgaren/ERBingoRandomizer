@@ -206,6 +206,7 @@ public class Equipment
         14510000, // Death Knight's Twin Axes
         15500000, // Death Knight's Longhaft Axe
         19500000, // Obsidian Lomina
+        17520000, // Barbed Staff Spear
     };
     public static List<int> DlcLightShopIDs = new List<int> {  // added for fun
         2550000,  // Sword of Light

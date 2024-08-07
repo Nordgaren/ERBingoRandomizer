@@ -7,7 +7,7 @@
         xmlns:localConverter="clr-namespace:Randomizer.Converter"
         mc:Ignorable="d"
         xmlns:gif="http://wpfanimatedgif.codeplex.com"
-        Title="Equipment Randomizer v0.15"
+        Title="Equipment Randomizer v0.44"
         Height="500"
         Width="800"
         ResizeMode="CanResizeWithGrip"

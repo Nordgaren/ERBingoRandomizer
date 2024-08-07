@@ -17,8 +17,6 @@ public partial class Randomizer
     void writeLog()
     {
         Directory.CreateDirectory(Config.SpoilerPath);
-        // File.Delete($"{Config.SpoilerPath}/log-{MainWindowViewModel.lastSeed}.log");
-        // File.WriteAllLines($"{Config.SpoilerPath}/log-{_seed}.log", _randomizerLog);
         File.WriteAllLines($"{Config.SpoilerPath}/Starting_Classes.log", _randomizerLog);
     }
     void logReplacementDictionary(Dictionary<int, ItemLotEntry> dict)
