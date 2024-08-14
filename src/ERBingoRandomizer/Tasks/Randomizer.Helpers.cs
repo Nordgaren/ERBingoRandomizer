@@ -105,10 +105,9 @@ public partial class Randomizer
         {
             List<ItemLotEntry> value = (List<ItemLotEntry>)orderedDictionary[i]!;
             List<ItemLotEntry> itemLotEntries = new(value);
-            itemLotEntries.Shuffle(_random); // TODO investigate if thise matters
+            itemLotEntries.Shuffle(_random);
 
-            foreach (ItemLotEntry entry in itemLotEntries)
-            { dict.Add(entry.Id, getNewId(entry.Id, value)); }
+            foreach (ItemLotEntry entry in itemLotEntries) { dict.Add(entry.Id, getNewId(entry.Id, value)); }
         }
         return dict;
     }
@@ -120,8 +119,8 @@ public partial class Randomizer
             List<int> value = (List<int>)orderedDictionary[i]!;
             List<int> itemLotEntries = new(value);
             itemLotEntries.Shuffle(_random); // TODO investigate if thise matters
-            foreach (int entry in itemLotEntries)
-            { output.Add(entry, getNewId(entry, value)); }
+
+            foreach (int entry in itemLotEntries) { output.Add(entry, getNewId(entry, value)); }
         }
         return output;
     }

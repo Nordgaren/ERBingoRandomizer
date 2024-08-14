@@ -134,14 +134,13 @@ public partial class Randomizer
             for (int i = 0; i < Const.ItemLots; i++)
             {
                 int category = (int)categories[i].GetValue(row);
+
                 if (category != Const.ItemLotWeaponCategory && category != Const.ItemLotCustomWeaponCategory)
                 { continue; }
 
                 int id = (int)itemIds[i].GetValue(row);
-                //> Should work if it were item lot entries
-
-                //^ TODO revisit for longterm
                 int sanitizedId = washWeaponLevels(id);
+
                 if (category == Const.ItemLotWeaponCategory)
                 {
                     if (!_weaponDictionary.TryGetValue(sanitizedId, out EquipParamWeapon? wep)) { continue; }
@@ -219,8 +218,7 @@ public partial class Randomizer
                         categories[i].SetValue(row, entry.Category);
                         break;
                     }
-                    if (!chanceDropReplace.TryGetValue(id, out entry))
-                    { continue; }
+                    if (!chanceDropReplace.TryGetValue(id, out entry)) { continue; }
 
                     itemIds[i].SetValue(row, entry.Id);
                     categories[i].SetValue(row, entry.Category);
