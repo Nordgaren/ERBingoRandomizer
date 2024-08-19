@@ -85,6 +85,7 @@ public partial class Randomizer
     {
         Dictionary<int, ItemLotEntry> dict = new();
 
+        // consolidate all ranged armamets
         List<ItemLotEntry> bows = (List<ItemLotEntry>?)orderedDictionary[(object)Const.BowType] ?? new List<ItemLotEntry>();
         List<ItemLotEntry> lightbows = (List<ItemLotEntry>?)orderedDictionary[(object)Const.LightBowType] ?? new List<ItemLotEntry>();
         List<ItemLotEntry> greatbows = (List<ItemLotEntry>?)orderedDictionary[(object)Const.GreatbowType] ?? new List<ItemLotEntry>();
@@ -101,13 +102,28 @@ public partial class Randomizer
         orderedDictionary.Remove(Const.CrossbowType);
         orderedDictionary.Remove(Const.BallistaType);
 
+        // consolidate colossals
+        List<ItemLotEntry> colSwords = (List<ItemLotEntry>?)orderedDictionary[(object)Const.ColossalSwordType] ?? new List<ItemLotEntry>();
+        List<ItemLotEntry> colWeapons = (List<ItemLotEntry>?)orderedDictionary[(object)Const.ColossalWeaponType] ?? new List<ItemLotEntry>();
+        colWeapons.AddRange(colSwords);
+        orderedDictionary[(object)Const.ColossalWeaponType] = colWeapons;
+        orderedDictionary.Remove(Const.ColossalSwordType);
+
+        // consolidate axes and hammers
+        // List<ItemLotEntry> axes = (List<ItemLotEntry>?)orderedDictionary[(object)Const.AxeType] ?? new List<ItemLotEntry>();
+        // List<ItemLotEntry> hammers = (List<ItemLotEntry>?)orderedDictionary[(object)Const.HammerType] ?? new List<ItemLotEntry>();
+        // axes.AddRange(hammers);
+        // orderedDictionary[(object)Const.AxeType] = axes;
+        // orderedDictionary.Remove(Const.HammerType);
+
         for (int i = 0; i < orderedDictionary.Count; i++)
         {
             List<ItemLotEntry> value = (List<ItemLotEntry>)orderedDictionary[i]!;
             List<ItemLotEntry> itemLotEntries = new(value);
             itemLotEntries.Shuffle(_random);
 
-            foreach (ItemLotEntry entry in itemLotEntries) { dict.Add(entry.Id, getNewId(entry.Id, value)); }
+            foreach (ItemLotEntry entry in itemLotEntries)
+            { dict.Add(entry.Id, getNewId(entry.Id, value)); }
         }
         return dict;
     }
@@ -145,31 +161,6 @@ public partial class Randomizer
         }
     }
 
-    private void replaceShopLineupParam(ShopLineupParam lot, IList<int> shopLineupList, IList<int> remembranceList)
-    {
-        int newId = 0;
-        if (lot.mtrlId == -1)
-        {
-            int limit = shopLineupList.Count;
-            int index = _random.Next(limit);
-            newId = shopLineupList[index];
-        }
-        else
-        {
-            int limit = remembranceList.Count;
-            int index = _random.Next(limit);
-            newId = remembranceList[index];
-            remembranceList.Remove(newId);
-        }
-        lot.equipId = newId;
-        // int newId = getNewId(lot.equipId, shopLineupParamDictionary);
-        // TODO: currently has DLC weapons available, longterm will want DLC items read as params 
-        // logItem($"{_weaponNameDictionary[lot.equipId]} --> {Equipment.EquipmentNameList[newId]}");
-
-        // ShopLineupParam newRemembrance = getNewId(lot.equipId, shopLineupParamRemembranceList);
-        // logItem($"{_weaponNameDictionary[lot.equipId]} --> {_weaponNameDictionary[newRemembrance.equipId]}");
-        // copyShopLineupParam(lot, newRemembrance);
-    }
     private void replaceShopLineupParamMagic(ShopLineupParam lot, IReadOnlyDictionary<int, int> shopLineupParamDictionary, IList<ShopLineupParam> shopLineupParamRemembranceList)
     {
         if (lot.mtrlId == -1)

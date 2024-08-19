@@ -51,6 +51,7 @@ public class Equipment
         new ItemLotWrapper(new ItemLotEntry(15500000, 2), Const.GreataxeType), //  Death Knight's Longhaft Axe
         new ItemLotWrapper(new ItemLotEntry(17520000, 2), Const.GreatSpearType), // Barbed Staff-Spear
         new ItemLotWrapper(new ItemLotEntry(10510000, 2), Const.TwinbladeType), //  Blacksteel Twinblade
+        new ItemLotWrapper(new ItemLotEntry(13500000, 2), Const.FlailType), //  Serpent Flail
     };
 
     public static List<int> CurvedSwordIDs = new List<int>()
@@ -130,6 +131,11 @@ public class Equipment
     {
         13000000, 13010000, 13020000, 13040000,
         // 13500000, // DLC
+    };
+    public static List<int> MerchantSpearIDs = new List<int>
+    {
+        17520000, 16550000, 17060000, 17050000, 16140000,
+        16000000, 16520000, 16540000, 16050000, 16110000, 16030000,
     };
     public static List<int> GreatSpearIDs = new List<int>
     {   // serpent hunter is deliberately excluded 17030000
@@ -252,15 +258,44 @@ public class Equipment
         44000000, 44010000, 42010000, 42030000, 42040000, 
         // 42500000, 63500000, 44500000, (DLC)
     };
-    public static List<int> DlcSideIDs = new List<int>
+    public static List<int> DlcAndSalt = new List<int>
     {
-        64520000, // Curseblade's Cirque
-        7510000,  // Falx
+        1500000,  // main gauche
+        1020000,  // parrying dagger
         22500000, // Claws of Night
+        68500000, // Beast Claw
+        68510000, // Red Bear Beast Claw
+        21540000, // Golem Fist
+        21510000, // Pata
+        23500000, // Devonia's Hammer
+        4500000,  // Ancient Meteoric Ore
         40500000, // Bone Bow
         43500000, // Repeating Crossbow
         43510000, // Spread Crossbow
         41510000, // Ansbach's Bow
+        30510000, // small shield
+        21550000, // small shield
+        16520000, // swift spear
+        16540000, // bloodfiend's fork
+        64520000, // Curseblade's Cirque
+        7510000,  // Falx
+        7520000,  // Dancing Blade of Ranah
+        7530000,  // Horned Warrior's Sword 
+        7080000,  // scavengers
+        13500000, // Serpent Flail
+        66500000, // Great Katana
+        9500000, // Sword of Knight
+        12520000, // Blacksteel Greathammer
+        17520000, // Barbed Staff spear
+        3520000, // Lizard Greatsword
+        11500000, // Flowerstone Gavel
+        67500000, // Milady
+        67510000, // Leda's Sword
+        19500000, // Obsidian Lomina
+        31500000, // 
+        31510000, //
+        31520000, // 
+        31530000, //
     };
 
     // SORCERIES
@@ -311,20 +346,6 @@ public class Equipment
         10000000, 10010000, 10030000, 10080000, 9000000, 9030000, 9040000, 9060000, 9070000, 9080000, // twin blades / katana
         23130000, 15050000, 15020000, 15060000, 12000000, 12020000, 12180000, 12010000, 4040000, 4000000, // troll's hammer, longhaft axe
     };
-    public static IReadOnlyList<List<int>> MainWeaponLists = new List<List<int>>() {
-        StraightSwordIDs, CurvedSwordIDs, AxeIDs, HalberdIDs, HammerIDs, KatanaIDs,
-        GreataxeIDs, GreatHammerIDs, GreatSpearIDs, GreatswordIDs, CurvedGreatSwordIDs,
-        TwinbladeIDs, ReaperIDs, HeavyThrustingIDs, DaggerIDs,
-    };
-    public static IReadOnlyList<List<int>> SideWeaponLists = new List<List<int>>() {
-        ClawIDs, DaggerIDs, FistIDs, ThrustingSwordIDs, WhipIDs, FlailIDs,
-        GreatShieldIDs, MediumShieldIDs, SmallShieldIDs, LightBowAndBowIDs, BallistaOrGreatBowIDs,
-    };
-    // public static IReadOnlyList<List<int>> WeaponShopLists = new List<List<int>>() {
-    //     DaggerIDs, FistIDs, LightBowAndBowIDs, SmallShieldIDs, MediumShieldIDs, TorchIDs, ColossalWeaponIDs,
-    //     CurvedGreatSwordIDs, HammerIDs, StraightSwordIDs, CurvedSwordIDs, ReaperIDs, TwinbladeIDs,
-    //     DlcHeavyShopIDs, DlcLightShopIDs, DlcSmithingIDs, // GreatswordIDs, GreataxeIDs, 
-    // };
 
     // ARMOR
     public static List<int> HeadArmorIDs = new List<int>()
