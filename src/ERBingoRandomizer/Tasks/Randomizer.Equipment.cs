@@ -13,7 +13,7 @@ public partial class Randomizer
     {
         14050000, 7040000, 7020000, 7100000, 15120000, 18060000,
         16010000, 16070000, 16020000, 16160000, 16150000,
-        2150000, 5020000, 20000000,
+        2150000, 5020000, 20000000, 2510000,
     };
     private int randomizeStartingWeapon(int id, List<int> weapons)
     {
@@ -49,8 +49,7 @@ public partial class Randomizer
     {   // currently never used, but could be handy in a chaos mode where classes start with potentially nothing
         int randomChance = _random.Next(chance);
 
-        if (id == Const.NoItem)
-        { return Config.Target < randomChance; }
+        if (id == Const.NoItem) { return Config.Target < randomChance; }
 
         return false;
     }
@@ -112,14 +111,14 @@ public partial class Randomizer
     private void randomizeSorceries(CharaInitParam chr, IReadOnlyList<int> spells)
     {
         assignUsableWeapon(chr, Const.StaffType);
-        chr.equipSpell01 = assignStartingSpell(chr, Const.SorceryType, Equipment.StartingSorceryIDs);
+        chr.equipSpell01 = assignStartingSpell(chr, spells);
     }
     private void randomizeIncantations(CharaInitParam chr, IReadOnlyList<int> spells)
     {
         assignUsableWeapon(chr, Const.SealType);
-        chr.equipSpell02 = assignStartingSpell(chr, Const.IncantationType, Equipment.StartingIncantationIDs);
+        chr.equipSpell02 = assignStartingSpell(chr, spells);
     }
-    private int assignStartingSpell(CharaInitParam chr, byte type, IReadOnlyList<int> spells)
+    private int assignStartingSpell(CharaInitParam chr, IReadOnlyList<int> spells)
     {
         int index = _random.Next(spells.Count);
         return spells[index];

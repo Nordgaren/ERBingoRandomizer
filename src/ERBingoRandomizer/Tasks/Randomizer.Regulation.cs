@@ -49,6 +49,12 @@ public partial class Randomizer
         patchAtkParam();
         patchSmithingStones();
         _cancellationToken.ThrowIfCancellationRequested();
+        allocatedIDs = new HashSet<int>()
+        {
+            14050000, 7040000, 7020000, 7100000, 15120000, 18060000,
+            16010000, 16070000, 16020000, 16160000, 16150000,
+            2150000, 5020000, 20000000, 2510000,
+        };
         writeFiles();
         writeLog();
         SeedInfo = new SeedInfo(_seed, Util.GetShaRegulation256Hash());
@@ -67,13 +73,6 @@ public partial class Randomizer
 
         IEnumerable<int> remembranceItems = _shopLineupParam.Rows.Where(r => r.ID is >= 101900 and <= 101929)
             .Select(r => new ShopLineupParam(r).equipId);
-
-        List<int> spells = _magicDictionary.Keys.Select(id => id).Distinct()
-            .Where(id => remembranceItems.All(r => r != id))
-            .Where(id => staves.All(s => s.ID != id)
-                && seals.All(s => s.ID != id))
-            .ToList();
-        // spells.Shuffle(_random);
 
         List<Param.Row> bows = _weaponTypeDictionary[Const.BowType];
         List<Param.Row> lightbows = _weaponTypeDictionary[Const.LightBowType];
@@ -148,7 +147,7 @@ public partial class Randomizer
 
             CharaInitParam startingClass = new(row);
             randomizeEquipment(startingClass, weapons, sideArms);
-            allocateStatsAndSpells(row.ID, startingClass, spells);
+            allocateStatsAndSpells(row.ID, startingClass);
             logCharaInitEntry(startingClass, i + 288100);
             addDescriptionString(startingClass, Const.ChrInfoMapping[i]);
         }
@@ -291,12 +290,11 @@ public partial class Randomizer
     }
     private void randomizeShopLineupParam()
     {
-        // HashSet<int> allocatedIDs = new HashSet<int>();
         List<List<int>> WeaponShopLists = new List<List<int>>() {
             Equipment.LightBowAndBowIDs, Equipment.CrossBowIDs,
             Equipment.SmallShieldIDs, Equipment.MediumShieldIDs,
             Equipment.ColossalWeaponIDs, Equipment.ColossalSwordIDs,
-            Equipment.DaggerClawFistIDs, Equipment.TorchIDs,
+            Equipment.DaggerIDs, Equipment.ClawIDs, Equipment.FistIDs,
             Equipment.CurvedSwordIDs, Equipment.CurvedGreatSwordIDs,
             Equipment.HammerIDs, Equipment.GreatHammerIDs,
             Equipment.AxeIDs, Equipment.GreataxeIDs,
@@ -304,7 +302,6 @@ public partial class Randomizer
             Equipment.ReaperIDs, Equipment.KatanaIDs,
             Equipment.TwinbladeIDs, Equipment.HeavyThrustingIDs,
             Equipment.MerchantSpearIDs, Equipment.ThrustingSwordIDs,
-            Equipment.DlcAndSalt,
         };
         List<int> RemembranceWeaponIDs = new List<int>()
         {
@@ -346,10 +343,9 @@ public partial class Randomizer
 
             if (lot.equipId == Const.CarianRegalScepter || !(wep.wepType is Const.StaffType or Const.SealType))
             {   // about 60 item shop allocations
-                if (lot.mtrlId == -1)
-                { replaceWeaponLineupParam(lot, WeaponShopLists); }
-                else
-                { replaceRemembranceLineupParam(lot, RemembranceWeaponIDs); } // list is small, better to have seperate unique allocation logic
+                if (lot.mtrlId == -1) { replaceWeaponLineupParam(lot, WeaponShopLists); }
+                else { replaceRemembranceLineupParam(lot, RemembranceWeaponIDs); }
+                // remembrance list is small, better to have seperate unique allocation logic
             }
         }
     }

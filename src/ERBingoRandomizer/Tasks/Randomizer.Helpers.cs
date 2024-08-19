@@ -25,7 +25,7 @@ public partial class Randomizer
         IEnumerable<byte[]> chunks = hashData.Chunk(4); // if we have a toggle for smithing cost, could choose different range of chunks, however what would the step be if there are more toggles?
         return chunks.Aggregate(0, (current, chunk) => current ^ BitConverter.ToInt32(chunk));
     }
-    private void allocateStatsAndSpells(int rowId, CharaInitParam startingClass, IReadOnlyList<int> spells)
+    private void allocateStatsAndSpells(int rowId, CharaInitParam startingClass)
     {
         switch (rowId)
         {
@@ -49,14 +49,14 @@ public partial class Randomizer
                 break;
             case 3006:
                 setConfessorStats(startingClass);
-                guaranteeIncantations(startingClass, spells);
+                guaranteeIncantations(startingClass, Equipment.StartingIncantationIDs);
                 break;
             case 3007:
                 setClassStats(startingClass);
                 break;
             case 3008:
                 setPrisonerStats(startingClass);
-                guaranteeSorceries(startingClass, spells);
+                guaranteeSorceries(startingClass, Equipment.StartingSorceryIDs);
                 break;
             case 3009:
                 setClassStats(startingClass);
