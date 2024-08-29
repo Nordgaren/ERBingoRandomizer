@@ -7,7 +7,7 @@
         xmlns:localConverter="clr-namespace:Randomizer.Converter"
         mc:Ignorable="d"
         xmlns:gif="http://wpfanimatedgif.codeplex.com"
-        Title="Equipment Randomizer v0.59"
+        Title="Equipment Randomizer v0.60"
         Height="500"
         Width="800"
         ResizeMode="CanResizeWithGrip"
@@ -62,13 +62,13 @@
             <StackPanel Orientation="Horizontal"
                         HorizontalAlignment="Center">
                 <Grid>
-                    <Button Width="150"
+                    <Button Width="120"
                             Height="50"
                             Content="Cancel"
                             Command="{Binding Cancel}"
                             Visibility="{Binding InProgress, Converter={StaticResource BoolToVisibilityConverter}}"
                             FontWeight="Bold"/>
-                    <Button Width="150"
+                    <Button Width="120"
                             Height="50"
                             Content="Randomize"
                             Command="{Binding RandomizeBingo}"
@@ -76,20 +76,20 @@
                             FontWeight="Bold"/>
                 </Grid>
                 <Separator Margin="50,0,0,0"/>
-                <Button Width="150"
+                <Button Width="120"
                         Height="50"
                         Content="Bingo!"
                         Command="{Binding LaunchEldenRing}"
                         FontWeight="Bold"/>
                 <Separator Margin="50,0,0,0"/>
                 <Grid>
-                    <Button Width="150"
+                    <Button Width="120"
                             Height="50"
                             Content="Cancel"
                             Command="{Binding Cancel}"
                             Visibility="{Binding Packaging, Converter={StaticResource BoolToVisibilityConverter}}"
                             FontWeight="Bold"/>
-                    <Button Width="150"
+                    <Button Width="120"
                             Height="50"
                             Content="Package Files"
                             Command="{Binding PackageFiles}"

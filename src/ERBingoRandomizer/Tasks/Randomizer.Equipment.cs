@@ -10,37 +10,31 @@ namespace Project.Tasks;
 public partial class Randomizer
 {
     HashSet<int> allocatedIDs = new HashSet<int>()
-    {
-        14050000, 7040000, 7020000, 7100000, 15120000, 18060000,
-        16010000, 16070000, 16020000, 16160000, 16150000,
-        2150000, 5020000, 20000000, 2510000,
-    };
+    { 7040000, 7100000, 16020000, 2150000, 2510000, 14050000, 11060000, 11100000};
     private int randomizeStartingWeapon(int id, List<int> weapons)
     {
         int limit = weapons.Count;
-        int newID = 0;
+        int newID;
         do
         {
             _cancellationToken.ThrowIfCancellationRequested();
-            int index = _random.Next(limit);
-            newID = washWeaponMetadata(weapons[index]);
+            newID = washWeaponMetadata(weapons[_random.Next(limit)]);
         } while (allocatedIDs.Contains(newID));
 
-        allocatedIDs.Add(newID);  //  allocatedIDs.Add(washWeaponMetadata(newID));
+        allocatedIDs.Add(newID);
         return newID;
     }
     private int getRandomArmor(int id, byte type, IReadOnlyDictionary<byte, List<int>> gearLists)
     {
         List<int> armors = gearLists[type];
         int limit = armors.Count;
-        int newID = 0;
-        int index = 0;
+        int newID;
         do
         {
             _cancellationToken.ThrowIfCancellationRequested();
-            index = _random.Next(limit);
-            newID = armors[index];
+            newID = armors[_random.Next(limit)];
         } while (allocatedIDs.Contains(newID));
+
         allocatedIDs.Add(newID);
         return newID;
     }
@@ -129,10 +123,7 @@ public partial class Randomizer
         EquipParamWeapon? wep;
 
         if (_weaponDictionary.TryGetValue(chr.subWepLeft, out wep))
-        {
-            if (wep.wepType == type && chrCanUseWeapon(wep, chr))
-            { return; }
-        }
+        { if (wep.wepType == type && chrCanUseWeapon(wep, chr)) { return; } }
         else
         {
             chr.subWepLeft = getUsableWeapon(chr, type);
@@ -140,10 +131,7 @@ public partial class Randomizer
         }
 
         if (_weaponDictionary.TryGetValue(chr.subWepRight, out wep))
-        {
-            if (wep.wepType == type && chrCanUseWeapon(wep, chr))
-            { return; }
-        }
+        { if (wep.wepType == type && chrCanUseWeapon(wep, chr)) { return; } }
         else
         {
             chr.subWepRight = getUsableWeapon(chr, type);
@@ -151,10 +139,7 @@ public partial class Randomizer
         }
 
         if (_weaponDictionary.TryGetValue(chr.subWepLeft3, out wep))
-        {
-            if (wep.wepType == type && chrCanUseWeapon(wep, chr))
-            { return; }
-        }
+        { if (wep.wepType == type && chrCanUseWeapon(wep, chr)) { return; } }
         else
         {
             chr.subWepLeft3 = getUsableWeapon(chr, type);
@@ -164,11 +149,9 @@ public partial class Randomizer
     }
     private int getUsableWeapon(CharaInitParam chr, ushort type)
     { // currently only used for starting classes (staves and seals)
-        if (type == Const.StaffType)
-        { return 33000000; } // Glintstone Staff
+        if (type == Const.StaffType) { return 33000000; } // Glintstone Staff
 
-        if (type == Const.SealType)
-        { return 34000000; } // Finger Seal
+        if (type == Const.SealType) { return 34000000; } // Finger Seal
 
         IReadOnlyList<Param.Row> table = _weaponTypeDictionary[type];
         int limit = table.Count;

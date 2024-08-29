@@ -94,7 +94,7 @@ public partial class Randomizer
         { getParams(file); }
     }
     private void getFmgs()
-    {   // TODO BND4 ?
+    {
         byte[] itemMsgBndBytes = getOrOpenFile(Const.ItemMsgBNDPath);
 
         if (itemMsgBndBytes == null) { throw new InvalidFileException(Const.ItemMsgBNDPath); }
@@ -125,20 +125,21 @@ public partial class Randomizer
         _weaponTypeDictionary = new Dictionary<ushort, List<Param.Row>>();
         _weaponNameDictionary = new Dictionary<int, string>();
 
+        injectAdditionalWeaponNames(); // workaround for _weaponFmg
+
         foreach (Param.Row row in _equipParamWeapon.Rows)
         {
-            string rowString = _weaponFmg[row.ID];              // TODO DLC not included in _weaponFmg
+            string rowString = _weaponFmg[row.ID];
 
             if ((int)row["sortId"]!.Value.Value == 9999999
-                || string.IsNullOrWhiteSpace(rowString)         // TODO DLC weapons have whitespace here
-                || rowString.ToLower().Contains("[error]")
-            )
+                || string.IsNullOrWhiteSpace(rowString)
+                || rowString.ToLower().Contains("[error]"))
             { continue; }
 
             EquipParamWeapon wep = new(row);
 
-            if (row.ID == Const.SerpentHunter)
-            {   // weapon is not randomized and cannot be leveled
+            if (row.ID == Const.SerpentHunter) // is not randomized and cannot be leveled
+            {
                 wep.materialSetId = 0;
                 wep.reinforceTypeId = 3000;
                 wep.reinforceShopCategory = 0;
@@ -146,7 +147,7 @@ public partial class Randomizer
             }
 
             _weaponNameDictionary[row.ID] = rowString;
-            if (!Enumerable.Range(81, 86).Contains(wep.wepType)) // TODO missing rows for DLC weapons
+            if (!Enumerable.Range(Const.ArrowType, Const.BallistaBoltType).Contains(wep.wepType))
             { _weaponDictionary.Add(row.ID, new EquipParamWeapon(row)); }
 
             if (_weaponTypeDictionary.TryGetValue(wep.wepType, out List<Param.Row>? rows))
@@ -237,7 +238,7 @@ public partial class Randomizer
         return false;
     }
     private void getParams(BinderFile file)
-    {   // TODO still does not pick up on params from DLC
+    {
         string fileName = Path.GetFileName(file.Name);
         switch (fileName)
         {
@@ -326,7 +327,7 @@ public partial class Randomizer
         switch (fileName)
         {
             case Const.WeaponNameName:
-                _weaponFmg = FMG.Read(file.Bytes);
+                _weaponFmg = FMG.Read(file.Bytes); // TODO inject DLC ?
                 break;
             case Const.ProtectorNameName:
                 _protectorFmg = FMG.Read(file.Bytes);

@@ -65,20 +65,18 @@ public partial class Randomizer
     }
     private void guaranteeSorceries(CharaInitParam chr, IReadOnlyList<int> spells)
     {
-        if (hasSpellOfType(chr, Const.SorceryType))
-        { return; }
+        if (hasSpellOfType(chr, Const.SorceryType)) { return; }
 
-        chr.equipSpell01 = -1;
-        chr.equipSpell02 = -1;
+        chr.equipSpell01 = Const.NoItem;
+        chr.equipSpell02 = Const.NoItem;
         randomizeSorceries(chr, spells);
     }
     private void guaranteeIncantations(CharaInitParam chr, IReadOnlyList<int> spells)
     {
-        if (hasSpellOfType(chr, Const.IncantationType))
-        { return; }
+        if (hasSpellOfType(chr, Const.IncantationType)) { return; }
 
-        chr.equipSpell01 = -1;
-        chr.equipSpell02 = -1;
+        chr.equipSpell01 = Const.NoItem;
+        chr.equipSpell02 = Const.NoItem;
         randomizeIncantations(chr, spells);
     }
     private Dictionary<int, ItemLotEntry> getReplacementHashmap(IOrderedDictionary orderedDictionary)
@@ -102,28 +100,13 @@ public partial class Randomizer
         orderedDictionary.Remove(Const.CrossbowType);
         orderedDictionary.Remove(Const.BallistaType);
 
-        // consolidate colossals
-        List<ItemLotEntry> colSwords = (List<ItemLotEntry>?)orderedDictionary[(object)Const.ColossalSwordType] ?? new List<ItemLotEntry>();
-        List<ItemLotEntry> colWeapons = (List<ItemLotEntry>?)orderedDictionary[(object)Const.ColossalWeaponType] ?? new List<ItemLotEntry>();
-        colWeapons.AddRange(colSwords);
-        orderedDictionary[(object)Const.ColossalWeaponType] = colWeapons;
-        orderedDictionary.Remove(Const.ColossalSwordType);
-
-        // consolidate axes and hammers
-        // List<ItemLotEntry> axes = (List<ItemLotEntry>?)orderedDictionary[(object)Const.AxeType] ?? new List<ItemLotEntry>();
-        // List<ItemLotEntry> hammers = (List<ItemLotEntry>?)orderedDictionary[(object)Const.HammerType] ?? new List<ItemLotEntry>();
-        // axes.AddRange(hammers);
-        // orderedDictionary[(object)Const.AxeType] = axes;
-        // orderedDictionary.Remove(Const.HammerType);
-
         for (int i = 0; i < orderedDictionary.Count; i++)
         {
             List<ItemLotEntry> value = (List<ItemLotEntry>)orderedDictionary[i]!;
             List<ItemLotEntry> itemLotEntries = new(value);
             itemLotEntries.Shuffle(_random);
 
-            foreach (ItemLotEntry entry in itemLotEntries)
-            { dict.Add(entry.Id, getNewId(entry.Id, value)); }
+            foreach (ItemLotEntry entry in itemLotEntries) { dict.Add(entry.Id, getNewId(entry.Id, value)); }
         }
         return dict;
     }
@@ -180,34 +163,34 @@ public partial class Randomizer
             $"{Equipment.EquipmentNameList[chr.wepleft]}{getRequiredLevelsWeapon(chr, chr.wepleft)}",
             $"{Equipment.EquipmentNameList[chr.wepRight]}{getRequiredLevelsWeapon(chr, chr.wepRight)}",
         };
-        if (chr.subWepLeft != -1)
+        if (chr.subWepLeft != Const.NoItem)
         { str.Add($"{Equipment.EquipmentNameList[chr.subWepLeft]}{getRequiredLevelsWeapon(chr, chr.subWepLeft)}"); }
 
-        if (chr.subWepRight != -1)
+        if (chr.subWepRight != Const.NoItem)
         { str.Add($"{Equipment.EquipmentNameList[chr.subWepRight]}{getRequiredLevelsWeapon(chr, chr.subWepRight)}"); }
 
-        if (chr.subWepLeft3 != -1)
+        if (chr.subWepLeft3 != Const.NoItem)
         { str.Add($"{Equipment.EquipmentNameList[chr.subWepLeft3]}{getRequiredLevelsWeapon(chr, chr.subWepLeft3)}"); }
 
-        if (chr.subWepRight3 != -1)
+        if (chr.subWepRight3 != Const.NoItem)
         { str.Add($"{Equipment.EquipmentNameList[chr.subWepRight3]}{getRequiredLevelsWeapon(chr, chr.subWepRight3)}"); }
 
-        if (chr.equipArrow != -1)
+        if (chr.equipArrow != Const.NoItem)
         { str.Add($"{_weaponNameDictionary[chr.equipArrow]}[{chr.arrowNum}]"); }
 
-        if (chr.equipSubArrow != -1)
+        if (chr.equipSubArrow != Const.NoItem)
         { str.Add($"{_weaponNameDictionary[chr.equipSubArrow]}[{chr.subArrowNum}]"); }
 
-        if (chr.equipBolt != -1)
+        if (chr.equipBolt != Const.NoItem)
         { str.Add($"{_weaponNameDictionary[chr.equipBolt]}[{chr.boltNum}]"); }
 
-        if (chr.equipSubBolt != -1)
+        if (chr.equipSubBolt != Const.NoItem)
         { str.Add($"{_weaponNameDictionary[chr.equipSubBolt]}[{chr.subBoltNum}]"); }
 
-        if (chr.equipSpell01 != -1)
+        if (chr.equipSpell01 != Const.NoItem)
         { str.Add($"{_goodsFmg[chr.equipSpell01]}"); }
 
-        if (chr.equipSpell02 != -1)
+        if (chr.equipSpell02 != Const.NoItem)
         { str.Add($"{_goodsFmg[chr.equipSpell02]}"); }
 
         _lineHelpFmg[id] = string.Join(", ", str);
@@ -341,4 +324,78 @@ public partial class Randomizer
     }
     private static int washWeaponMetadata(int id) { return id / 10000 * 10000; }
     private static int washWeaponLevels(int id) { return id / 100 * 100; }
+
+    private void injectAdditionalWeaponNames()
+    {
+        // no affinity
+        _weaponFmg[14510000] = "Death Knight's Twin Axes";
+        _weaponFmg[14540000] = "Forked-Tongue Hatchet";
+        _weaponFmg[64520000] = "Curseblade's Cirque";
+        _weaponFmg[8520000] = "Horned Warrior's Greatsword";
+        _weaponFmg[22500000] = "Claws of Night";
+        _weaponFmg[68510000] = "Red Bear's Claw";
+        _weaponFmg[4500000] = "Ancient Meteoric Ore Greatsword";
+        _weaponFmg[4540000] = "Moonrithyll's Knight Sword";
+        _weaponFmg[23500000] = "Devonia's Hammer";
+        _weaponFmg[12510000] = "Anvil Hammer";
+        _weaponFmg[12530000] = "Bloodfiend's Arm";
+        _weaponFmg[7500000] = "Spirit Sword";
+        _weaponFmg[7510000] = "Falx";
+        _weaponFmg[7520000] = "Dancing Blade of Ranah";
+        _weaponFmg[7530000] = "Horned Warrior's Sword";
+        _weaponFmg[21520000] = "Poisoned Hand";
+        _weaponFmg[66510000] = "Dragon-Hunter's Great Katana";
+        _weaponFmg[66520000] = "Rakshasa's Great Katana";
+        _weaponFmg[15500000] = "Death Knight's Longhaft Axe";
+        _weaponFmg[16550000] = "Bloodfiend's Sacred Spear";
+        _weaponFmg[17520000] = "Barbed Staff-Spear";
+        _weaponFmg[3550000] = "Greatsword of Solitude";
+        _weaponFmg[18500000] = "Spirit Glaive";
+        _weaponFmg[11500000] = "Flowerstone Gavel";
+        _weaponFmg[60500000] = "Dryleaf Arts";
+        _weaponFmg[60510000] = "Dane's Footwork";
+        _weaponFmg[2520000] = "Star-Lined Sword";
+        _weaponFmg[9500000] = "Sword of Night";
+        _weaponFmg[19500000] = "Obsidian Lamina";
+        _weaponFmg[67510000] = "Leda's Sword";
+        _weaponFmg[16520000] = "Swift Spear";
+        _weaponFmg[16540000] = "Bloodfiend's Fork";
+        _weaponFmg[2540000] = "Stone-Sheathed Sword";
+        _weaponFmg[2550000] = "Sword of Light";
+        _weaponFmg[2560000] = "Sword of Darkness";
+        _weaponFmg[2530000] = "Carian Sorcery Sword";
+        _weaponFmg[10500000] = "Euporia";
+        _weaponFmg[31530000] = "Golden Lion Shield";
+        _weaponFmg[62500000] = "Dueling Shield";
+        _weaponFmg[62510000] = "Carian Thrusting Shield";
+        _weaponFmg[13500000] = "Serpent Flail";
+        _weaponFmg[41510000] = "Ansbach's Bow";
+        _weaponFmg[43500000] = "Repeating Crossbow";
+        _weaponFmg[43510000] = "Spread Crossbow";
+        _weaponFmg[44500000] = "Rabbath's Cannon";
+        _weaponFmg[42500000] = "Igon's Greatbow";
+        _weaponFmg[40500000] = "Bone Bow";
+
+        // affinities
+        for (int i = 0; i < 1200; i += 100)
+        {
+            _weaponFmg[i + 64500000] = "Backhand Blade";
+            _weaponFmg[i + 8510000] = "Freyja's Greatsword";
+            _weaponFmg[i + 4520000] = "Fire Knight's Greatsword";
+            _weaponFmg[i + 1510000] = "Fire Knight Shortsword";
+            _weaponFmg[i + 1500000] = "Main-gauche";
+            _weaponFmg[i + 21510000] = "Pata";
+            _weaponFmg[i + 21540000] = "Golem Fist";
+            _weaponFmg[i + 66500000] = "Great Katana";
+            _weaponFmg[i + 3520000] = "Lizard Greatsword";
+            _weaponFmg[i + 6500000] = "Queelign's Greatsword";
+            _weaponFmg[i + 67500000] = "Milady";
+            _weaponFmg[i + 12520000] = "Black Steel Greathammer";
+            _weaponFmg[i + 10510000] = "Black Steel Twinblade";
+            _weaponFmg[i + 14520000] = "Messmer Soldier's Axe";
+            _weaponFmg[i + 16520000] = "Swift Spear";
+            _weaponFmg[i + 16540000] = "Bloodfiend's Fork";
+            _weaponFmg[i + 68500000] = "Beast Claw";
+        }
+    }
 }

@@ -5,53 +5,20 @@ namespace Project.Settings;
 
 public class Equipment
 {
-    public static List<ItemLotWrapper> DlcWeaponItemLots = new List<ItemLotWrapper>()
+    public static List<ItemLotWrapper> AdditionalItemLots = new List<ItemLotWrapper>()
     {
-        new ItemLotWrapper(new ItemLotEntry(6500000, 2), Const.HeavyThrustingType),  // Queelign's
-        new ItemLotWrapper(new ItemLotEntry(62510000, 2), Const.HeavyThrustingType), // Carian Thrusting Shield
-        new ItemLotWrapper(new ItemLotEntry(62500000, 2), Const.HeavyThrustingType), // Thrusting Shield
-        new ItemLotWrapper(new ItemLotEntry(14510000, 2), Const.AxeType), // Death Knight's Twin Axes
-        new ItemLotWrapper(new ItemLotEntry(14540000, 2), Const.AxeType), // Forked Tongue Hatchet
-        new ItemLotWrapper(new ItemLotEntry(21510000, 2), Const.FistType), // Pata
-        new ItemLotWrapper(new ItemLotEntry(21520000, 2), Const.FistType), // Poisoned Hand
-        new ItemLotWrapper(new ItemLotEntry(21540000, 2), Const.FistType), // Golem Fist
-        new ItemLotWrapper(new ItemLotEntry(22500000, 2), Const.ClawType), // Claws of Night
-        new ItemLotWrapper(new ItemLotEntry(4500000, 2), Const.ColossalSwordType), // Ancient Meteoric Ore
+        new ItemLotWrapper(new ItemLotEntry(1140000, 2), Const.DaggerType),  // Bloodstained Dagger
+        new ItemLotWrapper(new ItemLotEntry(1090000, 2), Const.DaggerType),  // Great Knife
+        new ItemLotWrapper(new ItemLotEntry(19020000, 2), Const.ReaperType),  // Halo Scythe
         new ItemLotWrapper(new ItemLotEntry(4520000, 2), Const.ColossalSwordType), // Fire Knight's Greatsword
-        new ItemLotWrapper(new ItemLotEntry(12530000, 2), Const.ColossalWeaponType), // Bloodfiend's Arm
-        new ItemLotWrapper(new ItemLotEntry(23500000, 2), Const.ColossalWeaponType), // Devonia's Hammer
+        new ItemLotWrapper(new ItemLotEntry(14540000, 2), Const.AxeType),     // Forked Tongue Hatchet
         new ItemLotWrapper(new ItemLotEntry(66510000, 2), Const.KatanaType),  // Dragon-Hunters
         new ItemLotWrapper(new ItemLotEntry(66500000, 2), Const.KatanaType),  // Great Katana
         new ItemLotWrapper(new ItemLotEntry(66520000, 2), Const.KatanaType),  // Rakshasa's
-        new ItemLotWrapper(new ItemLotEntry(9500000, 2), Const.KatanaType),   // Sword of Night
-        new ItemLotWrapper(new ItemLotEntry(2520000, 2), Const.KatanaType),   // Star Lined Sword
         new ItemLotWrapper(new ItemLotEntry(67500000, 2), Const.GreatswordType), // Milady
         new ItemLotWrapper(new ItemLotEntry(67510000, 2), Const.GreatswordType), // Leda's Sword
-        new ItemLotWrapper(new ItemLotEntry(3520000, 2), Const.GreatswordType),  // Lizard Greatsword
-        new ItemLotWrapper(new ItemLotEntry(3550000, 2), Const.GreatswordType),  // Greatsword of Solitude
-        new ItemLotWrapper(new ItemLotEntry(7500000, 2), Const.CurvedSwordType), // Spirit Sword
-        new ItemLotWrapper(new ItemLotEntry(7510000, 2), Const.CurvedSwordType), // Falx
-        new ItemLotWrapper(new ItemLotEntry(7520000, 2), Const.CurvedSwordType), // Dancing Blade of Ranah
-        new ItemLotWrapper(new ItemLotEntry(7530000, 2), Const.CurvedSwordType), // Horned Warrior's Sword
-        new ItemLotWrapper(new ItemLotEntry(41510000, 2), Const.BowType),        // Ansbach's Bow
-        new ItemLotWrapper(new ItemLotEntry(40500000, 2), Const.LightBowType),   // Bone Bow
-        new ItemLotWrapper(new ItemLotEntry(43500000, 2), Const.BowType),        // repeating crossbow
-        new ItemLotWrapper(new ItemLotEntry(43510000, 2), Const.BowType),        // spread crossbow
-        new ItemLotWrapper(new ItemLotEntry(2550000, 2), Const.StraightSwordType), // Sword of Light
-        new ItemLotWrapper(new ItemLotEntry(2560000, 2), Const.StraightSwordType), // Sword of Darkness
-        new ItemLotWrapper(new ItemLotEntry(2540000, 2), Const.StraightSwordType), // stone sheathed
         new ItemLotWrapper(new ItemLotEntry(64520000, 2), Const.CurvedGreatswordType), // Curseblade's Cirque
-        new ItemLotWrapper(new ItemLotEntry(64500000, 2), Const.CurvedGreatswordType), // backhand blade
-        new ItemLotWrapper(new ItemLotEntry(8510000, 2), Const.CurvedGreatswordType), // Freyja's Greatsword
-        new ItemLotWrapper(new ItemLotEntry(8520000, 2), Const.CurvedGreatswordType), // Horned Warrior's Greatsword
-        new ItemLotWrapper(new ItemLotEntry(18500000, 2), Const.HalberdType), // Spirit Glaive
-        new ItemLotWrapper(new ItemLotEntry(11500000, 2), Const.HammerType),  // Flowerstone Gavel
-        new ItemLotWrapper(new ItemLotEntry(19500000, 2), Const.ReaperType), // Obsidian Lamina
-        new ItemLotWrapper(new ItemLotEntry(12520000, 2), Const.GreatHammerType), // Blacksteel Greathammer
-        new ItemLotWrapper(new ItemLotEntry(15500000, 2), Const.GreataxeType), //  Death Knight's Longhaft Axe
-        new ItemLotWrapper(new ItemLotEntry(17520000, 2), Const.GreatSpearType), // Barbed Staff-Spear
-        new ItemLotWrapper(new ItemLotEntry(10510000, 2), Const.TwinbladeType), //  Blacksteel Twinblade
-        new ItemLotWrapper(new ItemLotEntry(13500000, 2), Const.FlailType), //  Serpent Flail
+        new ItemLotWrapper(new ItemLotEntry(62510000, 2), Const.HeavyThrustingType), // Carian Thrusting Shield
     };
 
     public static List<int> CurvedSwordIDs = new List<int>()
@@ -243,7 +210,7 @@ public class Equipment
         43500000, 43510000, // (DLC) 
     };
     public static List<int> BallistaOrGreatBowIDs = new List<int>
-    { // includes throwing blades
+    {
         44000000, 44010000, 42010000, 42030000, 42040000,
         42500000, 63500000, 44500000, // (DLC)
     };
@@ -280,32 +247,33 @@ public class Equipment
     public static List<int> HeadArmorIDs = new List<int>()
     {   // non-exhaustive list of armor, deliberate at this time
         //DLC 
-        5253000, 5021000, 5180000, 5120000, 3010000, 5230000, 5320000, 5090000, 5130000,
-        5060000, 5250000, 5100000, 5101000, 5330000, 5191000, 5190000, 5140000, 5220000,
-        5221000, 5000000, 5020000, 5160000, 5260000, 5280000, 5300000, 5030000, 3000000,
-        5010000, 5183000, 5110000, 5270000, 5150000, 5272000, 5210000, 5080000, 5200000,
+        5253000, 5021000, 5180000, 5120000, 3010000, 5230000, 5320000, 5090000, 5130000, 5060000,
+        5250000, 5100000, 5101000, 5330000, 5191000, 5190000, 5140000, 5220000, 5221000, 5000000,
+        5020000, 5160000, 5260000, 5280000, 5300000, 5030000, 3000000, 5010000, 5183000, 5110000,
+        5270000, 5150000, 5272000, 5210000, 5080000, 5200000,
         
         //BASE
         1060000, 370000, 380000, 581000, 650000, 1130000, 850000, 963000, 870000, 1080000,
         130000, 640000, 1880000, 580000, 770000, 250000, 1040000, 1840000, 801000, 460000,
         120000, 200000, 180000, 170000, 881000, 940000, 340000, 891000, 730000, 670000,
         651000, 540000, 140000, 210000, 230000, 860000, 300000, 1120000, 292000, 1300000,
-        290000, 291000, 760000, 1401000, 980000, 811000, 571000, 231000, 150000,
+        290000, 291000, 760000, 1401000, 980000, 811000, 571000, 231000, 150000, 780000,
+        660000, 280000, 620000, 720000,
     };
     public static List<int> BodyArmorIDs = new List<int>()
     {   // non-exhaustive list of armor, deliberate at this time
         //DLC
-        5252100, 5253100, 3000100, 3001100, 5180100, 5181100, 5120100, 5121100, 3010100,
-        5190100, 5231100, 5230100, 5060100, 5191100, 5250100, 5100100, 5101100, 5020100,
-        5000100, 5140100, 5141100, 5220100, 5002100, 5160100, 5260100, 5280100, 5030100,
-        5031100, 5010100, 5270100, 5271100, 5111100, 5131100, 5210100, 5090100, 5070100,
-        5080100, 5081100, 5200100,
-
+        5252100, 5253100, 3000100, 3001100, 5180100, 5181100, 5120100, 5121100, 3010100, 5190100,
+        5231100, 5230100, 5060100, 5191100, 5250100, 5100100, 5101100, 5020100, 5000100, 5140100,
+        5141100, 5220100, 5002100, 5160100, 5260100, 5280100, 5030100, 5031100, 5010100, 5270100,
+        5271100, 5111100, 5131100, 5210100, 5090100, 5070100, 5080100, 5081100, 5200100,
+        5110100, 
         //BASE
         670100, 171100, 240100, 1100100, 1930100, 940100, 80100, 1010100, 661100, 872100,
         1070100, 341100, 951100, 1040100, 311100, 331100, 1991100, 652100, 1400100, 181100,
         200100, 320100, 740100, 761100, 481100, 641100, 870100, 50100, 520100, 1050100,
-        292100, 930100, 151100, 131100, 771100, 580100, 1740100, 911100, 861100,
+        292100, 930100, 151100, 131100, 771100, 580100, 1740100, 911100, 861100, 294100,
+        290100, 963100, 770100, 121100, 1940100, 380100,
     };
     public static List<int> ArmsArmorIDs = new List<int>()
     {   // non-exhaustive list of armor, deliberate at this time
@@ -317,7 +285,7 @@ public class Equipment
         //BASE
         581200, 1000200, 351200, 790200, 730200, 880200, 460200, 990200, 360200, 1700200,
         1040200, 330200, 50200, 640200, 580200, 760200, 470200, 260200, 230200, 290200,
-        150200, 872200, 670200, 1070200, 860200, 200200, 1100200, 120200
+        150200, 872200, 670200, 1070200, 860200, 200200, 1100200, 120200, 930200, 940200,
     };
     public static List<int> LegsArmorIDs = new List<int>()
     {   // non-exhaustive list of armor, deliberate at this time
@@ -330,7 +298,7 @@ public class Equipment
         120300, 730300, 340300, 880300, 940300, 460300, 300300, 520300, 530300, 650300,
         870300, 640300, 760300, 1130300, 470300, 320300, 600300, 872300, 90300, 150300,
         290300, 310300, 580300, 1040300, 1740300, 1070300, 540300, 330300, 620300, 390300,
-        1010300, 280300, 130300, 860300, 1100300
+        1010300, 280300, 130300, 860300, 1100300, 50300, 930300, 370300, 1000300, 990300,
      };
     public static IReadOnlyDictionary<byte, List<int>> ArmorLists = new Dictionary<byte, List<int>>()
     {

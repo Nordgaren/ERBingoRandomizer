@@ -75,6 +75,12 @@ public static class Const
     public const ushort GreatArrowType = 83;
     public const ushort BoltType = 85;
     public const ushort BallistaBoltType = 86;
+    public const ushort ThrustingShieldType = 90;
+    public const ushort BackhandBladeType = 92;
+    public const ushort LightGreatswordType = 93;
+    public const ushort GreatKatanaType = 94;
+    public const ushort BeastClawsType = 95;
+
     public const byte SorceryType = 0;
     public const byte IncantationType = 1;
     public const byte GoodsSorceryType = 5;
