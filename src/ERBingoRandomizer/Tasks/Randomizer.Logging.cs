@@ -33,20 +33,20 @@ public partial class Randomizer
     {
         logItem($"\n## {_menuTextFmg[i]}");
         List<string> str = new() {
-            $"{Equipment.EquipmentNameList[chr.wepleft]}{getRequiredLevelsWeapon(chr, chr.wepleft)}",
-            $"{Equipment.EquipmentNameList[chr.wepRight]}{getRequiredLevelsWeapon(chr, chr.wepRight)}",
+            $"{_weaponNameDictionary[chr.wepleft]}{getRequiredLevelsWeapon(chr, chr.wepleft)}",
+            $"{_weaponNameDictionary[chr.wepRight]}{getRequiredLevelsWeapon(chr, chr.wepRight)}",
         };
         if (chr.subWepLeft != -1)
-        { str.Add($"{Equipment.EquipmentNameList[chr.subWepLeft]}{getRequiredLevelsWeapon(chr, chr.subWepLeft)}"); }
+        { str.Add($"{_weaponNameDictionary[chr.subWepLeft]}{getRequiredLevelsWeapon(chr, chr.subWepLeft)}"); }
 
         if (chr.subWepRight != -1)
-        { str.Add($"{Equipment.EquipmentNameList[chr.subWepRight]}{getRequiredLevelsWeapon(chr, chr.subWepRight)}"); }
+        { str.Add($"{_weaponNameDictionary[chr.subWepRight]}{getRequiredLevelsWeapon(chr, chr.subWepRight)}"); }
 
         if (chr.subWepLeft3 != -1)
-        { str.Add($"{Equipment.EquipmentNameList[chr.subWepLeft3]}{getRequiredLevelsWeapon(chr, chr.subWepLeft3)}"); }
+        { str.Add($"{_weaponNameDictionary[chr.subWepLeft3]}{getRequiredLevelsWeapon(chr, chr.subWepLeft3)}"); }
 
         if (chr.subWepRight3 != -1)
-        { str.Add($"{Equipment.EquipmentNameList[chr.subWepRight3]}{getRequiredLevelsWeapon(chr, chr.subWepRight3)}"); }
+        { str.Add($"{_weaponNameDictionary[chr.subWepRight3]}{getRequiredLevelsWeapon(chr, chr.subWepRight3)}"); }
 
         if (chr.equipArrow != -1)
         { str.Add($"{_weaponNameDictionary[chr.equipArrow]}[{chr.arrowNum}]"); }
@@ -70,22 +70,22 @@ public partial class Randomizer
         // logItem("__ Weapons");
 
         // if (chr.wepleft != -1)
-        // { logItem($"Left: {Equipment.EquipmentNameList[chr.wepleft]}{getRequiredLevelsWeapon(chr, chr.wepleft)}"); }
+        // { logItem($"Left: {_weaponNameDictionary[chr.wepleft]}{getRequiredLevelsWeapon(chr, chr.wepleft)}"); }
 
         // if (chr.wepRight != -1)
-        // { logItem($"Right: {Equipment.EquipmentNameList[chr.wepRight]}{getRequiredLevelsWeapon(chr, chr.wepRight)}"); }
+        // { logItem($"Right: {_weaponNameDictionary[chr.wepRight]}{getRequiredLevelsWeapon(chr, chr.wepRight)}"); }
 
         // if (chr.subWepLeft != -1)
-        // { logItem($"Left 2: {Equipment.EquipmentNameList[chr.subWepLeft]}{getRequiredLevelsWeapon(chr, chr.subWepLeft)}"); }
+        // { logItem($"Left 2: {_weaponNameDictionary[chr.subWepLeft]}{getRequiredLevelsWeapon(chr, chr.subWepLeft)}"); }
 
         // if (chr.subWepRight != -1)
-        // { logItem($"Right 2: {Equipment.EquipmentNameList[chr.subWepRight]}{getRequiredLevelsWeapon(chr, chr.subWepRight)}"); }
+        // { logItem($"Right 2: {_weaponNameDictionary[chr.subWepRight]}{getRequiredLevelsWeapon(chr, chr.subWepRight)}"); }
 
         // if (chr.subWepLeft3 != -1)
-        // { logItem($"Left 3: {Equipment.EquipmentNameList[chr.subWepLeft3]}{getRequiredLevelsWeapon(chr, chr.subWepLeft3)}"); }
+        // { logItem($"Left 3: {_weaponNameDictionary[chr.subWepLeft3]}{getRequiredLevelsWeapon(chr, chr.subWepLeft3)}"); }
 
         // if (chr.subWepRight3 != -1)
-        // { logItem($"Right 3: {Equipment.EquipmentNameList[chr.subWepRight3]}{getRequiredLevelsWeapon(chr, chr.subWepRight3)}"); }
+        // { logItem($"Right 3: {_weaponNameDictionary[chr.subWepRight3]}{getRequiredLevelsWeapon(chr, chr.subWepRight3)}"); }
 
         // logItem("\n__ Armor");
         // logItem($"Head: {_protectorFmg[chr.equipHelm]} : {chr.equipHelm}");

@@ -18,8 +18,9 @@ public static class Config
     public const ushort MaxBolts = 30;
     public const ushort MaxBallistaBolts = 10;
     // Base Stats For Magics
-    public const byte MinInt = 10;
-    public const byte MinFai = 10;
+    public const byte MinInt = 9;
+    public const byte MinFai = 9;
+    public const byte CoreStat = 8;
     // Level Randomizer  
     public const byte MaxStat = 16;
     public const byte MinStat = 5;

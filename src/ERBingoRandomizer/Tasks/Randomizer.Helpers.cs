@@ -79,67 +79,70 @@ public partial class Randomizer
         chr.equipSpell02 = Const.NoItem;
         randomizeIncantations(chr, spells);
     }
-    private Dictionary<int, ItemLotEntry> getReplacementHashmap(IOrderedDictionary orderedDictionary)
+    private void groupArmaments(IOrderedDictionary orderedDictionary)
     {
-        Dictionary<int, ItemLotEntry> dict = new();
-
-        // consolidate all ranged armamets
+        // consolidate bows, lightbows, crossbows, ballistae
         List<ItemLotEntry> bows = (List<ItemLotEntry>?)orderedDictionary[(object)Const.BowType] ?? new List<ItemLotEntry>();
         List<ItemLotEntry> lightbows = (List<ItemLotEntry>?)orderedDictionary[(object)Const.LightBowType] ?? new List<ItemLotEntry>();
-        List<ItemLotEntry> greatbows = (List<ItemLotEntry>?)orderedDictionary[(object)Const.GreatbowType] ?? new List<ItemLotEntry>();
         List<ItemLotEntry> crossbows = (List<ItemLotEntry>?)orderedDictionary[(object)Const.CrossbowType] ?? new List<ItemLotEntry>();
         List<ItemLotEntry> ballista = (List<ItemLotEntry>?)orderedDictionary[(object)Const.BallistaType] ?? new List<ItemLotEntry>();
 
         bows.AddRange(lightbows);
-        bows.AddRange(greatbows);
         bows.AddRange(crossbows);
         bows.AddRange(ballista);
+
         orderedDictionary[(object)Const.BowType] = bows;
         orderedDictionary.Remove(Const.LightBowType);
-        orderedDictionary.Remove(Const.GreatbowType);
         orderedDictionary.Remove(Const.CrossbowType);
         orderedDictionary.Remove(Const.BallistaType);
+    }
+
+    private Dictionary<int, ItemLotEntry> getRandomizedEntries(IOrderedDictionary orderedDictionary)
+    {
+        Dictionary<int, ItemLotEntry> output = new();
 
         for (int i = 0; i < orderedDictionary.Count; i++)
         {
-            List<ItemLotEntry> value = (List<ItemLotEntry>)orderedDictionary[i]!;
-            List<ItemLotEntry> itemLotEntries = new(value);
+            List<ItemLotEntry> values = (List<ItemLotEntry>)orderedDictionary[i]!;
+            List<ItemLotEntry> itemLotEntries = new(values);
             itemLotEntries.Shuffle(_random);
 
-            foreach (ItemLotEntry entry in itemLotEntries) { dict.Add(entry.Id, getNewId(entry.Id, value)); }
+            foreach (ItemLotEntry entry in itemLotEntries)
+            {
+                if (entry.Id != Const.GargoyleGreatsword)
+                { output.Add(entry.Id, getNewId(entry.Id, values)); }
+            }
         }
-        return dict;
+        return output;
     }
-    private Dictionary<int, int> getShopReplacementHashmap(IOrderedDictionary orderedDictionary)
+    private Dictionary<int, int> getRandomizedIntegers(IOrderedDictionary orderedDictionary)
     {
         Dictionary<int, int> output = new();
         for (int i = 0; i < orderedDictionary.Count; i++)
         {
             List<int> value = (List<int>)orderedDictionary[i]!;
             List<int> itemLotEntries = new(value);
-            itemLotEntries.Shuffle(_random); // TODO investigate if thise matters
+            itemLotEntries.Shuffle(_random);
 
             foreach (int entry in itemLotEntries) { output.Add(entry, getNewId(entry, value)); }
         }
         return output;
     }
-    private void dedupeAndRandomizeVectors(IOrderedDictionary orderedDictionary)
+    private void removeDuplicateEntriesFrom(IOrderedDictionary orderedDictionary)
     {
-        for (int i = 0; i < orderedDictionary.Count; i++)
+        for (int i = 0; i < orderedDictionary.Count; i += 1)
         {
             List<ItemLotEntry> values = (List<ItemLotEntry>)orderedDictionary[i]!;
             List<ItemLotEntry> distinct = values.Distinct().ToList();
-            distinct.Shuffle(_random); // TODO investigate if thise matters
             orderedDictionary[i] = distinct;
         }
     }
-    private void dedupeAndRandomizeShopVectors(IOrderedDictionary orderedDictionary)
+    private void removeDuplicateIntegersFrom(IOrderedDictionary orderedDictionary)
     {
-        for (int i = 0; i < orderedDictionary.Count; i++)
+        for (int i = 0; i < orderedDictionary.Count; i += 1)
         {
             List<int> values = (List<int>)orderedDictionary[i]!;
             List<int> distinct = values.Distinct().ToList();
-            distinct.Shuffle(_random); // TODO investigate if thise matters
             orderedDictionary[i] = distinct;
         }
     }
@@ -160,20 +163,20 @@ public partial class Randomizer
     private void addDescriptionString(CharaInitParam chr, int id)
     {
         List<string> str = new() {
-            $"{Equipment.EquipmentNameList[chr.wepleft]}{getRequiredLevelsWeapon(chr, chr.wepleft)}",
-            $"{Equipment.EquipmentNameList[chr.wepRight]}{getRequiredLevelsWeapon(chr, chr.wepRight)}",
+            $"{_weaponNameDictionary[chr.wepleft]}{getRequiredLevelsWeapon(chr, chr.wepleft)}",
+            $"{_weaponNameDictionary[chr.wepRight]}{getRequiredLevelsWeapon(chr, chr.wepRight)}",
         };
         if (chr.subWepLeft != Const.NoItem)
-        { str.Add($"{Equipment.EquipmentNameList[chr.subWepLeft]}{getRequiredLevelsWeapon(chr, chr.subWepLeft)}"); }
+        { str.Add($"{_weaponNameDictionary[chr.subWepLeft]}{getRequiredLevelsWeapon(chr, chr.subWepLeft)}"); }
 
         if (chr.subWepRight != Const.NoItem)
-        { str.Add($"{Equipment.EquipmentNameList[chr.subWepRight]}{getRequiredLevelsWeapon(chr, chr.subWepRight)}"); }
+        { str.Add($"{_weaponNameDictionary[chr.subWepRight]}{getRequiredLevelsWeapon(chr, chr.subWepRight)}"); }
 
         if (chr.subWepLeft3 != Const.NoItem)
-        { str.Add($"{Equipment.EquipmentNameList[chr.subWepLeft3]}{getRequiredLevelsWeapon(chr, chr.subWepLeft3)}"); }
+        { str.Add($"{_weaponNameDictionary[chr.subWepLeft3]}{getRequiredLevelsWeapon(chr, chr.subWepLeft3)}"); }
 
         if (chr.subWepRight3 != Const.NoItem)
-        { str.Add($"{Equipment.EquipmentNameList[chr.subWepRight3]}{getRequiredLevelsWeapon(chr, chr.subWepRight3)}"); }
+        { str.Add($"{_weaponNameDictionary[chr.subWepRight3]}{getRequiredLevelsWeapon(chr, chr.subWepRight3)}"); }
 
         if (chr.equipArrow != Const.NoItem)
         { str.Add($"{_weaponNameDictionary[chr.equipArrow]}[{chr.arrowNum}]"); }
@@ -211,12 +214,12 @@ public partial class Randomizer
         SFUtil.EncryptERRegulation($"{Const.BingoPath}/{Const.RegulationName}", _regulationBnd);
         // create menu message for starting classes
         Directory.CreateDirectory(Path.GetDirectoryName($"{Const.BingoPath}/{Const.MenuMsgBNDPath}") ?? throw new InvalidOperationException());
-        setBndFile(_menuMsgBND, Const.GR_LineHelpName, _lineHelpFmg.Write()); // TODO why isn't this updating starting classes ?
+        setBndFile(_menuMsgBND, Const.GR_LineHelpName, _lineHelpFmg.Write());
         File.WriteAllBytes($"{Const.BingoPath}/{Const.MenuMsgBNDPath}", _menuMsgBND.Write());
     }
 
     private string getRequiredLevelsWeapon(CharaInitParam chr, int id)
-    {   // TODO reimplement to account for DLC gear
+    {
         string response = "";
         EquipParamWeapon wep = _weaponDictionary[id];
         int reqLevels = 0;
@@ -375,7 +378,20 @@ public partial class Randomizer
         _weaponFmg[44500000] = "Rabbath's Cannon";
         _weaponFmg[42500000] = "Igon's Greatbow";
         _weaponFmg[40500000] = "Bone Bow";
+        // remembrances
+        _weaponFmg[53500000] = "Sword Lance";
+        _weaponFmg[3510000] = "Greatsword of Damnation";
+        _weaponFmg[4530000] = "Greatsword of Radahn (Lord)";
+        _weaponFmg[4550000] = "Greatsword of Radahn (Light)";
+        _weaponFmg[8500000] = "Putrescence Cleaver";
+        _weaponFmg[17500000] = "Spear of the Impaler";
+        _weaponFmg[18510000] = "Poleblade of the Bud";
+        _weaponFmg[23510000] = "Shadow Sunflower Blossom";
+        _weaponFmg[23520000] = "Gazing Finger";
+        _weaponFmg[33510000] = "Staff of the Great Beyond";
+        _weaponFmg[67520000] = "Rellana's Twin Blades";
 
+        // TODO update Remembrance shop IDs
         // affinities
         for (int i = 0; i < 1200; i += 100)
         {
@@ -397,5 +413,17 @@ public partial class Randomizer
             _weaponFmg[i + 16540000] = "Bloodfiend's Fork";
             _weaponFmg[i + 68500000] = "Beast Claw";
         }
+        //spells
+        _goodsFmg[2004320] = "Rellana's Twin Moons";
+        _goodsFmg[2006200] = "Vortex of Putrescence";
+        _goodsFmg[2004700] = "Blades of Stone";
+        _goodsFmg[2007820] = "Messmer's Orb";
+        _goodsFmg[2006680] = "Land of Shadow";
+        _goodsFmg[2007200] = "Rotten Butterflies";
+        _goodsFmg[2007300] = "Midra's Flame of Frenzy";
+        _goodsFmg[2006700] = "Light of Miquella";
+
+        _goodsFmg[2006800] = "Roar of Rugalea";
+        _goodsFmg[2004500] = "Glintstone Nail";
     }
 }

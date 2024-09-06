@@ -11,7 +11,7 @@ public static class Const
     public const string ExeName = "eldenring.exe";
     public const string RegulationName = "regulation.bin";
     public const string ItemMsgBNDPath = "/msg/engus/item.msgbnd.dcx";
-    public const string MenuMsgBNDPath = "/msg/engus/menu.msgbnd.dcx"; // TODO confirm no needed extension for DLC inclusion
+    public const string MenuMsgBNDPath = "/msg/engus/menu.msgbnd.dcx"; // TODO why is mod engine 2 being a punk?
     // Params  
     public const string EquipMtrlSetParam = "EquipMtrlSetParam.param";
     public const string EquipParamWeaponName = "EquipParamWeapon.param";
@@ -90,7 +90,9 @@ public static class Const
     public const ushort StaffType = 57;
     public const ushort SealType = 61;
     public const int SerpentHunter = 17030000;
+    public const int GargoyleGreatsword = 3190000;
     public const int CarianRegalScepter = 33090000;
+    public const int RellanaTwinBlades = 67520000; // Workaround, TODO longterm fix
     public static readonly string ExeDir = Environment.CurrentDirectory;
     // Level Randomizer  
     public const byte NumStats = 8;

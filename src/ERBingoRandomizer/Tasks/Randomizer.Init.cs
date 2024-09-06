@@ -83,7 +83,7 @@ public partial class Randomizer
     private void getDefs()
     {
         _paramDefs = new List<PARAMDEF>();
-        string[] defs = Util.GetResourcesInFolder("Params/Defs"); // TODO
+        string[] defs = Util.GetResourcesInFolder("Params/Defs");
         foreach (string def in defs)
         { _paramDefs.Add(Util.XmlDeserialize(def)); }
     }
@@ -327,7 +327,7 @@ public partial class Randomizer
         switch (fileName)
         {
             case Const.WeaponNameName:
-                _weaponFmg = FMG.Read(file.Bytes); // TODO inject DLC ?
+                _weaponFmg = FMG.Read(file.Bytes); // TODO current workaround is to inject DLC names, no idea why FMGs are not picked up
                 break;
             case Const.ProtectorNameName:
                 _protectorFmg = FMG.Read(file.Bytes);

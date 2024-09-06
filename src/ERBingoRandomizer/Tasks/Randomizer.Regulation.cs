@@ -11,6 +11,7 @@ using System.Linq;
 using System.Security.Cryptography;
 using System.Text.Json;
 using System.Threading.Tasks;
+using static FSParam.Param;
 
 namespace Project.Tasks;
 
@@ -82,9 +83,10 @@ public partial class Randomizer
         List<Param.Row> colossalWeapons = _weaponTypeDictionary[Const.ColossalWeaponType];
         List<Param.Row> colossalSwords = _weaponTypeDictionary[Const.ColossalSwordType];
 
-        IEnumerable<int> remembranceItems = _shopLineupParam.Rows.Where(r => r.ID is >= 101900 and <= 101929)
+        IEnumerable<int> remembranceItems = _shopLineupParam.Rows.Where(r => r.ID is >= 101895 and <= 101948) // sword lance to Light of Miquella
             .Select(r => new ShopLineupParam(r).equipId);
-        // washWeaponLevels  washWeaponMetadata  // TODO testing equal opportunity
+
+        // washWeaponLevels  washWeaponMetadata  (washing only levels biases towards smithing weapons)
         List<int> mainArms = _weaponDictionary.Keys.Select(washWeaponLevels).Distinct()
             .Where(id => staves.All(s => s.ID != id) && seals.All(s => s.ID != id)
                 && smallShields.All(s => s.ID != id)
@@ -116,7 +118,7 @@ public partial class Randomizer
         List<Param.Row> halberds = _weaponTypeDictionary[Const.HalberdType];
         List<Param.Row> reapers = _weaponTypeDictionary[Const.ReaperType];
 
-        List<int> sideArms = _weaponDictionary.Keys.Select(washWeaponMetadata).Distinct() // TODO testing equal opportunity
+        List<int> sideArms = _weaponDictionary.Keys.Select(washWeaponMetadata).Distinct()
             .Where(id => staves.All(s => s.ID != id) && seals.All(s => s.ID != id)
                 && greatswords.All(s => s.ID != id)
                 && curvedGreatswords.All(s => s.ID != id)
@@ -130,8 +132,6 @@ public partial class Randomizer
                 && greatSpears.All(s => s.ID != id)
                 && halberds.All(s => s.ID != id)
                 && reapers.All(s => s.ID != id)
-                && greatbows.All(s => s.ID != id)
-                && greatShields.All(s => s.ID != id)
                 && remembranceItems.All(i => i != id))
             .ToList();
 
@@ -208,11 +208,13 @@ public partial class Randomizer
         foreach (ItemLotWrapper item in Equipment.AdditionalItemLots)
         { addToOrderedDict(categoryDictMap, item.Type, item.Entry); }
 
-        dedupeAndRandomizeVectors(categoryDictMap);
-        dedupeAndRandomizeVectors(categoryDictEnemy);
+        removeDuplicateEntriesFrom(categoryDictMap);
+        removeDuplicateEntriesFrom(categoryDictEnemy);
+        groupArmaments(categoryDictMap);
+        groupArmaments(categoryDictEnemy);
 
-        Dictionary<int, ItemLotEntry> guaranteedDropReplace = getReplacementHashmap(categoryDictMap);
-        Dictionary<int, ItemLotEntry> chanceDropReplace = getReplacementHashmap(categoryDictEnemy);
+        Dictionary<int, ItemLotEntry> guaranteedDropReplace = getRandomizedEntries(categoryDictMap);
+        Dictionary<int, ItemLotEntry> chanceDropReplace = getRandomizedEntries(categoryDictEnemy);
 
         // Application now has weapons set to randomize
         // logItem(">> Item Replacements - all instances of item on left will be replaced with item on right");
@@ -220,7 +222,7 @@ public partial class Randomizer
         // logReplacementDictionary(guaranteedDropReplace);
         // logItem("\n## Chance Weapons");
         // logReplacementDictionary(chanceDropReplace);
-        logItem("");
+        // logItem("");
 
         foreach (Param.Row row in _itemLotParam_enemy.Rows.Concat(_itemLotParam_map.Rows))
         {
@@ -234,9 +236,7 @@ public partial class Randomizer
 
                 int id = (int)itemIds[i].GetValue(row);
                 if (category == Const.ItemLotWeaponCategory)
-                {
-                    // if (!_weaponDictionary.TryGetValue(washWeaponLevels(id), out _)) { continue; }
-
+                { // if (!_weaponDictionary.TryGetValue(washWeaponLevels(id), out _)) { continue; } // not needed
                     if (guaranteedDropReplace.TryGetValue(id, out ItemLotEntry entry))
                     {
                         itemIds[i].SetValue(row, entry.Id);
@@ -250,16 +250,14 @@ public partial class Randomizer
                 }
                 else
                 { // category == Const.ItemLotCustomWeaponCategory
-                    if (!_customWeaponDictionary.TryGetValue(id, out _))
-                    { continue; }
+                    if (!_customWeaponDictionary.TryGetValue(id, out _)) { continue; }
 
                     if (guaranteedDropReplace.TryGetValue(id, out ItemLotEntry entry))
                     {
                         itemIds[i].SetValue(row, entry.Id);
                         categories[i].SetValue(row, entry.Category);
                     }
-                    if (!chanceDropReplace.TryGetValue(id, out entry))
-                    { continue; }
+                    if (!chanceDropReplace.TryGetValue(id, out entry)) { continue; }
 
                     itemIds[i].SetValue(row, entry.Id);
                     categories[i].SetValue(row, entry.Category);
@@ -284,13 +282,13 @@ public partial class Randomizer
         List<int> RemembranceWeaponIDs = new List<int>()
         {
             3100000, 3140000, 4020000, 4050000, 6040000, 8100000, 9020000, 11150000,
-            13030000, 15040000, 15110000, 17010000,  20060000, 21060000, 23050000,
-            42000000,
-            3500000, 3510000, 8500000, 17500000, 18510000, 23510000, 23520000, 67520000, // DLC  // 4530000, 4550000,  // Radahn's DLC swords
+            13030000, 15040000, 15110000, 17010000,  20060000, 21060000, 23050000, 42000000,
+            3500000, 3510000, 8500000, 17500000, 18510000, 23510000, 23520000, 67520000, // DLC  
+            4530000, 4550000,  // Radahn's DLC swords
         };
         List<ShopLineupParam> shopLineupParamRemembranceList = new();
 
-        foreach (Param.Row row in _shopLineupParam.Rows)
+        foreach (Param.Row row in _shopLineupParam.Rows) // should write out to find DLC Remembrances TODO
         {
             if ((byte)row["equipType"]!.Value.Value != Const.ShopLineupWeaponCategory || (row.ID < 101900 || row.ID > 101980))
             { continue; } // assures only weapons are randomized, maybe update for different armor logic, not sure
@@ -316,9 +314,14 @@ public partial class Randomizer
 
             ShopLineupParam lot = new(row);
 
+            if (lot.equipId == Const.CarianRegalScepter || lot.equipId == Const.RellanaTwinBlades)
+            {   // randomizes Rennala's staff and Rellana's Twin Blades (new DLC weapon types not randomized)
+                lot.equipId = 9020000;
+            }   // Hand of Malenia
+
             if (!_weaponDictionary.TryGetValue(washWeaponLevels(lot.equipId), out EquipParamWeapon? wep)) { continue; }
 
-            if (lot.equipId == Const.CarianRegalScepter || !(wep.wepType is Const.StaffType or Const.SealType))
+            if (!(wep.wepType is Const.StaffType or Const.SealType))
             {   // about 60 item shop allocations
                 if (lot.mtrlId == -1) { replaceWeaponLineupParam(lot, WeaponShopLists); }
                 else { replaceRemembranceLineupParam(lot, RemembranceWeaponIDs); }
@@ -331,15 +334,16 @@ public partial class Randomizer
         OrderedDictionary magicCategoryDictMap = new();
         List<ShopLineupParam> shopLineupParamRemembranceList = new();
         List<ShopLineupParam> shopLineupParamDragonList = new();
+
         foreach (Param.Row row in _shopLineupParam.Rows)
         {
-            if ((byte)row["equipType"]!.Value.Value != Const.ShopLineupGoodsCategory || row.ID > 101980) // TODO identify magic number
-            { continue; }
+            if ((byte)row["equipType"]!.Value.Value != Const.ShopLineupGoodsCategory || row.ID > 101980)
+            { continue; } // Dragon Communion Shop 101950 - 101980 
 
             ShopLineupParam lot = new(new Param.Row(row));
             if (!_magicDictionary.TryGetValue(lot.equipId, out Magic? magic)) { continue; }
 
-            if (row.ID < 101950) // TODO identify magic number
+            if (row.ID < 101950) // one row abouve Light of Miquella
             {
                 if (lot.mtrlId == -1)
                 {
@@ -375,10 +379,9 @@ public partial class Randomizer
                 addToOrderedDict(magicCategoryDictMap, magic.ezStateBehaviorType, id);
             }
         }
+        removeDuplicateIntegersFrom(magicCategoryDictMap);
 
-        dedupeAndRandomizeShopVectors(magicCategoryDictMap);
-
-        Dictionary<int, int> magicShopReplacement = getShopReplacementHashmap(magicCategoryDictMap);
+        Dictionary<int, int> magicShopReplacement = getRandomizedIntegers(magicCategoryDictMap);
         shopLineupParamRemembranceList.Shuffle(_random);
         shopLineupParamDragonList.Shuffle(_random);
         // logItem("\n## All Magic Replacement.");
@@ -394,9 +397,8 @@ public partial class Randomizer
             ShopLineupParam lot = new(row);
             if (!_magicDictionary.TryGetValue(lot.equipId, out _)) { continue; }
 
-            if (row.ID < 101950)
+            if (row.ID < 101950) // two up from Miquella's
             { replaceShopLineupParamMagic(lot, magicShopReplacement, shopLineupParamRemembranceList); }
-
             else
             {
                 ShopLineupParam newDragonIncant = getNewId(lot.equipId, shopLineupParamDragonList);
@@ -442,19 +444,12 @@ public partial class Randomizer
         int limit = remembranceList.Count;
         int index = _random.Next(limit);
         int newId = remembranceList[index];
+        // logItem($"{_weaponNameDictionary[lot.equipId]} --> {newId}");
         remembranceList.Remove(newId);
-        // }
         lot.equipId = newId;
-        // int newId = getNewId(lot.equipId, shopLineupParamDictionary);
-        // TODO: currently has DLC weapons available, longterm will want DLC items read as params 
-        // logItem($"{_weaponNameDictionary[lot.equipId]} --> {Equipment.EquipmentNameList[newId]}");
-
-        // ShopLineupParam newRemembrance = getNewId(lot.equipId, shopLineupParamRemembranceList);
-        // logItem($"{_weaponNameDictionary[lot.equipId]} --> {_weaponNameDictionary[newRemembrance.equipId]}");
-        // copyShopLineupParam(lot, newRemembrance);
     }
     private void randomizeShopArmorParam()
-    {
+    {   // need the id's to identify the item lots
         List<int> baseHeadProtectors = new List<int>()
         {
             40000, 160000, 210000, 280000, 620000, 630000, 660000, 670000, 730000, 870000,
@@ -527,7 +522,7 @@ public partial class Randomizer
 
             if (category == 4 && numberRequired > 1 && id >= 10100 && id < 10110)
             {
-                row["itemNum01"].Value.SetValue(Const.SmithingCost); // if (numberRequired == 4) { } // if (numberRequired == 6) { }
+                row["itemNum01"].Value.SetValue(Const.SmithingCost); // if (numberRequired == 4) { } if (numberRequired == 6) { }
             }
         }
     }

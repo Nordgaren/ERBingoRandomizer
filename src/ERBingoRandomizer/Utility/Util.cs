@@ -1,13 +1,13 @@
 ﻿using Microsoft.Win32;
 using SoulsFormats;
 using System;
-using System.Windows.Forms;
 using System.Collections.Generic;
 using System.Drawing;
 using System.IO;
 using System.Linq;
 using System.Security.Cryptography;
 using System.Xml;
+using System.Windows.Forms; // TextRenderer
 using Project.Settings;
 
 namespace Project.Utility;
@@ -125,40 +125,6 @@ static class Util
         return game >= BHD5.Game.EldenRing ? hashable.Aggregate(0ul, (i, c) => i * PRIME64 + c) : hashable.Aggregate(0u, (i, c) => i * PRIME + c);
     }
 
-    public static string SplitCharacterText(bool useSpaces, List<string> items)
-    { // TODO where is this used?
-        const int lineCount = 3;
-        const int sizeLimit = 250;
-        Font font = new("Times New Roman", 12); // Pick some generic serif font to approximate Garamond
-
-        string delimeter = useSpaces ? ", " : "，";
-        List<string> committed = new();
-        foreach (string item in items)
-        {
-            List<string> cand = committed.ToList();
-            if (cand.Count == 0)
-            { cand.Add(""); }
-            else
-            { cand[cand.Count - 1] += delimeter; }
-            // This adds a space, trim it later if it matters: Japanese, Chinese, and Thai lack ascii spaces
-            // Otherwise, add one word at a time, also measuring the space before.
-            foreach (string token in item.Split(' ').Select((s, i) => (i == 0 ? "" : " ") + s))
-            {
-                string lastLine = cand[cand.Count - 1];
-                string addedLine = (lastLine + token).Trim(' ');
-                // if (TextRenderer.MeasureText(addedLine, font).Width < sizeLimit)
-                // { cand[cand.Count - 1] = addedLine; }
-                // else
-                // { cand.Add(token.Trim(' ')); }
-            }
-            if (cand.Count > lineCount)
-            { break; }
-            committed = cand;
-        }
-        if (committed.Count == 0) { committed = items.Take(lineCount).ToList(); } // Make each item a line, hope it goes well
-
-        return string.Join("\n", committed.Select(t => t.Trim(' ')));
-    }
     private static string GetFileSha256Hash(string path)
     {
         if (File.Exists(path))
