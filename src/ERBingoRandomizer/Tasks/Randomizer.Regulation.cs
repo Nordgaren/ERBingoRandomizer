@@ -27,6 +27,8 @@ public partial class Randomizer
     private Param _equipMtrlSetParam;
     // Dictionaries
     private Dictionary<int, EquipParamWeapon> _weaponDictionary;
+    private List<List<int>> WeaponShopLists; // UPDATE
+    private List<int> merchantWeaponList; // UPDATE
     private Dictionary<int, EquipParamWeapon> _customWeaponDictionary;
     private Dictionary<int, string> _weaponNameDictionary;
     private Dictionary<int, EquipParamGoods> _goodsDictionary;
@@ -135,6 +137,15 @@ public partial class Randomizer
                 && remembranceItems.All(i => i != id))
             .ToList();
 
+        // UPDATE
+        merchantWeaponList = _weaponDictionary.Keys.Select(washWeaponMetadata).Distinct()
+            .Where(id => staves.All(s => s.ID != id) && seals.All(s => s.ID != id)
+                && greatbows.All(s => s.ID != id)
+                && greatShields.All(s => s.ID != id)
+                && remembranceItems.All(i => i != id))
+            .ToList();  // used later for merchants
+        addDlcTypes(merchantWeaponList);
+
         for (int i = 0; i < Config.NumberOfClasses; i++)
         {
             Param.Row? row = _charaInitParam[Config.FirstClassId + i];
@@ -204,15 +215,15 @@ public partial class Randomizer
                 }
             }
         }
-
-        foreach (ItemLotWrapper item in Equipment.AdditionalItemLots)
-        { addToOrderedDict(categoryDictMap, item.Type, item.Entry); }
-
+        //> workaround until DLC 'weapon types' are fully malleable in the codebase, want to combine katanas and great katanas. to be updated eventually for "group armaments"
+        addToOrderedDict(categoryDictMap, Const.KatanaType, new ItemLotEntry(66520000, 2)); // Rakshasa's
+        addToOrderedDict(categoryDictMap, Const.KatanaType, new ItemLotEntry(66510000, 2)); // Dragon-Hunters
+        addToOrderedDict(categoryDictMap, Const.KatanaType, new ItemLotEntry(66500000, 2)); // Great Katana
+        //^
         removeDuplicateEntriesFrom(categoryDictMap);
         removeDuplicateEntriesFrom(categoryDictEnemy);
         groupArmaments(categoryDictMap);
         groupArmaments(categoryDictEnemy);
-
         Dictionary<int, ItemLotEntry> guaranteedDropReplace = getRandomizedEntries(categoryDictMap);
         Dictionary<int, ItemLotEntry> chanceDropReplace = getRandomizedEntries(categoryDictEnemy);
 
@@ -236,7 +247,9 @@ public partial class Randomizer
 
                 int id = (int)itemIds[i].GetValue(row);
                 if (category == Const.ItemLotWeaponCategory)
-                { // if (!_weaponDictionary.TryGetValue(washWeaponLevels(id), out _)) { continue; } // not needed
+                {
+                    if (!_weaponDictionary.TryGetValue(washWeaponLevels(id), out _)) { continue; }
+
                     if (guaranteedDropReplace.TryGetValue(id, out ItemLotEntry entry))
                     {
                         itemIds[i].SetValue(row, entry.Id);
@@ -266,29 +279,16 @@ public partial class Randomizer
         }
     }
     private void randomizeShopLineupParam()
-    {
-        List<List<int>> WeaponShopLists = new List<List<int>>() {
-            Equipment.LightBowAndBowIDs, Equipment.CrossBowIDs,
-            Equipment.SmallShieldIDs, Equipment.MediumShieldIDs,
-            Equipment.ColossalWeaponIDs, Equipment.ColossalSwordIDs,
-            Equipment.DaggerIDs, Equipment.ClawIDs, Equipment.FistIDs,
-            Equipment.CurvedSwordIDs, Equipment.CurvedGreatSwordIDs,
-            Equipment.HammerIDs, Equipment.GreatHammerIDs,
-            Equipment.AxeIDs, Equipment.GreataxeIDs,
-            Equipment.StraightSwordIDs, Equipment.GreatswordIDs,
-            Equipment.ReaperIDs, Equipment.KatanaIDs,
-            Equipment.HeavyThrustingIDs, Equipment.ThrustingSwordIDs,
-        };
+    {   // UPDATE
         List<int> RemembranceWeaponIDs = new List<int>()
         {
-            3100000, 3140000, 4020000, 4050000, 6040000, 8100000, 9020000, 11150000,
-            13030000, 15040000, 15110000, 17010000,  20060000, 21060000, 23050000, 42000000,
-            3500000, 3510000, 8500000, 17500000, 18510000, 23510000, 23520000, 67520000, // DLC  
-            4530000, 4550000,  // Radahn's DLC swords
+            3100000, 3140000, 4020000, 4050000, 6040000, 8100000, 9020000, 11150000, 13030000,
+            15040000, 15110000, 17010000,  20060000, 21060000, 23050000, 42000000, 3500000, 3510000,
+            8500000, 17500000, 18510000, 23510000, 23520000, 67520000, 4530000, 4550000,
         };
         List<ShopLineupParam> shopLineupParamRemembranceList = new();
 
-        foreach (Param.Row row in _shopLineupParam.Rows) // should write out to find DLC Remembrances TODO
+        foreach (Param.Row row in _shopLineupParam.Rows)
         {
             if ((byte)row["equipType"]!.Value.Value != Const.ShopLineupWeaponCategory || (row.ID < 101900 || row.ID > 101980))
             { continue; } // assures only weapons are randomized, maybe update for different armor logic, not sure
@@ -314,18 +314,15 @@ public partial class Randomizer
 
             ShopLineupParam lot = new(row);
 
-            if (lot.equipId == Const.CarianRegalScepter || lot.equipId == Const.RellanaTwinBlades)
-            {   // randomizes Rennala's staff and Rellana's Twin Blades (new DLC weapon types not randomized)
-                lot.equipId = 9020000;
-            }   // Hand of Malenia
+            if (lot.equipId == Const.CarianRegalScepter || lot.equipId == Const.RellanaTwinBlades) // easier on players to have Rennala gift a usable weapon for square
+            { lot.equipId = 9020000; } // randomizes Rennala's staff and Rellana's Twin Blades (new DLC weapon types have a bug not being randomized as expected)
 
             if (!_weaponDictionary.TryGetValue(washWeaponLevels(lot.equipId), out EquipParamWeapon? wep)) { continue; }
 
             if (!(wep.wepType is Const.StaffType or Const.SealType))
-            {   // about 60 item shop allocations
-                if (lot.mtrlId == -1) { replaceWeaponLineupParam(lot, WeaponShopLists); }
-                else { replaceRemembranceLineupParam(lot, RemembranceWeaponIDs); }
-                // remembrance list is small, better to have seperate unique allocation logic
+            {
+                if (lot.mtrlId == -1) { replaceWeaponLineupParam(lot, merchantWeaponList); }
+                else { replaceRemembranceLineupParam(lot, RemembranceWeaponIDs); }  // remembrance list is small, better to have seperate unique allocation logic
             }
         }
     }
@@ -343,7 +340,7 @@ public partial class Randomizer
             ShopLineupParam lot = new(new Param.Row(row));
             if (!_magicDictionary.TryGetValue(lot.equipId, out Magic? magic)) { continue; }
 
-            if (row.ID < 101950) // one row abouve Light of Miquella
+            if (row.ID < 101950) // one row above Light of Miquella
             {
                 if (lot.mtrlId == -1)
                 {
@@ -424,25 +421,22 @@ public partial class Randomizer
             }
         }
     }
-    private void replaceWeaponLineupParam(ShopLineupParam lot, List<List<int>> WeaponShopLists)
+    private void replaceWeaponLineupParam(ShopLineupParam lot, List<int> WeaponShopList)
     {
-        int newID = 0;
+        int newId = 0;
         do
         {
             _cancellationToken.ThrowIfCancellationRequested();
-            int weaponCategory = _random.Next(WeaponShopLists.Count);
-            List<int> weaponList = WeaponShopLists[weaponCategory];
-            int index = _random.Next(weaponList.Count);
-            newID = weaponList[index];
-        } while (allocatedIDs.Contains(newID));
+            int index = _random.Next(WeaponShopList.Count);
+            newId = washWeaponMetadata(WeaponShopList[index]);
+        } while (allocatedIDs.Contains(newId));
 
-        lot.equipId = newID;
-        allocatedIDs.Add(newID);
+        lot.equipId = newId;
+        allocatedIDs.Add(newId);
     }
     private void replaceRemembranceLineupParam(ShopLineupParam lot, IList<int> remembranceList)
     {
-        int limit = remembranceList.Count;
-        int index = _random.Next(limit);
+        int index = _random.Next(remembranceList.Count);
         int newId = remembranceList[index];
         // logItem($"{_weaponNameDictionary[lot.equipId]} --> {newId}");
         remembranceList.Remove(newId);

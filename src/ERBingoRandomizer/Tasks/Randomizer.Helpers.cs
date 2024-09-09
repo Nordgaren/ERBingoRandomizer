@@ -81,25 +81,28 @@ public partial class Randomizer
     }
     private void groupArmaments(IOrderedDictionary orderedDictionary)
     {
-        // consolidate bows, lightbows, crossbows, ballistae
+        // consolidate bows, lightbows, crossbows, greatbows, ballistae
         List<ItemLotEntry> bows = (List<ItemLotEntry>?)orderedDictionary[(object)Const.BowType] ?? new List<ItemLotEntry>();
         List<ItemLotEntry> lightbows = (List<ItemLotEntry>?)orderedDictionary[(object)Const.LightBowType] ?? new List<ItemLotEntry>();
         List<ItemLotEntry> crossbows = (List<ItemLotEntry>?)orderedDictionary[(object)Const.CrossbowType] ?? new List<ItemLotEntry>();
+        List<ItemLotEntry> greatbows = (List<ItemLotEntry>?)orderedDictionary[(object)Const.GreatbowType] ?? new List<ItemLotEntry>();
         List<ItemLotEntry> ballista = (List<ItemLotEntry>?)orderedDictionary[(object)Const.BallistaType] ?? new List<ItemLotEntry>();
 
         bows.AddRange(lightbows);
         bows.AddRange(crossbows);
+        bows.AddRange(greatbows);
         bows.AddRange(ballista);
 
         orderedDictionary[(object)Const.BowType] = bows;
         orderedDictionary.Remove(Const.LightBowType);
         orderedDictionary.Remove(Const.CrossbowType);
+        orderedDictionary.Remove(Const.GreatbowType);
         orderedDictionary.Remove(Const.BallistaType);
     }
 
     private Dictionary<int, ItemLotEntry> getRandomizedEntries(IOrderedDictionary orderedDictionary)
     {
-        Dictionary<int, ItemLotEntry> output = new();
+        Dictionary<int, ItemLotEntry> output = new(); // key is weapon type
 
         for (int i = 0; i < orderedDictionary.Count; i++)
         {
@@ -108,10 +111,7 @@ public partial class Randomizer
             itemLotEntries.Shuffle(_random);
 
             foreach (ItemLotEntry entry in itemLotEntries)
-            {
-                if (entry.Id != Const.GargoyleGreatsword)
-                { output.Add(entry.Id, getNewId(entry.Id, values)); }
-            }
+            { output.Add(entry.Id, getNewId(entry.Id, values)); }
         }
         return output;
     }
@@ -124,7 +124,8 @@ public partial class Randomizer
             List<int> itemLotEntries = new(value);
             itemLotEntries.Shuffle(_random);
 
-            foreach (int entry in itemLotEntries) { output.Add(entry, getNewId(entry, value)); }
+            foreach (int entry in itemLotEntries)
+            { output.Add(entry, getNewId(entry, value)); }
         }
         return output;
     }
@@ -275,7 +276,7 @@ public partial class Randomizer
         return newId;
     }
     // ReSharper disable once SuggestBaseTypeForParameter
-    private static void addToOrderedDict<T>(IOrderedDictionary orderedDict, object key, T type)
+    public static void addToOrderedDict<T>(IOrderedDictionary orderedDict, object key, T type) // flip back to private
     {
         List<T>? ids = (List<T>?)orderedDict[key];
         if (ids != null)
@@ -327,6 +328,24 @@ public partial class Randomizer
     }
     private static int washWeaponMetadata(int id) { return id / 10000 * 10000; }
     private static int washWeaponLevels(int id) { return id / 100 * 100; }
+
+    private void addDlcTypes(List<int> weaponList)
+    {   // not all needed to be injected at FMGs, these impact merchant allocations
+        weaponList.Add(64500000); // backhand blades
+        weaponList.Add(64520000);
+        weaponList.Add(68500000); // beast claws
+        weaponList.Add(68510000);
+        weaponList.Add(66500000); // great katanas
+        weaponList.Add(66510000);
+        weaponList.Add(66520000);
+        weaponList.Add(67500000); // light greatswords
+        weaponList.Add(67510000);
+        weaponList.Add(62500000); // thrusting shields
+        weaponList.Add(62510000);
+        weaponList.Add(60500000); // dryleaf arts
+        weaponList.Add(60510000);
+        // weaponList.Add();
+    }
 
     private void injectAdditionalWeaponNames()
     {
@@ -391,7 +410,6 @@ public partial class Randomizer
         _weaponFmg[33510000] = "Staff of the Great Beyond";
         _weaponFmg[67520000] = "Rellana's Twin Blades";
 
-        // TODO update Remembrance shop IDs
         // affinities
         for (int i = 0; i < 1200; i += 100)
         {

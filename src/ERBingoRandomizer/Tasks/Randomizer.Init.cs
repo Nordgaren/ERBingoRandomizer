@@ -178,6 +178,7 @@ public partial class Randomizer
             string rowString = _protectorFmg[row.ID];
             if (sortId == 9999999 || sortId == 99999 || string.IsNullOrWhiteSpace(rowString) || rowString.ToLower().Contains("[error]"))
             { continue; }
+            // TODO try to randomize all armor in game
 
             byte protectorCategory = (byte)row["protectorCategory"]!.Value.Value;
 

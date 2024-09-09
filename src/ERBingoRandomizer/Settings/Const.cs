@@ -80,7 +80,6 @@ public static class Const
     public const ushort LightGreatswordType = 93;
     public const ushort GreatKatanaType = 94;
     public const ushort BeastClawsType = 95;
-
     public const byte SorceryType = 0;
     public const byte IncantationType = 1;
     public const byte GoodsSorceryType = 5;
@@ -112,25 +111,6 @@ public static class Const
     public static readonly int[] ChrInfoMapping = {
         297130, 297131, 297132, 297133, 297134, 297135, 297138, 297136, 297137, 297139,
     };
-    // weapons
-    public enum WeaponType
-    {
-        Dagger = 1, StraightSword = 3, Greatsword = 5, ColossalSword = 7,
-        CurvedSword = 9, CurvedGreatsword = 11, Katana = 13, Twinblade = 14,
-        ThrustingSword = 15, HeavyThrustingSword = 16, Axe = 17, Greataxe = 19,
-        Hammer = 21, GreatHammer = 23, Flail = 24, Spear = 25,
-        SpearLarge = 26, // UNUSED
-        GreatSpear = 28, Halberd = 29, Reaper = 31, Fist = 35,
-        Claws = 37, Whip = 39, ColossalWeapon = 41, LightBow = 50,
-        Bow = 51, Greatbow = 53, Crossbow = 55, Ballista = 56,
-        GlintstoneStaff = 57,
-        Sorcery = 58, //UNUSED
-        FingerSeal = 61,
-        SmallShield = 65, MediumShield = 67, Greatshield = 69, Torch = 87,
-        // DLC
-        HandToHand = 88, PerfumeBottles = 89, ThrustingShield = 90, ThowingBlades = 91,
-        BackhandBlade = 92, LightGreatsword = 93, GreatKatana = 94, BeastClaws = 95,
-    }
     // BHD5  
     public static class ArchiveKeys
     {
