@@ -10,8 +10,8 @@ public static class Const {
     public const string BingoRegulationPath = $"{BingoPath}/{RegulationName}";
     public const string ExeName = "eldenring.exe";
     public const string RegulationName = "regulation.bin";
-    public const string ItemMsgBNDPath = "/msg/engus/item.msgbnd.dcx";
-    public const string MenuMsgBNDPath = "/msg/engus/menu.msgbnd.dcx";
+    public const string ItemMsgBNDPath = "/msg/engus/item_dlc02.msgbnd.dcx";
+    public const string MenuMsgBNDPath = "/msg/engus/menu_dlc02.msgbnd.dcx";
     // Params  
     public const string EquipParamWeaponName = "EquipParamWeapon.param";
     public const string EquipParamCustomWeaponName = "EquipParamCustomWeapon.param";
